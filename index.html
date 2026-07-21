@@ -15,8 +15,27 @@
   <!-- Menu Bar -->
   <header class="menu-bar" id="menu-bar">
     <div class="menu-bar-left">
-
-      <div class="menu-app-name" id="menu-app-name"><strong>Finder</strong></div>
+      <div class="brand-logo" id="brand-logo">
+        <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="brand-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#7DD3FC"/>
+              <stop offset="45%" stop-color="#818CF8"/>
+              <stop offset="100%" stop-color="#C084FC"/>
+            </linearGradient>
+            <linearGradient id="brand-grad-inner" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#E0F2FE"/>
+              <stop offset="100%" stop-color="#DDD6FE"/>
+            </linearGradient>
+          </defs>
+          <rect x="1" y="1" width="30" height="30" rx="8" fill="url(#brand-grad)" opacity="0.9"/>
+          <rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/>
+          <path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)" opacity="0.95"/>
+          <path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/>
+          <circle cx="22" cy="10" r="2" fill="rgba(255,255,255,0.5)"/>
+        </svg>
+      </div>
+      <div class="menu-app-name" id="menu-app-name"><strong>Thread OS</strong></div>
       <div class="menu-items">
         <span class="menu-item">File</span>
         <span class="menu-item">Edit</span>
@@ -49,8 +68,8 @@
         <span>Finder</span>
       </div>
       <div class="desktop-icon" data-app="threads">
-        <div class="desktop-icon-img threads-desktop-icon">
-          <svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#6C5CE7"/><rect x="10" y="12" width="28" height="4" rx="2" fill="rgba(255,255,255,0.7)"/><rect x="10" y="20" width="20" height="4" rx="2" fill="rgba(255,255,255,0.5)"/><rect x="10" y="28" width="24" height="4" rx="2" fill="rgba(255,255,255,0.5)"/><rect x="10" y="36" width="16" height="4" rx="2" fill="rgba(255,255,255,0.3)"/></svg>
+        <div class="desktop-icon-img">
+          <svg width="48" height="48" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="dgrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7DD3FC"/><stop offset="45%" stop-color="#818CF8"/><stop offset="100%" stop-color="#C084FC"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#dgrad)"/><rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/><path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)"/><path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/><circle cx="22" cy="10" r="2" fill="rgba(255,255,255,0.5)"/></svg>
         </div>
         <span>Threads</span>
       </div>
@@ -184,7 +203,7 @@
       </div>
       <div class="dock-item" data-app="threads" data-tooltip="Threads">
         <div class="dock-item-img">
-          <svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#6C5CE7"/><rect x="10" y="12" width="28" height="4" rx="2" fill="rgba(255,255,255,0.7)"/><rect x="10" y="20" width="20" height="4" rx="2" fill="rgba(255,255,255,0.5)"/><rect x="10" y="28" width="24" height="4" rx="2" fill="rgba(255,255,255,0.5)"/></svg>
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="dockgrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7DD3FC"/><stop offset="45%" stop-color="#818CF8"/><stop offset="100%" stop-color="#C084FC"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#dockgrad)"/><rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/><path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)"/><path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/><circle cx="22" cy="10" r="2" fill="rgba(255,255,255,0.5)"/></svg>
         </div>
         <div class="dock-indicator active"></div>
       </div>
