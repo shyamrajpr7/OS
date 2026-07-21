@@ -16,26 +16,9 @@
   <header class="menu-bar" id="menu-bar">
     <div class="menu-bar-left">
       <div class="brand-logo" id="brand-logo">
-        <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="brand-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#7DD3FC"/>
-              <stop offset="45%" stop-color="#818CF8"/>
-              <stop offset="100%" stop-color="#C084FC"/>
-            </linearGradient>
-            <linearGradient id="brand-grad-inner" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#E0F2FE"/>
-              <stop offset="100%" stop-color="#DDD6FE"/>
-            </linearGradient>
-          </defs>
-          <rect x="1" y="1" width="30" height="30" rx="8" fill="url(#brand-grad)" opacity="0.9"/>
-          <rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/>
-          <path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)" opacity="0.95"/>
-          <path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/>
-          <circle cx="22" cy="10" r="2" fill="rgba(255,255,255,0.5)"/>
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="brand-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7DD3FC"/><stop offset="45%" stop-color="#818CF8"/><stop offset="100%" stop-color="#C084FC"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="8" fill="url(#brand-grad)" opacity="0.9"/><rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/><path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)" opacity="0.95"/><path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/><circle cx="22" cy="10" r="2" fill="rgba(255,255,255,0.5)"/></svg>
       </div>
-      <div class="menu-app-name" id="menu-app-name"><strong>Thread OS</strong></div>
+      <div class="menu-app-name" id="menu-app-name"><strong>Finder</strong></div>
       <div class="menu-items">
         <span class="menu-item">File</span>
         <span class="menu-item">Edit</span>
@@ -58,12 +41,10 @@
 
   <!-- Desktop Area -->
   <main class="desktop" id="desktop">
-
-    <!-- Desktop Icons -->
     <div class="desktop-icons">
       <div class="desktop-icon" data-app="finder">
-        <div class="desktop-icon-img finder-icon">
-          <svg width="48" height="48" viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="34" rx="4" fill="#47A3FF"/><rect x="4" y="8" width="40" height="10" rx="4" fill="#1E6FD9"/><circle cx="14" cy="13" r="2" fill="#FF5F57"/><circle cx="20" cy="13" r="2" fill="#FEBC2E"/><circle cx="26" cy="13" r="2" fill="#28C840"/><rect x="8" y="22" width="14" height="3" rx="1" fill="rgba(255,255,255,0.5)"/><rect x="8" y="28" width="10" height="3" rx="1" fill="rgba(255,255,255,0.5)"/><rect x="8" y="34" width="12" height="3" rx="1" fill="rgba(255,255,255,0.5)"/></svg>
+        <div class="desktop-icon-img">
+          <svg width="48" height="48" viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="34" rx="4" fill="#47A3FF"/><rect x="4" y="8" width="40" height="10" rx="4" fill="#1E6FD9"/><circle cx="14" cy="13" r="2" fill="#FF5F57"/><circle cx="20" cy="13" r="2" fill="#FEBC2E"/><circle cx="26" cy="13" r="2" fill="#28C840"/></svg>
         </div>
         <span>Finder</span>
       </div>
@@ -75,52 +56,46 @@
       </div>
     </div>
 
-    <!-- Windows Container -->
     <div class="windows-container" id="windows-container">
 
       <!-- Finder Window -->
-      <div class="mac-window" id="finder-window" style="width:820px; height:520px; top:60px; left:120px;">
+      <div class="mac-window" id="finder-window" style="width:860px; height:540px; top:50px; left:100px;">
         <div class="window-titlebar" data-window="finder-window">
           <div class="traffic-lights">
             <button class="tl-btn tl-close" data-action="close"></button>
             <button class="tl-btn tl-minimize" data-action="minimize"></button>
             <button class="tl-btn tl-maximize" data-action="maximize"></button>
           </div>
-          <div class="window-title">Finder</div>
-          <div class="window-titlebar-spacer"></div>
-          <div class="titlebar-actions">
-            <button class="tb-action-btn" id="btn-back-nav"><i data-lucide="chevron-left"></i></button>
-            <button class="tb-action-btn" id="btn-forward-nav"><i data-lucide="chevron-right"></i></button>
+          <div class="titlebar-nav">
+            <button class="tb-nav-btn" id="btn-back" disabled><i data-lucide="chevron-left"></i></button>
+            <button class="tb-nav-btn" id="btn-forward" disabled><i data-lucide="chevron-right"></i></button>
           </div>
+          <div class="window-title" id="finder-titlebar-name">Finder</div>
+          <div class="window-titlebar-spacer"></div>
         </div>
         <div class="window-body finder-body">
           <aside class="finder-sidebar">
             <div class="sidebar-section">
               <div class="sidebar-label">Favorites</div>
-              <div class="sidebar-item active" data-section="all-threads">
-                <i data-lucide="layers"></i><span>All Threads</span>
-              </div>
-              <div class="sidebar-item" data-section="desktop-node">
-                <i data-lucide="monitor"></i><span>DESK-01</span>
-              </div>
-              <div class="sidebar-item" data-section="mobile-node">
-                <i data-lucide="smartphone"></i><span>MOBILE-01</span>
-              </div>
+              <div class="sidebar-item" data-path="/Users/shyamraj/Desktop"><i data-lucide="monitor"></i><span>Desktop</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj/Documents"><i data-lucide="file-text"></i><span>Documents</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj/Downloads"><i data-lucide="download"></i><span>Downloads</span></div>
+              <div class="sidebar-item" data-path="/Applications"><i data-lucide="grid-3x3"></i><span>Applications</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj/Music"><i data-lucide="music"></i><span>Music</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj/Pictures"><i data-lucide="image"></i><span>Pictures</span></div>
             </div>
             <div class="sidebar-section">
-              <div class="sidebar-label">Shared</div>
-              <div class="sidebar-item" data-section="fused">
-                <i data-lucide="link"></i><span>Fused Threads</span>
-              </div>
-              <div class="sidebar-item" data-section="recent">
-                <i data-lucide="clock"></i><span>Recent</span>
-              </div>
+              <div class="sidebar-label">Locations</div>
+              <div class="sidebar-item" data-path="/"><i data-lucide="hard-drive"></i><span>Macintosh HD</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj"><i data-lucide="user"></i><span>shyamraj</span></div>
+              <div class="sidebar-item" data-path="/System"><i data-lucide="settings"></i><span>System</span></div>
             </div>
             <div class="sidebar-section">
               <div class="sidebar-label">Tags</div>
-              <div class="sidebar-item"><span class="tag-dot red"></span><span>Critical</span></div>
-              <div class="sidebar-item"><span class="tag-dot blue"></span><span>Development</span></div>
-              <div class="sidebar-item"><span class="tag-dot purple"></span><span>Shared</span></div>
+              <div class="sidebar-item"><span class="tag-dot red"></span><span>Red</span></div>
+              <div class="sidebar-item"><span class="tag-dot blue"></span><span>Blue</span></div>
+              <div class="sidebar-item"><span class="tag-dot purple"></span><span>Purple</span></div>
+              <div class="sidebar-item"><span class="tag-dot green"></span><span>Green</span></div>
             </div>
           </aside>
           <div class="finder-content">
@@ -129,64 +104,23 @@
                 <button class="view-btn active" data-view="list"><i data-lucide="list"></i></button>
                 <button class="view-btn" data-view="grid"><i data-lucide="grid-3x3"></i></button>
               </div>
+              <div class="finder-pathbar" id="finder-pathbar"></div>
               <div class="finder-search">
                 <i data-lucide="search"></i>
-                <input type="text" placeholder="Search threads..." id="finder-search-input">
+                <input type="text" placeholder="Search" id="finder-search-input">
               </div>
             </div>
-            <div class="finder-list-header">
-              <span class="col-name">Name</span>
-              <span class="col-status">Status</span>
-              <span class="col-node">Node</span>
-              <span class="col-pid">PID</span>
+            <div class="finder-list-header" id="finder-list-header">
+              <span class="col-name" data-sort="name">Name <i data-lucide="chevron-down"></i></span>
+              <span class="col-size" data-sort="size">Size</span>
+              <span class="col-kind" data-sort="kind">Kind</span>
+              <span class="col-date" data-sort="date">Date Modified</span>
             </div>
-            <div class="finder-list" id="finder-list">
-              <!-- Dynamically populated -->
-            </div>
+            <div class="finder-list" id="finder-list"></div>
+            <div class="finder-statusbar" id="finder-statusbar">0 items</div>
           </div>
         </div>
         <div class="window-resize-handle" data-window="finder-window"></div>
-      </div>
-
-      <!-- Thread Detail Window -->
-      <div class="mac-window thread-detail-window" id="thread-detail-window" style="width:540px; height:440px; top:120px; left:400px; display:none;">
-        <div class="window-titlebar" data-window="thread-detail-window">
-          <div class="traffic-lights">
-            <button class="tl-btn tl-close" data-action="close"></button>
-            <button class="tl-btn tl-minimize" data-action="minimize"></button>
-            <button class="tl-btn tl-maximize" data-action="maximize"></button>
-          </div>
-          <div class="window-title" id="detail-window-title">Thread Details</div>
-          <div class="window-titlebar-spacer"></div>
-        </div>
-        <div class="window-body detail-body">
-          <div class="detail-header">
-            <div class="detail-icon" id="detail-icon"></div>
-            <div class="detail-info">
-              <h3 id="detail-thread-name"></h3>
-              <div class="detail-meta">
-                <span class="detail-badge" id="detail-badge"></span>
-                <span class="detail-pid" id="detail-pid"></span>
-              </div>
-            </div>
-          </div>
-          <div class="detail-sections">
-            <div class="detail-tabs">
-              <button class="detail-tab active" data-tab="code">Code</button>
-              <button class="detail-tab" data-tab="state">State</button>
-              <button class="detail-tab" data-tab="memory">Memory</button>
-            </div>
-            <div class="detail-content" id="detail-content">
-              <pre id="detail-code-pre"></pre>
-            </div>
-            <div class="detail-actions">
-              <button class="detail-action-btn" id="detail-toggle-btn">
-                <i data-lucide="arrow-right-left"></i> Switch Node
-              </button>
-              <button class="detail-action-btn secondary" id="detail-close-btn">Close</button>
-            </div>
-          </div>
-        </div>
       </div>
 
     </div>
@@ -199,13 +133,12 @@
         <div class="dock-item-img">
           <svg width="32" height="32" viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="34" rx="4" fill="#47A3FF"/><rect x="4" y="8" width="40" height="10" rx="4" fill="#1E6FD9"/><circle cx="14" cy="13" r="2" fill="#FF5F57"/><circle cx="20" cy="13" r="2" fill="#FEBC2E"/><circle cx="26" cy="13" r="2" fill="#28C840"/></svg>
         </div>
-        <div class="dock-indicator"></div>
+        <div class="dock-indicator active"></div>
       </div>
       <div class="dock-item" data-app="threads" data-tooltip="Threads">
         <div class="dock-item-img">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="dockgrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7DD3FC"/><stop offset="45%" stop-color="#818CF8"/><stop offset="100%" stop-color="#C084FC"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#dockgrad)"/><rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/><path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)"/><path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/><circle cx="22" cy="10" r="2" fill="rgba(255,255,255,0.5)"/></svg>
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="dockgrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7DD3FC"/><stop offset="45%" stop-color="#818CF8"/><stop offset="100%" stop-color="#C084FC"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#dockgrad)"/><path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)"/><path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/></svg>
         </div>
-        <div class="dock-indicator active"></div>
       </div>
       <div class="dock-separator"></div>
       <div class="dock-item" data-app="terminal" data-tooltip="Terminal">
@@ -216,6 +149,11 @@
       <div class="dock-item" data-app="activity" data-tooltip="Activity Monitor">
         <div class="dock-item-img">
           <svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><polyline points="8,32 16,20 24,28 32,14 40,22" fill="none" stroke="#28C840" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="dock-item" data-app="settings" data-tooltip="System Settings">
+        <div class="dock-item-img">
+          <svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#2C2C2E"/><circle cx="24" cy="24" r="8" fill="none" stroke="#A1A1A6" stroke-width="2.5"/><circle cx="24" cy="24" r="3" fill="#A1A1A6"/></svg>
         </div>
       </div>
       <div class="dock-spacer"></div>

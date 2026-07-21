@@ -1,145 +1,520 @@
-/* THREAD OS - macOS Interactive Shell */
+/* THREAD OS - Working Finder Engine */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   if (window.lucide) window.lucide.createIcons();
 
-  const state = {
-    threads: [
-      {
-        id: 'TH-8901', title: 'Rust Compositor IDE', icon: 'code',
-        boundTo: 'DESK-01', pid: 4092,
-        content: '// Slint Render Loop for Thread Matrix\nfn render_thread_layer(ctx: &mut GraphicsContext) {\n  let frame = ctx.acquire_p2p_buffer();\n  frame.bind_texture_tether(NODE_MOBILE_01);\n  println!("P2P Memory Shared: Live State Streaming...");\n}',
-        stateSummary: { file: 'slint_compositor.rs', line: 142, memory: '340 MB', fps: 120 }
-      },
-      {
-        id: 'TH-8902', title: 'Kernel Mesh Chat', icon: 'message-square',
-        boundTo: 'SHARED', pid: 2180,
-        content: '[17:42:01] kernel_node: P2P UWB Session verified.\n[17:43:10] shyamraj: Initializing Loom Shell interface.\n[17:44:05] dev_team: Thread fusion active across DESK-01 & MOBILE-01!',
-        stateSummary: { channel: '#os-core-dev', unread: 3, memory: '110 MB' }
-      },
-      {
-        id: 'TH-8903', title: 'Audio Synth DAW', icon: 'sliders',
-        boundTo: 'MOBILE-01', pid: 7712,
-        content: 'PLAYHEAD: 01:24.08\nSYNTH 1: Phosphor Wave\nMODULATION: Lowpass 14kHz (Controlled via Mobile Deck Touch)',
-        stateSummary: { bpm: 128, sampleRate: '96kHz', memory: '450 MB' }
-      },
-      {
-        id: 'TH-8904', title: 'P2P Telemetry Dashboard', icon: 'activity',
-        boundTo: 'DESK-01', pid: 9012,
-        content: 'PROXIMITY LINK: UWB 0.4m (High Precision)\nPEER STATE: Active Sync (Zero Packet Drop)\nCOMPOSITOR SHADER: Slint WGPU Pipe Active',
-        stateSummary: { latency: '1.2ms', bandwidth: '2.4 Gbps', memory: '85 MB' }
+  /* ========== VIRTUAL FILE SYSTEM ========== */
+  var fileSystem = {
+    '/': {
+      type: 'folder', name: 'Macintosh HD', items: {
+        'Applications': { type: 'folder', items: {
+          'Finder.app': { type: 'app', size: '42.3 MB', modified: 'Mar 15 2026' },
+          'Threads.app': { type: 'app', size: '18.7 MB', modified: 'Jul 20 2026' },
+          'Terminal.app': { type: 'app', size: '8.1 MB', modified: 'Feb 3 2026' },
+          'Activity Monitor.app': { type: 'app', size: '12.4 MB', modified: 'Jan 18 2026' },
+          'Safari.app': { type: 'app', size: '28.9 MB', modified: 'Apr 22 2026' },
+          'System Settings.app': { type: 'app', size: '6.2 MB', modified: 'Mar 1 2026' },
+          'Calculator.app': { type: 'app', size: '3.1 MB', modified: 'Dec 10 2025' },
+          'TextEdit.app': { type: 'app', size: '5.8 MB', modified: 'Feb 14 2026' },
+          'Preview.app': { type: 'app', size: '15.6 MB', modified: 'Jan 5 2026' },
+          'Xcode.app': { type: 'app', size: '14.2 GB', modified: 'Jul 10 2026' }
+        }},
+        'Library': { type: 'folder', items: {
+          'System': { type: 'folder', items: {} },
+          'Caches': { type: 'folder', items: {} },
+          'Application Support': { type: 'folder', items: {} }
+        }},
+        'System': { type: 'folder', items: {
+          'Library': { type: 'folder', items: {} }
+        }},
+        'Users': { type: 'folder', items: {
+          'shyamraj': { type: 'folder', items: {} },
+          'Shared': { type: 'folder', items: {} }
+        }}
       }
-    ],
-    selectedThread: null,
-    focusedWindow: 'finder-window',
-    viewMode: 'list'
+    }
   };
 
-  const finderList = document.getElementById('finder-list');
-  const finderWindow = document.getElementById('finder-window');
-  const detailWindow = document.getElementById('thread-detail-window');
-  const menuClock = document.getElementById('menu-clock');
-  const dock = document.getElementById('dock');
-  const finderSearchInput = document.getElementById('finder-search-input');
+  // Build user home
+  fileSystem['/Users/shyamraj'] = {
+    type: 'folder', name: 'shyamraj', items: {
+      'Desktop': { type: 'folder', items: {
+        'Finder.app': { type: 'app', size: '42.3 MB', modified: 'Mar 15 2026' },
+        'Threads': { type: 'folder', items: {
+          'index.html': { type: 'code', size: '4.8 KB', modified: 'Jul 20 2026' },
+          'styles.css': { type: 'code', size: '8.2 KB', modified: 'Jul 20 2026' },
+          'app.js': { type: 'code', size: '12.1 KB', modified: 'Jul 20 2026' }
+        }},
+        'project-notes.txt': { type: 'doc', size: '2.4 KB', modified: 'Jul 18 2026' },
+        'screenshot-2026-07-20.png': { type: 'image', size: '1.8 MB', modified: 'Jul 20 2026' }
+      }},
+      'Documents': { type: 'folder', items: {
+        'Projects': { type: 'folder', items: {
+          'thread-os': { type: 'folder', items: {
+            'index.html': { type: 'code', size: '4.8 KB', modified: 'Jul 20 2026' },
+            'styles.css': { type: 'code', size: '8.2 KB', modified: 'Jul 20 2026' },
+            'app.js': { type: 'code', size: '12.1 KB', modified: 'Jul 20 2026' },
+            'README.md': { type: 'doc', size: '1.2 KB', modified: 'Jul 19 2026' }
+          }},
+          'webapp': { type: 'folder', items: {
+            'index.html': { type: 'code', size: '3.1 KB', modified: 'Jun 5 2026' },
+            'main.py': { type: 'code', size: '2.8 KB', modified: 'Jun 5 2026' }
+          }},
+          'campusease': { type: 'folder', items: {} },
+          'ecommerce': { type: 'folder', items: {} }
+        }},
+        'Resume.pdf': { type: 'pdf', size: '245 KB', modified: 'May 10 2026' },
+        'Notes.txt': { type: 'doc', size: '4.1 KB', modified: 'Jul 15 2026' },
+        'budget-2026.xlsx': { type: 'doc', size: '18.3 KB', modified: 'Jan 20 2026' },
+        'presentation.key': { type: 'doc', size: '8.7 MB', modified: 'Jun 22 2026' }
+      }},
+      'Downloads': { type: 'folder', items: {
+        'thread-export.zip': { type: 'zip', size: '2.4 MB', modified: 'Jul 19 2026' },
+        'update-pkg.dmg': { type: 'dmg', size: '156 MB', modified: 'Jul 18 2026' },
+        'photo-001.jpg': { type: 'image', size: '3.2 MB', modified: 'Jul 17 2026' },
+        'invoice-july.pdf': { type: 'pdf', size: '124 KB', modified: 'Jul 15 2026' },
+        'song-mix.mp3': { type: 'music', size: '8.4 MB', modified: 'Jul 12 2026' },
+        'video-tutorial.mp4': { type: 'video', size: '245 MB', modified: 'Jul 10 2026' },
+        'font-pack.zip': { type: 'zip', size: '4.8 MB', modified: 'Jul 8 2026' },
+        'dataset.csv': { type: 'doc', size: '52.1 KB', modified: 'Jul 5 2026' }
+      }},
+      'Music': { type: 'folder', items: {
+        'Playlist1': { type: 'folder', items: {
+          'track-01.mp3': { type: 'music', size: '7.2 MB', modified: 'Jun 1 2026' },
+          'track-02.mp3': { type: 'music', size: '8.1 MB', modified: 'Jun 1 2026' },
+          'track-03.mp3': { type: 'music', size: '6.9 MB', modified: 'Jun 1 2026' }
+        }},
+        'Synth': { type: 'folder', items: {
+          'phosphor-wave.wav': { type: 'music', size: '42 MB', modified: 'May 15 2026' },
+          'ambient-pad.wav': { type: 'music', size: '38 MB', modified: 'May 15 2026' }
+        }},
+        'iTunes': { type: 'folder', items: {} }
+      }},
+      'Pictures': { type: 'folder', items: {
+        'wallpaper.jpg': { type: 'image', size: '8.4 MB', modified: 'Jul 1 2026' },
+        'Screenshots': { type: 'folder', items: {
+          'screen-shot-1.png': { type: 'image', size: '1.2 MB', modified: 'Jul 20 2026' },
+          'screen-shot-2.png': { type: 'image', size: '980 KB', modified: 'Jul 19 2026' }
+        }},
+        'Photos Library': { type: 'folder', items: {} }
+      }},
+      'Movies': { type: 'folder', items: {} },
+      'Library': { type: 'folder', items: {} },
+      '.zshrc': { type: 'code', size: '2.1 KB', modified: 'Jul 10 2026' },
+      '.gitconfig': { type: 'doc', size: '0.4 KB', modified: 'Jun 15 2026' }
+    }
+  };
 
-  /* CLOCK */
+  /* ========== STATE ========== */
+  var state = {
+    currentPath: '/Users/shyamraj',
+    history: ['/Users/shyamraj'],
+    historyIndex: 0,
+    viewMode: 'list',
+    selectedItem: null,
+    focusedWindow: 'finder-window',
+    sortBy: 'name',
+    sortAsc: true
+  };
+
+  /* ========== DOM ========== */
+  var finderList = document.getElementById('finder-list');
+  var finderWindow = document.getElementById('finder-window');
+  var menuClock = document.getElementById('menu-clock');
+  var dock = document.getElementById('dock');
+  var pathbar = document.getElementById('finder-pathbar');
+  var statusbar = document.getElementById('finder-statusbar');
+  var searchInput = document.getElementById('finder-search-input');
+  var btnBack = document.getElementById('btn-back');
+  var btnForward = document.getElementById('btn-forward');
+  var listHeader = document.getElementById('finder-list-header');
+
+  /* ========== CLOCK ========== */
   function updateClock() {
-    const now = new Date();
-    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const d = days[now.getDay()];
-    const m = months[now.getMonth()];
-    const dt = now.getDate();
-    let h = now.getHours();
-    const min = now.getMinutes().toString().padStart(2,'0');
-    const ap = h >= 12 ? 'PM' : 'AM';
+    var now = new Date();
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var h = now.getHours();
+    var ap = h >= 12 ? 'PM' : 'AM';
     h = h % 12 || 12;
-    menuClock.textContent = d + ' ' + m + ' ' + dt + '  ' + h + ':' + min + ' ' + ap;
+    menuClock.textContent = days[now.getDay()] + ' ' + months[now.getMonth()] + ' ' + now.getDate() + '  ' + h + ':' + now.getMinutes().toString().padStart(2,'0') + ' ' + ap;
   }
   updateClock();
   setInterval(updateClock, 10000);
 
-  /* HELPER */
-  function getNodeColor(n) { return n === 'DESK-01' ? '#007AFF' : n === 'MOBILE-01' ? '#FF5F57' : '#AF52DE'; }
-  function getNodeColorDark(n) { return n === 'DESK-01' ? '#0055CC' : n === 'MOBILE-01' ? '#CC3333' : '#7B3DA0'; }
+  /* ========== FILE SYSTEM HELPERS ========== */
+  function getNode(path) {
+    if (path === '/') return fileSystem['/'];
+    var parts = path.split('/').filter(Boolean);
+    var node = fileSystem['/'];
+    for (var i = 0; i < parts.length; i++) {
+      if (node && node.items && node.items[parts[i]]) {
+        node = node.items[parts[i]];
+      } else {
+        return null;
+      }
+    }
+    return node;
+  }
 
-  function getFilteredThreads() {
-    const q = finderSearchInput ? finderSearchInput.value.toLowerCase() : '';
-    const sec = document.querySelector('.sidebar-item.active');
-    const section = sec ? sec.dataset.section : 'all-threads';
-    return state.threads.filter(t => {
-      const ms = !q || t.title.toLowerCase().includes(q) || t.id.toLowerCase().includes(q);
-      let mf = true;
-      if (section === 'desktop-node') mf = t.boundTo === 'DESK-01';
-      else if (section === 'mobile-node') mf = t.boundTo === 'MOBILE-01';
-      else if (section === 'fused') mf = t.boundTo === 'SHARED';
-      return ms && mf;
+  function getItems(path) {
+    var node = getNode(path);
+    if (!node || node.type !== 'folder') return [];
+    var items = [];
+    var keys = Object.keys(node.items);
+    keys.forEach(function(name) {
+      var item = node.items[name];
+      items.push({
+        name: name,
+        type: item.type,
+        size: item.size || '--',
+        modified: item.modified || '--',
+        kind: getKindLabel(item.type),
+        isFolder: item.type === 'folder'
+      });
+    });
+    return items;
+  }
+
+  function getKindLabel(type) {
+    var map = { folder: 'Folder', app: 'Application', doc: 'Document', image: 'Image', music: 'Music', video: 'Video', code: 'Source Code', zip: 'Archive', dmg: 'Disk Image', pdf: 'PDF' };
+    return map[type] || 'File';
+  }
+
+  function getIconForType(type) {
+    var map = {
+      folder: 'folder',
+      app: 'grid-3x3',
+      doc: 'file-text',
+      image: 'image',
+      music: 'music',
+      video: 'film',
+      code: 'file-code',
+      zip: 'archive',
+      dmg: 'hard-drive',
+      pdf: 'file-text'
+    };
+    return map[type] || 'file';
+  }
+
+  function getIconClass(type) {
+    var map = {
+      folder: 'folder-icon',
+      app: 'app-icon',
+      doc: 'doc-icon',
+      image: 'image-icon',
+      music: 'music-icon',
+      video: 'video-icon',
+      code: 'code-icon',
+      zip: 'zip-icon',
+      dmg: 'dmg-icon',
+      pdf: 'pdf-icon'
+    };
+    return map[type] || 'doc-icon';
+  }
+
+  function getGridIconClass(type) {
+    var map = {
+      folder: 'folder',
+      app: 'app',
+      doc: 'doc',
+      image: 'image',
+      music: 'music',
+      video: 'music',
+      code: 'code',
+      zip: 'zip',
+      dmg: 'doc',
+      pdf: 'pdf'
+    };
+    return map[type] || 'doc';
+  }
+
+  function joinPath(base, name) {
+    if (base === '/') return '/' + name;
+    return base + '/' + name;
+  }
+
+  /* ========== SORTING ========== */
+  function sortItems(items) {
+    var sorted = items.slice();
+    sorted.sort(function(a, b) {
+      // folders always first
+      if (a.isFolder && !b.isFolder) return -1;
+      if (!a.isFolder && b.isFolder) return 1;
+
+      var valA, valB;
+      if (state.sortBy === 'name') {
+        valA = a.name.toLowerCase();
+        valB = b.name.toLowerCase();
+      } else if (state.sortBy === 'size') {
+        valA = parseSize(a.size);
+        valB = parseSize(b.size);
+      } else if (state.sortBy === 'kind') {
+        valA = a.kind.toLowerCase();
+        valB = b.kind.toLowerCase();
+      } else if (state.sortBy === 'date') {
+        valA = a.modified;
+        valB = b.modified;
+      }
+      if (valA < valB) return state.sortAsc ? -1 : 1;
+      if (valA > valB) return state.sortAsc ? 1 : -1;
+      return 0;
+    });
+    return sorted;
+  }
+
+  function parseSize(s) {
+    if (!s || s === '--') return 0;
+    var match = s.match(/([\d.]+)\s*(KB|MB|GB|TB)/i);
+    if (!match) return 0;
+    var num = parseFloat(match[1]);
+    var unit = match[2].toUpperCase();
+    if (unit === 'KB') return num * 1024;
+    if (unit === 'MB') return num * 1024 * 1024;
+    if (unit === 'GB') return num * 1024 * 1024 * 1024;
+    if (unit === 'TB') return num * 1024 * 1024 * 1024 * 1024;
+    return num;
+  }
+
+  /* ========== NAVIGATION ========== */
+  function navigate(path, addToHistory) {
+    var node = getNode(path);
+    if (!node || node.type !== 'folder') return;
+
+    state.currentPath = path;
+    state.selectedItem = null;
+
+    if (addToHistory !== false) {
+      state.history = state.history.slice(0, state.historyIndex + 1);
+      state.history.push(path);
+      state.historyIndex = state.history.length - 1;
+    }
+
+    updateNavButtons();
+    renderBreadcrumb();
+    renderList();
+    highlightSidebar();
+  }
+
+  function goBack() {
+    if (state.historyIndex > 0) {
+      state.historyIndex--;
+      navigate(state.history[state.historyIndex], false);
+    }
+  }
+
+  function goForward() {
+    if (state.historyIndex < state.history.length - 1) {
+      state.historyIndex++;
+      navigate(state.history[state.historyIndex], false);
+    }
+  }
+
+  function updateNavButtons() {
+    btnBack.disabled = state.historyIndex <= 0;
+    btnForward.disabled = state.historyIndex >= state.history.length - 1;
+  }
+
+  function highlightSidebar() {
+    document.querySelectorAll('.sidebar-item[data-path]').forEach(function(item) {
+      item.classList.toggle('active', item.dataset.path === state.currentPath);
     });
   }
 
-  /* FINDER LIST */
-  function renderFinderList() {
-    if (!finderList) return;
-    const threads = getFilteredThreads();
+  /* ========== BREADCRUMB ========== */
+  function renderBreadcrumb() {
+    pathbar.innerHTML = '';
+    var parts = state.currentPath.split('/').filter(Boolean);
+    var builtPath = '';
 
-    if (state.viewMode === 'grid') {
-      finderList.className = 'finder-grid';
-      finderList.innerHTML = '';
-      threads.forEach(t => {
-        const item = document.createElement('div');
-        item.className = 'finder-grid-item' + (state.selectedThread === t.id ? ' active' : '');
-        item.dataset.id = t.id;
-        const ic = getNodeColor(t.boundTo);
-        const icd = getNodeColorDark(t.boundTo);
-        item.innerHTML = '<div class="grid-icon" style="background:linear-gradient(135deg,' + ic + ',' + icd + ')"><i data-lucide="' + t.icon + '"></i></div><span class="grid-label">' + t.title + '</span>';
-        item.addEventListener('click', () => openThreadDetail(t.id));
-        finderList.appendChild(item);
-      });
-    } else {
-      finderList.className = 'finder-list';
-      finderList.innerHTML = '';
-      threads.forEach(t => {
-        const row = document.createElement('div');
-        row.className = 'finder-row' + (state.selectedThread === t.id ? ' active' : '');
-        row.dataset.id = t.id;
-        const sc = t.boundTo === 'DESK-01' ? 'desk' : t.boundTo === 'MOBILE-01' ? 'mobile' : 'shared';
-        row.innerHTML = '<span class="col-name"><span class="status-dot ' + sc + '"></span><i data-lucide="' + t.icon + '"></i><span class="thread-name-text">' + t.title + '</span></span><span class="col-status">' + (t.boundTo === 'SHARED' ? 'Fused' : 'Active') + '</span><span class="col-node">' + t.boundTo + '</span><span class="col-pid">' + t.pid + '</span>';
-        row.addEventListener('click', () => openThreadDetail(t.id));
-        finderList.appendChild(row);
+    // Root
+    var rootSeg = document.createElement('span');
+    rootSeg.className = 'pathbar-segment';
+    rootSeg.textContent = '/';
+    rootSeg.addEventListener('click', function() { navigate('/'); });
+    pathbar.appendChild(rootSeg);
+
+    parts.forEach(function(part, i) {
+      var sep = document.createElement('span');
+      sep.className = 'pathbar-separator';
+      sep.textContent = '\u25B8';
+      pathbar.appendChild(sep);
+
+      builtPath += '/' + part;
+      var seg = document.createElement('span');
+      seg.className = 'pathbar-segment';
+      seg.textContent = part;
+      var p = builtPath;
+      seg.addEventListener('click', function() { navigate(p); });
+      pathbar.appendChild(seg);
+    });
+  }
+
+  /* ========== RENDER LIST ========== */
+  function renderList() {
+    if (!finderList) return;
+
+    var query = searchInput ? searchInput.value.toLowerCase() : '';
+    var items = getItems(state.currentPath);
+
+    if (query) {
+      items = items.filter(function(item) {
+        return item.name.toLowerCase().indexOf(query) !== -1;
       });
     }
+
+    items = sortItems(items);
+
+    // Update titlebar
+    var titleEl = document.getElementById('finder-titlebar-name');
+    var pathParts = state.currentPath.split('/').filter(Boolean);
+    titleEl.textContent = pathParts.length > 0 ? pathParts[pathParts.length - 1] : 'Macintosh HD';
+
+    // Update statusbar
+    statusbar.textContent = items.length + ' item' + (items.length !== 1 ? 's' : '');
+
+    if (state.viewMode === 'grid') {
+      renderGrid(items);
+    } else {
+      renderListRows(items);
+    }
+
     if (window.lucide) window.lucide.createIcons();
   }
 
-  /* THREAD DETAIL */
-  function openThreadDetail(id) {
-    const t = state.threads.find(x => x.id === id);
-    if (!t) return;
-    state.selectedThread = id;
-    document.getElementById('detail-window-title').textContent = t.title;
-    document.getElementById('detail-thread-name').textContent = t.title;
-    const badge = document.getElementById('detail-badge');
-    badge.textContent = t.boundTo;
-    badge.className = 'detail-badge ' + (t.boundTo === 'DESK-01' ? 'desk' : t.boundTo === 'MOBILE-01' ? 'mobile' : 'shared');
-    document.getElementById('detail-pid').textContent = 'PID ' + t.pid;
-    const iconEl = document.getElementById('detail-icon');
-    iconEl.innerHTML = '<i data-lucide="' + t.icon + '" style="width:24px;height:24px;color:white;"></i>';
-    iconEl.style.background = 'linear-gradient(135deg,' + getNodeColor(t.boundTo) + ',' + getNodeColorDark(t.boundTo) + ')';
-    document.getElementById('detail-code-pre').textContent = t.content;
-    const toggleBtn = document.getElementById('detail-toggle-btn');
-    toggleBtn.innerHTML = '<i data-lucide="arrow-right-left"></i> Move to ' + (t.boundTo === 'MOBILE-01' ? 'DESK-01' : 'MOBILE-01');
-    toggleBtn.onclick = function() {
-      t.boundTo = t.boundTo === 'MOBILE-01' ? 'DESK-01' : 'MOBILE-01';
-      openThreadDetail(id);
-      renderFinderList();
-    };
-    detailWindow.style.display = 'flex';
-    bringToFront(detailWindow);
-    renderFinderList();
-    if (window.lucide) window.lucide.createIcons();
+  function renderListRows(items) {
+    finderList.className = 'finder-list';
+    finderList.innerHTML = '';
+    document.getElementById('finder-list-header').style.display = 'flex';
+
+    items.forEach(function(item) {
+      var row = document.createElement('div');
+      row.className = 'finder-row' + (state.selectedItem === item.name ? ' selected' : '');
+      row.dataset.name = item.name;
+
+      var iconHtml = '<span class="file-icon ' + getIconClass(item.type) + '"><i data-lucide="' + getIconForType(item.type) + '"></i></span>';
+      row.innerHTML = '<span class="col-name">' + iconHtml + '<span>' + escapeHtml(item.name) + '</span></span><span class="col-size">' + item.size + '</span><span class="col-kind">' + item.kind + '</span><span class="col-date">' + item.modified + '</span>';
+
+      // Selection
+      row.addEventListener('click', function(e) {
+        e.stopPropagation();
+        selectItem(item.name);
+      });
+
+      // Double click to open
+      row.addEventListener('dblclick', function(e) {
+        e.stopPropagation();
+        openItem(item);
+      });
+
+      finderList.appendChild(row);
+    });
   }
 
-  /* WINDOW MANAGEMENT */
+  function renderGrid(items) {
+    finderList.className = 'finder-grid';
+    finderList.innerHTML = '';
+    document.getElementById('finder-list-header').style.display = 'none';
+
+    items.forEach(function(item) {
+      var gridItem = document.createElement('div');
+      gridItem.className = 'finder-grid-item' + (state.selectedItem === item.name ? ' selected' : '');
+      gridItem.dataset.name = item.name;
+
+      gridItem.innerHTML = '<div class="grid-icon-wrap ' + getGridIconClass(item.type) + '"><i data-lucide="' + getIconForType(item.type) + '"></i></div><span class="grid-label">' + escapeHtml(item.name) + '</span>';
+
+      gridItem.addEventListener('click', function(e) {
+        e.stopPropagation();
+        selectItem(item.name);
+      });
+
+      gridItem.addEventListener('dblclick', function(e) {
+        e.stopPropagation();
+        openItem(item);
+      });
+
+      finderList.appendChild(gridItem);
+    });
+  }
+
+  function selectItem(name) {
+    state.selectedItem = name;
+    renderList();
+  }
+
+  function openItem(item) {
+    if (item.isFolder) {
+      navigate(joinPath(state.currentPath, item.name));
+    }
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  /* ========== EVENT LISTENERS ========== */
+
+  // Back/Forward
+  btnBack.addEventListener('click', goBack);
+  btnForward.addEventListener('click', goForward);
+
+  // Sidebar
+  document.querySelectorAll('.sidebar-item[data-path]').forEach(function(item) {
+    item.addEventListener('click', function() {
+      navigate(item.dataset.path);
+    });
+  });
+
+  // View Toggle
+  document.querySelectorAll('.view-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.view-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      state.viewMode = btn.dataset.view;
+      renderList();
+    });
+  });
+
+  // Search
+  if (searchInput) {
+    searchInput.addEventListener('input', function() { renderList(); });
+  }
+
+  // Sort columns
+  listHeader.querySelectorAll('span[data-sort]').forEach(function(col) {
+    col.addEventListener('click', function() {
+      var sortBy = col.dataset.sort;
+      if (state.sortBy === sortBy) {
+        state.sortAsc = !state.sortAsc;
+      } else {
+        state.sortBy = sortBy;
+        state.sortAsc = true;
+      }
+      renderList();
+    });
+  });
+
+  // Click on empty area deselects
+  finderList.addEventListener('click', function(e) {
+    if (e.target === finderList) {
+      state.selectedItem = null;
+      renderList();
+    }
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    if (e.metaKey && e.key === 'ArrowLeft') { e.preventDefault(); goBack(); }
+    if (e.metaKey && e.key === 'ArrowRight') { e.preventDefault(); goForward(); }
+    if (e.key === 'Backspace' && !e.target.matches('input')) { e.preventDefault(); goBack(); }
+    if (e.key === 'Enter' && state.selectedItem) {
+      var items = getItems(state.currentPath);
+      var found = items.find(function(i) { return i.name === state.selectedItem; });
+      if (found) openItem(found);
+    }
+  });
+
+  /* ========== WINDOW MANAGEMENT ========== */
   var dragState = null;
   var resizeState = null;
   var highestZ = 200;
@@ -157,16 +532,13 @@ document.addEventListener('DOMContentLoaded', () => {
     var appName = document.getElementById('menu-app-name');
     if (win.id === 'finder-window') {
       appName.innerHTML = '<strong>Finder</strong>';
-    } else if (win.id === 'thread-detail-window') {
-      var t = state.threads.find(function(x) { return x.id === state.selectedThread; });
-      appName.innerHTML = '<strong>' + (t ? t.title : 'Thread Details') + '</strong>';
     }
   }
 
   document.addEventListener('mousedown', function(e) {
     var titlebar = e.target.closest('.window-titlebar');
     if (!titlebar) return;
-    if (e.target.closest('.tl-btn') || e.target.closest('.tb-action-btn')) return;
+    if (e.target.closest('.tl-btn') || e.target.closest('.tb-nav-btn')) return;
     var win = titlebar.closest('.mac-window');
     if (!win) return;
     bringToFront(win);
@@ -180,8 +552,8 @@ document.addEventListener('DOMContentLoaded', () => {
       dragState.win.style.top = (dragState.origTop + e.clientY - dragState.startY) + 'px';
     }
     if (resizeState) {
-      resizeState.win.style.width = Math.max(300, resizeState.origW + e.clientX - resizeState.startX) + 'px';
-      resizeState.win.style.height = Math.max(200, resizeState.origH + e.clientY - resizeState.startY) + 'px';
+      resizeState.win.style.width = Math.max(400, resizeState.origW + e.clientX - resizeState.startX) + 'px';
+      resizeState.win.style.height = Math.max(300, resizeState.origH + e.clientY - resizeState.startY) + 'px';
     }
   });
 
@@ -197,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* TRAFFIC LIGHTS */
+  // Traffic lights
   document.querySelectorAll('.tl-btn').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       var action = btn.dataset.action;
@@ -210,13 +582,13 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(function() { win.style.display = 'none'; win.style.opacity = ''; win.style.transform = ''; win.style.transition = ''; }, 150);
       } else if (action === 'minimize') {
         win.classList.add('minimized');
-        bounceDockItem(win.id === 'finder-window' ? 'finder' : 'threads');
+        bounceDockItem('finder');
       } else if (action === 'maximize') {
         if (win.style.width === '100vw') {
-          win.style.width = win.dataset.prevWidth || '820px';
-          win.style.height = win.dataset.prevHeight || '520px';
-          win.style.top = win.dataset.prevTop || '60px';
-          win.style.left = win.dataset.prevLeft || '120px';
+          win.style.width = win.dataset.prevWidth || '860px';
+          win.style.height = win.dataset.prevHeight || '540px';
+          win.style.top = win.dataset.prevTop || '50px';
+          win.style.left = win.dataset.prevLeft || '100px';
           win.style.borderRadius = '';
         } else {
           win.dataset.prevWidth = win.style.width;
@@ -239,7 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (win && win.style.display !== 'none') bringToFront(win);
   });
 
-  /* DOCK */
+  /* ========== DOCK ========== */
   function bounceDockItem(name) {
     var item = dock.querySelector('.dock-item[data-app="' + name + '"]');
     if (item) { item.classList.add('bouncing'); setTimeout(function() { item.classList.remove('bouncing'); }, 600); }
@@ -254,63 +626,13 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (win.style.display === 'none') { win.style.display = 'flex'; bringToFront(win); }
         else if (state.focusedWindow === 'finder-window') { win.classList.add('minimized'); bounceDockItem('finder'); }
         else { bringToFront(win); }
-      } else if (appName === 'threads') {
-        if (state.threads.length > 0) openThreadDetail(state.threads[0].id);
-        bounceDockItem('threads');
       } else {
         bounceDockItem(appName);
       }
     });
   });
 
-  /* SIDEBAR */
-  document.querySelectorAll('.sidebar-item[data-section]').forEach(function(item) {
-    item.addEventListener('click', function() {
-      document.querySelectorAll('.sidebar-item').forEach(function(i) { i.classList.remove('active'); });
-      item.classList.add('active');
-      renderFinderList();
-    });
-  });
-
-  /* VIEW TOGGLE */
-  document.querySelectorAll('.view-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.view-btn').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      state.viewMode = btn.dataset.view;
-      renderFinderList();
-    });
-  });
-
-  /* SEARCH */
-  if (finderSearchInput) finderSearchInput.addEventListener('input', function() { renderFinderList(); });
-
-  /* DETAIL TABS */
-  document.querySelectorAll('.detail-tab').forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      document.querySelectorAll('.detail-tab').forEach(function(t) { t.classList.remove('active'); });
-      tab.classList.add('active');
-      var t = state.threads.find(function(x) { return x.id === state.selectedThread; });
-      if (!t) return;
-      var pre = document.getElementById('detail-code-pre');
-      if (tab.dataset.tab === 'code') {
-        pre.textContent = t.content;
-      } else if (tab.dataset.tab === 'state') {
-        pre.textContent = JSON.stringify({ thread_id: t.id, bound_node: t.boundTo, pid: t.pid, summary: t.stateSummary }, null, 2);
-      } else if (tab.dataset.tab === 'memory') {
-        pre.textContent = 'Thread: ' + t.id + '\nProcess: ' + t.title + '\nPID: ' + t.pid + '\nNode: ' + t.boundTo + '\nMemory: ' + (t.stateSummary.memory || 'N/A') + '\nShared Memory Segment: 0x7FFF8A91B000\nUWB Tether Latency: 0.60ms';
-      }
-    });
-  });
-
-  /* CLOSE DETAIL */
-  document.getElementById('detail-close-btn').addEventListener('click', function() {
-    detailWindow.style.display = 'none';
-    state.selectedThread = null;
-    renderFinderList();
-  });
-
-  /* DESKTOP ICONS */
+  /* ========== DESKTOP ICONS ========== */
   document.querySelectorAll('.desktop-icon').forEach(function(icon) {
     icon.addEventListener('dblclick', function() {
       var appName = icon.dataset.app;
@@ -319,13 +641,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (win.classList.contains('minimized')) { win.classList.remove('minimized'); }
         else if (win.style.display === 'none') { win.style.display = 'flex'; }
         bringToFront(win);
-      } else if (appName === 'threads') {
-        if (state.threads.length > 0) openThreadDetail(state.threads[0].id);
       }
     });
   });
 
-  /* CONTEXT MENU */
+  /* ========== CONTEXT MENU ========== */
   var contextMenu = document.createElement('div');
   contextMenu.className = 'context-menu';
   document.body.appendChild(contextMenu);
@@ -333,32 +653,32 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     var items = [];
-    var row = e.target.closest('.finder-row');
+    var row = e.target.closest('.finder-row, .finder-grid-item');
     if (row) {
-      var tid = row.dataset.id;
+      var name = row.dataset.name;
       items = [
-        { label: 'Open Thread', icon: 'external-link', action: function() { openThreadDetail(tid); } },
-        { label: 'Switch Node', icon: 'arrow-right-left', action: function() {
-          var t = state.threads.find(function(x) { return x.id === tid; });
-          if (t) { t.boundTo = t.boundTo === 'MOBILE-01' ? 'DESK-01' : 'MOBILE-01'; renderFinderList(); }
+        { label: 'Open', icon: 'external-link', action: function() {
+          var allItems = getItems(state.currentPath);
+          var found = allItems.find(function(i) { return i.name === name; });
+          if (found) openItem(found);
         }},
+        { label: 'Get Info', icon: 'info', action: function() {} },
         { type: 'separator' },
-        { label: 'Close', icon: 'x', action: function() {} }
+        { label: 'Rename', icon: 'pencil', action: function() {} },
+        { label: 'Duplicate', icon: 'copy', action: function() {} },
+        { type: 'separator' },
+        { label: 'Move to Trash', icon: 'trash-2', action: function() {} }
       ];
     } else {
       items = [
-        { label: 'New Thread', icon: 'plus', action: function() {
-          var newId = 'TH-' + Math.floor(1000 + Math.random() * 9000);
-          state.threads.push({
-            id: newId, title: 'Kernel Process #' + newId, icon: 'terminal',
-            boundTo: 'DESK-01', pid: Math.floor(2000 + Math.random() * 6000),
-            content: '// New process initialized\nfn main() {\n  println!("Thread ' + newId + ' running...");\n}',
-            stateSummary: { memory: '64 MB' }
-          });
-          renderFinderList();
-        }},
+        { label: 'New Folder', icon: 'folder-plus', action: function() {} },
         { type: 'separator' },
-        { label: 'Paste', icon: 'clipboard', action: function() {} }
+        { label: 'Get Info', icon: 'info', action: function() {} },
+        { label: 'Change Desktop Background...', icon: 'image', action: function() {} },
+        { type: 'separator' },
+        { label: 'Use Stacks', icon: 'layers', action: function() {} },
+        { label: 'Sort By', icon: 'arrow-up-down', action: function() {} },
+        { label: 'Clean Up', icon: 'align-horizontal-distribute-center', action: function() {} }
       ];
     }
 
@@ -386,6 +706,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function hideContextMenu() { contextMenu.classList.remove('visible'); }
   document.addEventListener('click', hideContextMenu);
 
-  /* INITIAL RENDER */
-  renderFinderList();
+  /* ========== INITIAL RENDER ========== */
+  navigate(state.currentPath, false);
 });
