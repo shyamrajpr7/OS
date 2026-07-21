@@ -7,59 +7,47 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-  <!-- Menu Bar -->
-  <header class="menu-bar" id="menu-bar">
+  <!-- MENU BAR -->
+  <header class="menu-bar">
     <div class="menu-bar-left">
-      <div class="brand-logo" id="brand-logo">
-        <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="brand-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7DD3FC"/><stop offset="45%" stop-color="#818CF8"/><stop offset="100%" stop-color="#C084FC"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="8" fill="url(#brand-grad)" opacity="0.9"/><rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/><path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)" opacity="0.95"/><path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/><circle cx="22" cy="10" r="2" fill="rgba(255,255,255,0.5)"/></svg>
+      <div class="brand-logo" id="brandLogo">
+        <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="bg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7DD3FC"/><stop offset="45%" stop-color="#818CF8"/><stop offset="100%" stop-color="#C084FC"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="8" fill="url(#bg)" opacity="0.9"/><rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/><path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)"/><path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/><circle cx="22" cy="10" r="2" fill="rgba(255,255,255,0.5)"/></svg>
       </div>
-      <div class="menu-app-name" id="menu-app-name"><strong>Finder</strong></div>
-      <div class="menu-items">
-        <span class="menu-item">File</span>
-        <span class="menu-item">Edit</span>
-        <span class="menu-item">View</span>
-        <span class="menu-item">Go</span>
-        <span class="menu-item">Window</span>
-        <span class="menu-item">Help</span>
+      <div class="menu-app-name" id="menuAppName"><strong>Finder</strong></div>
+      <div class="menu-items" id="menuItems">
+        <span class="menu-item">File</span><span class="menu-item">Edit</span><span class="menu-item">View</span><span class="menu-item">Go</span><span class="menu-item">Window</span><span class="menu-item">Help</span>
       </div>
     </div>
     <div class="menu-bar-right">
       <div class="system-tray">
-        <i data-lucide="wifi" class="tray-icon"></i>
-        <i data-lucide="battery-full" class="tray-icon"></i>
-        <i data-lucide="search" class="tray-icon"></i>
-        <i data-lucide="control" class="tray-icon"></i>
+        <i class="ri-wifi-line tray-icon"></i>
+        <i class="ri-battery-2-fill tray-icon"></i>
+        <i class="ri-search-line tray-icon"></i>
+        <i class="ri-equalizer-line tray-icon"></i>
       </div>
-      <div class="menu-clock" id="menu-clock"></div>
+      <div class="menu-clock" id="menuClock"></div>
     </div>
   </header>
 
-  <!-- Desktop Area -->
+  <!-- DESKTOP -->
   <main class="desktop" id="desktop">
     <div class="desktop-icons">
-      <div class="desktop-icon" data-app="finder">
+      <div class="desktop-icon" data-app="Finder">
         <div class="desktop-icon-img">
           <svg width="48" height="48" viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="34" rx="4" fill="#47A3FF"/><rect x="4" y="8" width="40" height="10" rx="4" fill="#1E6FD9"/><circle cx="14" cy="13" r="2" fill="#FF5F57"/><circle cx="20" cy="13" r="2" fill="#FEBC2E"/><circle cx="26" cy="13" r="2" fill="#28C840"/></svg>
         </div>
         <span>Finder</span>
       </div>
-      <div class="desktop-icon" data-app="threads">
-        <div class="desktop-icon-img">
-          <svg width="48" height="48" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="dgrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7DD3FC"/><stop offset="45%" stop-color="#818CF8"/><stop offset="100%" stop-color="#C084FC"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#dgrad)"/><rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/><path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)"/><path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/><circle cx="22" cy="10" r="2" fill="rgba(255,255,255,0.5)"/></svg>
-        </div>
-        <span>Threads</span>
-      </div>
     </div>
 
-    <div class="windows-container" id="windows-container">
+    <div class="windows-container" id="windowsContainer">
 
-      <!-- Finder Window -->
-      <div class="mac-window" id="finder-window" style="width:860px; height:540px; top:50px; left:100px;">
+      <!-- ========== FINDER ========== -->
+      <div class="mac-window" id="finder-window" style="width:860px;height:540px;top:50px;left:100px;">
         <div class="window-titlebar" data-window="finder-window">
           <div class="traffic-lights">
             <button class="tl-btn tl-close" data-action="close"></button>
@@ -67,103 +55,348 @@
             <button class="tl-btn tl-maximize" data-action="maximize"></button>
           </div>
           <div class="titlebar-nav">
-            <button class="tb-nav-btn" id="btn-back" disabled><i data-lucide="chevron-left"></i></button>
-            <button class="tb-nav-btn" id="btn-forward" disabled><i data-lucide="chevron-right"></i></button>
+            <button class="tb-nav-btn" id="btnBack" disabled><i class="ri-arrow-left-s-line"></i></button>
+            <button class="tb-nav-btn" id="btnForward" disabled><i class="ri-arrow-right-s-line"></i></button>
+            <button class="tb-nav-btn" id="btnUp"><i class="ri-arrow-up-s-line"></i></button>
           </div>
-          <div class="window-title" id="finder-titlebar-name">Finder</div>
+          <div class="window-title" id="finderTitle">Finder</div>
           <div class="window-titlebar-spacer"></div>
         </div>
         <div class="window-body finder-body">
           <aside class="finder-sidebar">
             <div class="sidebar-section">
               <div class="sidebar-label">Favorites</div>
-              <div class="sidebar-item" data-path="/Users/shyamraj/Desktop"><i data-lucide="monitor"></i><span>Desktop</span></div>
-              <div class="sidebar-item" data-path="/Users/shyamraj/Documents"><i data-lucide="file-text"></i><span>Documents</span></div>
-              <div class="sidebar-item" data-path="/Users/shyamraj/Downloads"><i data-lucide="download"></i><span>Downloads</span></div>
-              <div class="sidebar-item" data-path="/Applications"><i data-lucide="grid-3x3"></i><span>Applications</span></div>
-              <div class="sidebar-item" data-path="/Users/shyamraj/Music"><i data-lucide="music"></i><span>Music</span></div>
-              <div class="sidebar-item" data-path="/Users/shyamraj/Pictures"><i data-lucide="image"></i><span>Pictures</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj/Desktop"><i class="ri-monitor-line"></i><span>Desktop</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj/Documents"><i class="ri-file-text-line"></i><span>Documents</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj/Downloads"><i class="ri-download-line"></i><span>Downloads</span></div>
+              <div class="sidebar-item" data-path="/Applications"><i class="ri-apps-2-line"></i><span>Applications</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj/Music"><i class="ri-music-line"></i><span>Music</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj/Pictures"><i class="ri-image-line"></i><span>Pictures</span></div>
             </div>
             <div class="sidebar-section">
               <div class="sidebar-label">Locations</div>
-              <div class="sidebar-item" data-path="/"><i data-lucide="hard-drive"></i><span>Macintosh HD</span></div>
-              <div class="sidebar-item" data-path="/Users/shyamraj"><i data-lucide="user"></i><span>shyamraj</span></div>
-              <div class="sidebar-item" data-path="/System"><i data-lucide="settings"></i><span>System</span></div>
-            </div>
-            <div class="sidebar-section">
-              <div class="sidebar-label">Tags</div>
-              <div class="sidebar-item"><span class="tag-dot red"></span><span>Red</span></div>
-              <div class="sidebar-item"><span class="tag-dot blue"></span><span>Blue</span></div>
-              <div class="sidebar-item"><span class="tag-dot purple"></span><span>Purple</span></div>
-              <div class="sidebar-item"><span class="tag-dot green"></span><span>Green</span></div>
+              <div class="sidebar-item" data-path="/"><i class="ri-hard-drive-2-line"></i><span>Macintosh HD</span></div>
+              <div class="sidebar-item" data-path="/Users/shyamraj"><i class="ri-user-line"></i><span>shyamraj</span></div>
             </div>
           </aside>
           <div class="finder-content">
             <div class="finder-toolbar">
               <div class="finder-view-toggle">
-                <button class="view-btn active" data-view="list"><i data-lucide="list"></i></button>
-                <button class="view-btn" data-view="grid"><i data-lucide="grid-3x3"></i></button>
+                <button class="view-btn active" data-view="list"><i class="ri-list-check"></i></button>
+                <button class="view-btn" data-view="grid"><i class="ri-grid-fill"></i></button>
               </div>
-              <div class="finder-pathbar" id="finder-pathbar"></div>
-              <div class="finder-search">
-                <i data-lucide="search"></i>
-                <input type="text" placeholder="Search" id="finder-search-input">
-              </div>
+              <div class="finder-pathbar" id="finderBreadcrumb"></div>
+              <div class="finder-search"><i class="ri-search-line"></i><input type="text" placeholder="Search" id="finderSearchInput"></div>
             </div>
-            <div class="finder-list-header" id="finder-list-header">
-              <span class="col-name" data-sort="name">Name <i data-lucide="chevron-down"></i></span>
+            <div class="finder-list-header" id="finderListHeader">
+              <span class="col-name" data-sort="name">Name <i class="ri-arrow-up-s-fill"></i></span>
               <span class="col-size" data-sort="size">Size</span>
               <span class="col-kind" data-sort="kind">Kind</span>
               <span class="col-date" data-sort="date">Date Modified</span>
             </div>
-            <div class="finder-list" id="finder-list"></div>
-            <div class="finder-statusbar" id="finder-statusbar">0 items</div>
+            <div class="finder-list" id="finderList"></div>
+            <div class="finder-grid" id="finderGrid" style="display:none;"></div>
+            <div class="finder-statusbar" id="finderStatus">0 items</div>
           </div>
         </div>
         <div class="window-resize-handle" data-window="finder-window"></div>
       </div>
 
+      <!-- ========== CALCULATOR ========== -->
+      <div class="mac-window app-window" id="calculator-window" style="width:250px;height:380px;top:80px;left:500px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Calculator</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body calc-body">
+          <div class="calc-display" id="calcDisplay">0</div>
+          <div class="calc-buttons">
+            <button class="calc-btn func" onclick="calcInput('C')">AC</button>
+            <button class="calc-btn func" onclick="calcInput('±')">±</button>
+            <button class="calc-btn func" onclick="calcInput('%')">%</button>
+            <button class="calc-btn op" onclick="calcInput('/')">÷</button>
+            <button class="calc-btn num" onclick="calcInput('7')">7</button>
+            <button class="calc-btn num" onclick="calcInput('8')">8</button>
+            <button class="calc-btn num" onclick="calcInput('9')">9</button>
+            <button class="calc-btn op" onclick="calcInput('*')">×</button>
+            <button class="calc-btn num" onclick="calcInput('4')">4</button>
+            <button class="calc-btn num" onclick="calcInput('5')">5</button>
+            <button class="calc-btn num" onclick="calcInput('6')">6</button>
+            <button class="calc-btn op" onclick="calcInput('-')">−</button>
+            <button class="calc-btn num" onclick="calcInput('1')">1</button>
+            <button class="calc-btn num" onclick="calcInput('2')">2</button>
+            <button class="calc-btn num" onclick="calcInput('3')">3</button>
+            <button class="calc-btn op" onclick="calcInput('+')">+</button>
+            <button class="calc-btn num zero" onclick="calcInput('0')">0</button>
+            <button class="calc-btn num" onclick="calcInput('.')">.</button>
+            <button class="calc-btn op" onclick="calcInput('=')">=</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== TEXTEDIT ========== -->
+      <div class="mac-window app-window" id="textedit-window" style="width:600px;height:450px;top:70px;left:200px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Untitled — TextEdit</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body" style="flex-direction:column;">
+          <div class="textedit-toolbar">
+            <button class="te-tool" id="teBold"><b>B</b></button>
+            <button class="te-tool" id="teItalic"><i>I</i></button>
+            <button class="te-tool" id="teUnderline"><u>U</u></button>
+            <div class="te-sep"></div>
+            <select id="teFontSize"><option>12</option><option selected>14</option><option>16</option><option>18</option><option>24</option><option>32</option></select>
+          </div>
+          <textarea class="textedit-area" id="texteditArea" placeholder="Start typing..." spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <!-- ========== TERMINAL ========== -->
+      <div class="mac-window app-window" id="terminal-window" style="width:640px;height:420px;top:100px;left:250px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Terminal — bash</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body terminal-body" id="terminalBody">
+          <div class="terminal-output" id="terminalOutput"></div>
+          <div class="terminal-input-line">
+            <span class="terminal-prompt" id="terminalPrompt">shyamraj@thread-os ~ $ </span>
+            <input type="text" class="terminal-input" id="terminalInput">
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== ACTIVITY MONITOR ========== -->
+      <div class="mac-window app-window" id="activity-window" style="width:600px;height:420px;top:60px;left:300px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Activity Monitor</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body activity-body">
+          <div class="activity-tabs">
+            <button class="activity-tab active" data-tab="cpu">CPU</button>
+            <button class="activity-tab" data-tab="memory">Memory</button>
+            <button class="activity-tab" data-tab="disk">Disk</button>
+            <button class="activity-tab" data-tab="network">Network</button>
+          </div>
+          <div class="activity-graph">
+            <canvas id="cpuCanvas"></canvas>
+          </div>
+          <div class="activity-stats">
+            <div class="stat"><span class="stat-label">CPU</span><span class="stat-value" id="cpuValue">0%</span></div>
+            <div class="stat"><span class="stat-label">Memory</span><span class="stat-value" id="memValue">0%</span></div>
+            <div class="stat"><span class="stat-label">Processes</span><span class="stat-value">186</span></div>
+          </div>
+          <div class="activity-process-list" id="activityProcessList">
+            <div class="proc-header"><span class="proc-name">Process Name</span><span class="proc-pid">PID</span><span class="proc-cpu">CPU</span><span class="proc-mem">Memory</span></div>
+            <div class="proc-row"><span class="proc-name">WindowServer</span><span class="proc-pid">142</span><span class="proc-cpu">12.3%</span><span class="proc-mem">312 MB</span></div>
+            <div class="proc-row"><span class="proc-name">Safari</span><span class="proc-pid">584</span><span class="proc-cpu">8.7%</span><span class="proc-mem">1.2 GB</span></div>
+            <div class="proc-row"><span class="proc-name">kernel_task</span><span class="proc-pid">0</span><span class="proc-cpu">5.1%</span><span class="proc-mem">256 MB</span></div>
+            <div class="proc-row"><span class="proc-name">Finder</span><span class="proc-pid">312</span><span class="proc-cpu">2.4%</span><span class="proc-mem">84 MB</span></div>
+            <div class="proc-row"><span class="proc-name">launchd</span><span class="proc-pid">1</span><span class="proc-cpu">0.8%</span><span class="proc-mem">12 MB</span></div>
+            <div class="proc-row"><span class="proc-name"> Spotlight</span><span class="proc-pid">401</span><span class="proc-cpu">1.2%</span><span class="proc-mem">148 MB</span></div>
+            <div class="proc-row"><span class="proc-name">mds_stores</span><span class="proc-pid">205</span><span class="proc-cpu">3.5%</span><span class="proc-mem">220 MB</span></div>
+            <div class="proc-row"><span class="proc-name">WindowServer</span><span class="proc-pid">142</span><span class="proc-cpu">12.3%</span><span class="proc-mem">312 MB</span></div>
+            <div class="proc-row"><span class="proc-name">Safari</span><span class="proc-pid">584</span><span class="proc-cpu">8.7%</span><span class="proc-mem">1.2 GB</span></div>
+            <div class="proc-row"><span class="proc-name">kernel_task</span><span class="proc-pid">0</span><span class="proc-cpu">5.1%</span><span class="proc-mem">256 MB</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== SYSTEM SETTINGS ========== -->
+      <div class="mac-window app-window" id="settings-window" style="width:680px;height:460px;top:80px;left:250px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">System Settings</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body settings-body">
+          <aside class="settings-sidebar">
+            <div class="settings-nav-item active" data-panel="general"><i class="ri-settings-3-line"></i><span>General</span></div>
+            <div class="settings-nav-item" data-panel="appearance"><i class="ri-palette-line"></i><span>Appearance</span></div>
+            <div class="settings-nav-item" data-panel="display"><i class="ri-computer-line"></i><span>Displays</span></div>
+            <div class="settings-nav-item" data-panel="sound"><i class="ri-volume-up-line"></i><span>Sound</span></div>
+            <div class="settings-nav-item" data-panel="network"><i class="ri-wifi-line"></i><span>Network</span></div>
+            <div class="settings-nav-item" data-panel="battery"><i class="ri-battery-2-charge-line"></i><span>Battery</span></div>
+            <div class="settings-nav-item" data-panel="privacy"><i class="ri-shield-check-line"></i><span>Privacy & Security</span></div>
+          </aside>
+          <div class="settings-content" id="settingsContent">
+            <!-- General -->
+            <div class="settings-panel" id="settings-general">
+              <h2>General</h2>
+              <div class="setting-row"><span>About This Mac</span><span class="setting-desc">Thread OS 1.0.0</span></div>
+              <div class="setting-row"><span>Software Update</span><span class="setting-desc">Up to date</span></div>
+              <div class="setting-row"><span>Storage</span><span class="setting-desc">234 GB available of 512 GB</span></div>
+              <div class="setting-row"><span>Login Items</span><span class="setting-desc">2 items</span></div>
+            </div>
+            <!-- Appearance -->
+            <div class="settings-panel" id="settings-appearance" style="display:none;">
+              <h2>Appearance</h2>
+              <div class="setting-row"><span>Dark Mode</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+              <div class="setting-row"><span>Accent Color</span><span class="setting-desc">Blue</span></div>
+              <div class="setting-row"><span>Highlight Color</span><span class="setting-desc">Blue</span></div>
+              <div class="setting-row"><span>Sidebar Icon Size</span><span class="setting-desc">Medium</span></div>
+            </div>
+            <!-- Display -->
+            <div class="settings-panel" id="settings-display" style="display:none;">
+              <h2>Displays</h2>
+              <div class="setting-row"><span>Brightness</span><span class="setting-desc">80%</span></div>
+              <div class="setting-row"><span>True Tone</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+              <div class="setting-row"><span>Night Shift</span><div class="toggle-switch" onclick="toggleSetting(this)"></div></div>
+              <div class="setting-row"><span>Resolution</span><span class="setting-desc">Default for display</span></div>
+            </div>
+            <!-- Sound -->
+            <div class="settings-panel" id="settings-sound" style="display:none;">
+              <h2>Sound</h2>
+              <div class="setting-row"><span>Output Volume</span><span class="setting-desc">75%</span></div>
+              <div class="setting-row"><span>Input Volume</span><span class="setting-desc">50%</span></div>
+              <div class="setting-row"><span>Alert Sound</span><span class="setting-desc">Sosumi</span></div>
+              <div class="setting-row"><span>Play Sound on Startup</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+            </div>
+            <!-- Network -->
+            <div class="settings-panel" id="settings-network" style="display:none;">
+              <h2>Network</h2>
+              <div class="setting-row"><span>Wi-Fi</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+              <div class="setting-row"><span>Connected To</span><span class="setting-desc">ThreadOS-5G</span></div>
+              <div class="setting-row"><span>IP Address</span><span class="setting-desc">192.168.1.42</span></div>
+              <div class="setting-row"><span>Bluetooth</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+            </div>
+            <!-- Battery -->
+            <div class="settings-panel" id="settings-battery" style="display:none;">
+              <h2>Battery</h2>
+              <div class="setting-row"><span>Battery Level</span><span class="setting-desc">87%</span></div>
+              <div class="setting-row"><span>Power Source</span><span class="setting-desc">AC Power</span></div>
+              <div class="setting-row"><span>Low Power Mode</span><div class="toggle-switch" onclick="toggleSetting(this)"></div></div>
+              <div class="setting-row"><span>Optimized Battery Charging</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+            </div>
+            <!-- Privacy -->
+            <div class="settings-panel" id="settings-privacy" style="display:none;">
+              <h2>Privacy & Security</h2>
+              <div class="setting-row"><span>Location Services</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+              <div class="setting-row"><span>Contacts</span><span class="setting-desc">Safari, Messages</span></div>
+              <div class="setting-row"><span>Calendar</span><span class="setting-desc">None</span></div>
+              <div class="setting-row"><span>Camera</span><span class="setting-desc">Zoom, FaceTime</span></div>
+              <div class="setting-row"><span>Microphone</span><span class="setting-desc">Zoom, FaceTime</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== PREVIEW ========== -->
+      <div class="mac-window app-window" id="preview-window" style="width:500px;height:400px;top:90px;left:350px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title" id="previewTitle">Preview</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body preview-body" id="previewBody">
+          <div class="preview-placeholder"><i class="ri-image-line" style="width:48px;height:48px;"></i><span>No file selected</span></div>
+        </div>
+      </div>
+
+      <!-- ========== SAFARI ========== -->
+      <div class="mac-window app-window" id="safari-window" style="width:780px;height:520px;top:40px;left:150px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Safari</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body safari-body">
+          <div class="safari-toolbar">
+            <button class="safari-nav-btn" id="safariBack"><i class="ri-arrow-left-s-line"></i></button>
+            <button class="safari-nav-btn" id="safariForward"><i class="ri-arrow-right-s-line"></i></button>
+            <div class="safari-url-bar"><i class="ri-lock-line"></i><input type="text" id="safariUrl" value="https://www.apple.com" placeholder="Search or enter website name"></div>
+            <button class="safari-nav-btn" id="safariGo"><i class="ri-arrow-right-line"></i></button>
+          </div>
+          <div class="safari-content"><iframe id="safariFrame" src="https://www.apple.com" sandbox="allow-same-origin allow-scripts allow-forms" style="width:100%;height:100%;border:none;"></iframe></div>
+        </div>
+      </div>
+
     </div>
   </main>
 
-  <!-- Dock -->
-  <footer class="dock-wrapper" id="dock-wrapper">
+  <!-- DOCK -->
+  <footer class="dock-wrapper">
     <div class="dock" id="dock">
-      <div class="dock-item" data-app="finder" data-tooltip="Finder">
-        <div class="dock-item-img">
-          <svg width="32" height="32" viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="34" rx="4" fill="#47A3FF"/><rect x="4" y="8" width="40" height="10" rx="4" fill="#1E6FD9"/><circle cx="14" cy="13" r="2" fill="#FF5F57"/><circle cx="20" cy="13" r="2" fill="#FEBC2E"/><circle cx="26" cy="13" r="2" fill="#28C840"/></svg>
-        </div>
+      <div class="dock-item" data-app="Finder" data-tooltip="Finder">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="34" rx="4" fill="#47A3FF"/><rect x="4" y="8" width="40" height="10" rx="4" fill="#1E6FD9"/><circle cx="14" cy="13" r="2" fill="#FF5F57"/><circle cx="20" cy="13" r="2" fill="#FEBC2E"/><circle cx="26" cy="13" r="2" fill="#28C840"/></svg></div>
         <div class="dock-indicator active"></div>
       </div>
-      <div class="dock-item" data-app="threads" data-tooltip="Threads">
-        <div class="dock-item-img">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="dockgrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7DD3FC"/><stop offset="45%" stop-color="#818CF8"/><stop offset="100%" stop-color="#C084FC"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#dockgrad)"/><path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)"/><path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/></svg>
-        </div>
+      <div class="dock-item" data-app="Safari.app" data-tooltip="Safari">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#006CFF"/><circle cx="24" cy="24" r="16" fill="none" stroke="white" stroke-width="1.5"/><polygon points="24,8 28,22 24,24 20,22" fill="white"/><polygon points="24,40 20,26 24,24 28,26" fill="rgba(255,255,255,0.5)"/><polygon points="8,24 22,20 24,24 22,28" fill="rgba(255,255,255,0.5)"/><polygon points="40,24 26,28 24,24 26,20" fill="white"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Calculator.app" data-tooltip="Calculator">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="6" width="32" height="10" rx="3" fill="#505050"/><g fill="#333"><rect x="8" y="20" width="7" height="7" rx="2"/><rect x="17" y="20" width="7" height="7" rx="2"/><rect x="26" y="20" width="7" height="7" rx="2"/><rect x="35" y="20" width="7" height="7" rx="2"/><rect x="8" y="29" width="7" height="7" rx="2"/><rect x="17" y="29" width="7" height="7" rx="2"/><rect x="26" y="29" width="7" height="7" rx="2"/><rect x="35" y="29" width="7" height="7" rx="2"/><rect x="8" y="38" width="16" height="7" rx="2"/><rect x="26" y="38" width="16" height="7" rx="2"/></g><g fill="#FF9500"><rect x="35" y="20" width="7" height="7" rx="2"/><rect x="35" y="29" width="7" height="7" rx="2"/><rect x="35" y="38" width="7" height="7" rx="2"/></g></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Terminal.app" data-tooltip="Terminal">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1E1E1E"/><rect x="4" y="4" width="40" height="40" rx="6" fill="#0D1117"/><polyline points="12,18 20,26 12,34" stroke="#28C840" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="24" y1="34" x2="36" y2="34" stroke="#C9D1D9" stroke-width="3" stroke-linecap="round"/></svg></div>
+        <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>
-      <div class="dock-item" data-app="terminal" data-tooltip="Terminal">
-        <div class="dock-item-img">
-          <svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><text x="10" y="30" font-family="monospace" font-size="18" fill="#28C840">&gt;_</text></svg>
-        </div>
+      <div class="dock-item" data-app="TextEdit.app" data-tooltip="TextEdit">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#4A90D9"/><rect x="10" y="8" width="28" height="32" rx="3" fill="white"/><g stroke="#ccc" stroke-width="1"><line x1="14" y1="16" x2="34" y2="16"/><line x1="14" y1="21" x2="34" y2="21"/><line x1="14" y1="26" x2="34" y2="26"/><line x1="14" y1="31" x2="28" y2="31"/></g></svg></div>
+        <div class="dock-indicator"></div>
       </div>
-      <div class="dock-item" data-app="activity" data-tooltip="Activity Monitor">
-        <div class="dock-item-img">
-          <svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><polyline points="8,32 16,20 24,28 32,14 40,22" fill="none" stroke="#28C840" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+      <div class="dock-item" data-app="Activity Monitor.app" data-tooltip="Activity Monitor">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1A1A2E"/><polyline points="6,30 14,18 22,26 30,12 38,20 42,14" stroke="#28C840" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="dock-indicator"></div>
       </div>
-      <div class="dock-item" data-app="settings" data-tooltip="System Settings">
-        <div class="dock-item-img">
-          <svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#2C2C2E"/><circle cx="24" cy="24" r="8" fill="none" stroke="#A1A1A6" stroke-width="2.5"/><circle cx="24" cy="24" r="3" fill="#A1A1A6"/></svg>
-        </div>
+      <div class="dock-item" data-app="System Settings.app" data-tooltip="System Settings">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#6B6B7B"/><circle cx="24" cy="24" r="10" fill="none" stroke="white" stroke-width="3"/><circle cx="24" cy="24" r="4" fill="white"/><line x1="24" y1="6" x2="24" y2="12" stroke="white" stroke-width="3" stroke-linecap="round"/><line x1="24" y1="36" x2="24" y2="42" stroke="white" stroke-width="3" stroke-linecap="round"/><line x1="6" y1="24" x2="12" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/><line x1="36" y1="24" x2="42" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/></svg></div>
+        <div class="dock-indicator"></div>
       </div>
       <div class="dock-spacer"></div>
-      <div class="dock-item dock-trash" data-app="trash" data-tooltip="Trash">
-        <div class="dock-item-img">
-          <svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="transparent"/><path d="M14 16h20l-2 24H16L14 16z" fill="none" stroke="#999" stroke-width="2"/><path d="M20 12h8v4H20z" fill="none" stroke="#999" stroke-width="2"/><line x1="20" y1="22" x2="20" y2="34" stroke="#999" stroke-width="1.5"/><line x1="24" y1="22" x2="24" y2="34" stroke="#999" stroke-width="1.5"/><line x1="28" y1="22" x2="28" y2="34" stroke="#999" stroke-width="1.5"/></svg>
-        </div>
+      <div class="dock-item" data-app="trash" data-tooltip="Trash">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="transparent"/><path d="M14 16h20l-2 24H16L14 16z" fill="none" stroke="#999" stroke-width="2"/><path d="M20 12h8v4H20z" fill="none" stroke="#999" stroke-width="2"/></svg></div>
       </div>
     </div>
   </footer>
+
+  <!-- CONTEXT MENU -->
+  <div class="context-menu" id="contextMenu">
+    <div class="context-menu-item"><i class="ri-folder-open-line"></i>Open</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item"><i class="ri-file-copy-line"></i>Copy</div>
+    <div class="context-menu-item"><i class="ri-scissors-line"></i>Cut</div>
+    <div class="context-menu-item"><i class="ri-clipboard-line"></i>Paste</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item"><i class="ri-delete-bin-line"></i>Move to Trash</div>
+  </div>
 
   <script src="app.js"></script>
 </body>
