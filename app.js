@@ -541,6 +541,20 @@ function finderSearch(query) {
   document.getElementById('finderStatus').textContent = `${sorted.length} result${sorted.length !== 1 ? 's' : ''}`;
 }
 
+// ---- Control Center ----
+function toggleControlCenter() {
+  const cc = document.getElementById('controlCenter');
+  const overlay = document.getElementById('ccOverlay');
+  const isOpen = cc.classList.contains('open');
+  if (isOpen) { cc.classList.remove('open'); overlay.classList.remove('visible'); }
+  else { cc.classList.add('open'); overlay.classList.add('visible'); }
+}
+
+function closeControlCenter() {
+  document.getElementById('controlCenter').classList.remove('open');
+  document.getElementById('ccOverlay').classList.remove('visible');
+}
+
 // ---- Notification Center ----
 function toggleNotifCenter() {
   const nc = document.getElementById('notifCenter');
@@ -736,7 +750,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
   });
@@ -777,5 +791,38 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('notifList').addEventListener('click', e => {
     const card = e.target.closest('.notif-card');
     if (card) dismissNotification(card);
+  });
+
+  // Control Center - tray icon click
+  document.querySelector('.ri-equalizer-line').addEventListener('click', toggleControlCenter);
+
+  // Control Center - overlay click closes
+  document.getElementById('ccOverlay').addEventListener('click', closeControlCenter);
+
+  // Control Center - tile toggles
+  document.querySelectorAll('.cc-tile').forEach(el => {
+    el.addEventListener('click', () => {
+      const isActive = el.dataset.active === 'true';
+      el.dataset.active = isActive ? 'false' : 'true';
+      const desc = el.querySelector('.cc-tile-desc');
+      if (desc) {
+        if (el.id === 'ccWifi') desc.textContent = isActive ? 'Off' : 'ThreadOS-5G';
+        else if (el.id === 'ccBluetooth') desc.textContent = isActive ? 'Off' : 'On';
+        else if (el.id === 'ccAirdrop') desc.textContent = isActive ? 'Off' : 'Everyone';
+        else if (el.id === 'ccFocus') desc.textContent = isActive ? 'Off' : 'On';
+      }
+    });
+  });
+
+  // Control Center - dark mode toggle
+  document.getElementById('ccDarkMode').addEventListener('click', function() {
+    this.classList.toggle('active');
+  });
+
+  // Control Center - bottom button toggles
+  ['ccDoNotDisturb', 'ccScreenMirror', 'ccStageManager'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function() {
+      this.classList.toggle('active');
+    });
   });
 });

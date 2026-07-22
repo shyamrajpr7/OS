@@ -482,6 +482,49 @@
     </div>
   </div>
 
+  <!-- CONTROL CENTER -->
+  <div class="control-center-overlay" id="ccOverlay"></div>
+  <div class="control-center" id="controlCenter">
+    <div class="cc-grid">
+      <div class="cc-tile cc-wifi" id="ccWifi" data-active="true">
+        <div class="cc-tile-icon"><i class="ri-wifi-fill"></i></div>
+        <div class="cc-tile-label">Wi-Fi</div>
+        <div class="cc-tile-desc">ThreadOS-5G</div>
+      </div>
+      <div class="cc-tile cc-bluetooth" id="ccBluetooth" data-active="true">
+        <div class="cc-tile-icon"><i class="ri-bluetooth-fill"></i></div>
+        <div class="cc-tile-label">Bluetooth</div>
+        <div class="cc-tile-desc">On</div>
+      </div>
+      <div class="cc-tile cc-airdrop" id="ccAirdrop" data-active="false">
+        <div class="cc-tile-icon"><i class="ri-radar-line"></i></div>
+        <div class="cc-tile-label">AirDrop</div>
+        <div class="cc-tile-desc">Off</div>
+      </div>
+      <div class="cc-tile cc-focus" id="ccFocus" data-active="false">
+        <div class="cc-tile-icon"><i class="ri-moon-fill"></i></div>
+        <div class="cc-tile-label">Focus</div>
+        <div class="cc-tile-desc">Off</div>
+      </div>
+    </div>
+    <div class="cc-slider-section">
+      <div class="cc-slider-row">
+        <i class="ri-sun-line"></i>
+        <input type="range" class="cc-slider" id="ccBrightness" min="0" max="100" value="80">
+      </div>
+      <div class="cc-slider-row">
+        <i class="ri-volume-up-line"></i>
+        <input type="range" class="cc-slider" id="ccVolume" min="0" max="100" value="75">
+      </div>
+    </div>
+    <div class="cc-bottom-row">
+      <button class="cc-bottom-btn" id="ccDarkMode"><i class="ri-moon-line"></i><span>Dark Mode</span></button>
+      <button class="cc-bottom-btn" id="ccDoNotDisturb"><i class="ri-notification-off-line"></i><span>DND</span></button>
+      <button class="cc-bottom-btn" id="ccScreenMirror"><i class="ri-tv-2-line"></i><span>Mirror</span></button>
+      <button class="cc-bottom-btn" id="ccStageManager"><i class="ri-layout-2-line"></i><span>Stage</span></button>
+    </div>
+  </div>
+
   <!-- CONTEXT MENU -->
   <div class="context-menu" id="contextMenu">
     <div class="context-menu-item"><i class="ri-folder-open-line"></i>Open</div>
