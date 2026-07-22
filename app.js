@@ -843,6 +843,117 @@ function dismissNotification(card) {
   }, 250);
 }
 
+// ---- Spotlight Search ----
+let spotlightIndex = -1;
+
+function toggleSpotlight() {
+  const overlay = document.getElementById('spotlightOverlay');
+  if (overlay.classList.contains('open')) {
+    closeSpotlight();
+  } else {
+    overlay.classList.add('open');
+    const input = document.getElementById('spotlightInput');
+    input.value = '';
+    document.getElementById('spotlightResults').innerHTML = '';
+    spotlightIndex = -1;
+    setTimeout(() => input.focus(), 50);
+  }
+}
+
+function closeSpotlight() {
+  document.getElementById('spotlightOverlay').classList.remove('open');
+}
+
+function spotlightSearch(query) {
+  const results = document.getElementById('spotlightResults');
+  if (!query) { results.innerHTML = ''; return; }
+  const q = query.toLowerCase();
+
+  const matches = [];
+
+  // Search apps
+  const apps = [
+    { name: 'Finder', app: 'Finder', icon: 'ri-folder-line', kind: 'Application' },
+    { name: 'Safari', app: 'Safari.app', icon: 'ri-safari-line', kind: 'Application' },
+    { name: 'Calculator', app: 'Calculator.app', icon: 'ri-calculator-line', kind: 'Application' },
+    { name: 'Terminal', app: 'Terminal.app', icon: 'ri-terminal-box-line', kind: 'Application' },
+    { name: 'TextEdit', app: 'TextEdit.app', icon: 'ri-file-text-line', kind: 'Application' },
+    { name: 'Activity Monitor', app: 'Activity Monitor.app', icon: 'ri-pulse-line', kind: 'Application' },
+    { name: 'System Settings', app: 'System Settings.app', icon: 'ri-settings-3-line', kind: 'Application' },
+    { name: 'Preview', app: 'Preview.app', icon: 'ri-image-line', kind: 'Application' }
+  ];
+  apps.forEach(a => { if (a.name.toLowerCase().includes(q)) matches.push({ ...a, action: () => openApp(a.app) }); });
+
+  // Search files
+  (function searchAll(path) {
+    getChildren(path).forEach(c => {
+      if (c.name.toLowerCase().includes(q)) {
+        matches.push({
+          name: c.name,
+          icon: c.type === 'folder' ? 'ri-folder-3-fill' : 'ri-file-line',
+          kind: c.kind || (c.type === 'folder' ? 'Folder' : 'File'),
+          action: () => {
+            if (c.type === 'folder') { navigateTo(c.path); }
+            else { const parts = c.path.split('/').filter(Boolean); parts.pop(); navigateTo('/' + parts.join('/')); }
+          }
+        });
+      }
+      if (c.type === 'folder') searchAll(c.path);
+    });
+  })('/');
+
+  // Search settings
+  const settings = [
+    { name: 'General', panel: 'general', icon: 'ri-settings-3-line', kind: 'Settings' },
+    { name: 'Appearance', panel: 'appearance', icon: 'ri-palette-line', kind: 'Settings' },
+    { name: 'Displays', panel: 'display', icon: 'ri-computer-line', kind: 'Settings' },
+    { name: 'Sound', panel: 'sound', icon: 'ri-volume-up-line', kind: 'Settings' },
+    { name: 'Network', panel: 'network', icon: 'ri-wifi-line', kind: 'Settings' },
+    { name: 'Battery', panel: 'battery', icon: 'ri-battery-2-charge-line', kind: 'Settings' },
+    { name: 'Privacy & Security', panel: 'privacy', icon: 'ri-shield-check-line', kind: 'Settings' }
+  ];
+  settings.forEach(s => { if (s.name.toLowerCase().includes(q)) matches.push({ ...s, action: () => { openApp('System Settings.app'); switchSettingsPanel(s.panel); } }); });
+
+  // Render
+  if (!matches.length) {
+    results.innerHTML = '<div style="padding:20px;text-align:center;color:var(--mac-text-muted);font-size:13px;">No results found</div>';
+    return;
+  }
+
+  let html = '';
+  let lastKind = '';
+  matches.slice(0, 10).forEach((m, i) => {
+    if (m.kind !== lastKind) {
+      html += `<div class="spotlight-section-label">${m.kind}</div>`;
+      lastKind = m.kind;
+    }
+    html += `<div class="spotlight-item" data-index="${i}"><div class="spotlight-item-icon"><i class="${m.icon}"></i></div><span class="spotlight-item-text">${m.name}</span></div>`;
+  });
+  results.innerHTML = html;
+
+  // Store actions
+  results._actions = matches.slice(0, 10);
+  spotlightIndex = -1;
+}
+
+function spotlightNavigate(dir) {
+  const items = document.querySelectorAll('.spotlight-item');
+  if (!items.length) return;
+  items.forEach(i => i.classList.remove('active'));
+  spotlightIndex = Math.max(0, Math.min(items.length - 1, spotlightIndex + dir));
+  items[spotlightIndex].classList.add('active');
+  items[spotlightIndex].scrollIntoView({ block: 'nearest' });
+}
+
+function spotlightSelect() {
+  const results = document.getElementById('spotlightResults');
+  const items = document.querySelectorAll('.spotlight-item');
+  if (spotlightIndex >= 0 && spotlightIndex < items.length && results._actions) {
+    closeSpotlight();
+    results._actions[spotlightIndex].action();
+  }
+}
+
 // ---- Context Menu ----
 let contextTarget = null; // the right-clicked file/folder item
 let clipboardItem = null;
@@ -1090,6 +1201,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('desktop').addEventListener('contextmenu', e => showContextMenu(e, null));
   document.addEventListener('click', e => { if (!e.target.closest('.context-menu')) hideContextMenu(); });
 
+  // Spotlight search input
+  document.getElementById('spotlightInput').addEventListener('input', e => spotlightSearch(e.target.value));
+  document.getElementById('spotlightInput').addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); spotlightNavigate(1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); spotlightNavigate(-1); }
+    else if (e.key === 'Enter') { e.preventDefault(); spotlightSelect(); }
+  });
+  document.getElementById('spotlightOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeSpotlight();
+  });
+
+  // Spotlight search icon in tray
+  document.querySelector('.ri-search-line').addEventListener('click', toggleSpotlight);
+
   // Context menu item clicks
   document.querySelectorAll('.context-menu-item[data-action]').forEach(el => {
     el.addEventListener('click', () => handleContextAction(el.dataset.action));
@@ -1135,13 +1260,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
     // Cmd+Shift+3 -> full screenshot
     if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === '3') { e.preventDefault(); startScreenshot('full'); }
     // Cmd+Shift+4 -> region screenshot
     if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === '4') { e.preventDefault(); startScreenshot('region'); }
+    // Cmd+Space -> Spotlight
+    if ((e.metaKey || e.ctrlKey) && e.key === ' ') { e.preventDefault(); toggleSpotlight(); }
   });
 
   // Launchpad - click overlay background to close
