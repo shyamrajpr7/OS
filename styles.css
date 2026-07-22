@@ -944,6 +944,109 @@ body, html { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .context-menu-danger:hover { background: var(--mac-red); color: white; }
 .context-menu-separator { height: 1px; background: var(--mac-border); margin: 4px 8px; }
 
+/* ===================== SHUTDOWN / LOGOUT DIALOG ===================== */
+.shutdown-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 100000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.shutdown-overlay.visible {
+  display: flex;
+}
+.shutdown-dialog {
+  text-align: center;
+  animation: fadeIn 0.2s;
+}
+.shutdown-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  font-size: 36px;
+  color: var(--mac-text-secondary);
+}
+.shutdown-username {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mac-text);
+  margin-bottom: 28px;
+}
+.shutdown-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.shutdown-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 16px 24px;
+  color: var(--mac-text);
+  font-size: 13px;
+  font-family: var(--font-system);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+  min-width: 100px;
+}
+.shutdown-btn:hover {
+  background: rgba(255,255,255,0.15);
+  transform: scale(1.05);
+}
+.shutdown-btn:active {
+  transform: scale(0.97);
+}
+.shutdown-btn i {
+  font-size: 28px;
+}
+.shutdown-btn-danger {
+  border-color: rgba(255,95,87,0.3);
+}
+.shutdown-btn-danger:hover {
+  background: rgba(255,95,87,0.2);
+  border-color: rgba(255,95,87,0.5);
+}
+.shutdown-cancel {
+  background: none;
+  border: none;
+  color: var(--mac-text-secondary);
+  font-size: 13px;
+  font-family: var(--font-system);
+  cursor: pointer;
+  padding: 6px 16px;
+  border-radius: 6px;
+  transition: color 0.12s;
+}
+.shutdown-cancel:hover {
+  color: var(--mac-text);
+}
+.shutdown-screen-off {
+  position: fixed;
+  inset: 0;
+  background: black;
+  z-index: 200000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--mac-text-muted);
+  font-size: 14px;
+}
+.shutdown-screen-off.visible {
+  display: flex;
+}
+
 /* ===================== SPOTLIGHT SEARCH ===================== */
 .spotlight-overlay {
   position: fixed;

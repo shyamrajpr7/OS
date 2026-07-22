@@ -843,6 +843,22 @@ function dismissNotification(card) {
   }, 250);
 }
 
+// ---- Shutdown / Logout Dialog ----
+function toggleShutdownDialog() {
+  const overlay = document.getElementById('shutdownOverlay');
+  overlay.classList.toggle('visible');
+}
+
+function closeShutdownDialog() {
+  document.getElementById('shutdownOverlay').classList.remove('visible');
+}
+
+function screenOff() {
+  const screen = document.getElementById('screenOff');
+  screen.classList.add('visible');
+  screen.addEventListener('click', () => screen.classList.remove('visible'), { once: true });
+}
+
 // ---- Spotlight Search ----
 let spotlightIndex = -1;
 
@@ -1245,10 +1261,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Brand logo click -> About
-  document.getElementById('brandLogo').addEventListener('click', () => {
-    alert('Thread OS 1.0.0\nA macOS-inspired web desktop\nBuilt with HTML, CSS & JavaScript');
-  });
+  // Shutdown dialog - brand logo click
+  document.getElementById('brandLogo').addEventListener('click', toggleShutdownDialog);
+
+  // Shutdown dialog - buttons
+  document.getElementById('btnSleep').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
+  document.getElementById('btnRestart').addEventListener('click', () => { closeShutdownDialog(); screenOff(); setTimeout(() => location.reload(), 2000); });
+  document.getElementById('btnShutdown').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
+  document.getElementById('btnLogout').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
+  document.getElementById('btnShutdownCancel').addEventListener('click', closeShutdownDialog);
+  document.getElementById('shutdownOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeShutdownDialog(); });
 
   // Activity monitor tabs
   document.querySelectorAll('.activity-tab').forEach(el => {
