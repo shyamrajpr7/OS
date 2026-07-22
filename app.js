@@ -100,6 +100,8 @@ let navIndex = 0;
 let zCounter = 100;
 let focusedApp = null;
 let calcState = { current: '0', previous: null, operator: null, waitingForOperand: false, display: '0' };
+let teCurrentFile = null;
+let teFileContent = {};
 
 // ---- Clock ----
 function updateClock() {
@@ -247,7 +249,7 @@ function openFileInApp(item) {
   if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp', 'ico'].includes(ext)) {
     openPreview(item, 'image');
   } else if (['txt', 'md', 'json', 'js', 'css', 'html', 'xml', 'csv', 'log', 'py', 'java', 'c', 'cpp', 'h'].includes(ext)) {
-    openPreview(item, 'text');
+    openTextFile(item);
   } else if (ext === 'pdf') {
     openPreview(item, 'pdf');
   } else if (['mp3', 'wav', 'ogg', 'flac', 'aac'].includes(ext)) {
@@ -257,6 +259,14 @@ function openFileInApp(item) {
   } else {
     openPreview(item, 'generic');
   }
+}
+
+function openTextFile(item) {
+  teCurrentFile = item.path;
+  const content = teFileContent[item.path] || getFileContent(item.path);
+  document.getElementById('texteditArea').value = content;
+  document.querySelector('#textedit-window .window-title').textContent = item.name + ' — TextEdit';
+  openApp('TextEdit.app');
 }
 
 function openPreview(item, type) {
@@ -818,6 +828,55 @@ function switchSettingsPanel(panel) {
   if (target) target.style.display = '';
 }
 
+// ---- TextEdit ----
+function teNewFile() {
+  teCurrentFile = null;
+  document.getElementById('texteditArea').value = '';
+  document.querySelector('#textedit-window .window-title').textContent = 'Untitled — TextEdit';
+}
+
+function teOpenFile() {
+  const files = [];
+  Object.keys(fileSystem).forEach(path => {
+    const node = fileSystem[path];
+    if (node && node.type === 'folder' && node.children) {
+      node.children.forEach(c => {
+        if (typeof c === 'object' && c.type === 'file') {
+          const ext = c.name.split('.').pop().toLowerCase();
+          if (['txt', 'md', 'json', 'js', 'css', 'html', 'xml', 'csv', 'log', 'py', 'java', 'c', 'cpp', 'h'].includes(ext)) {
+            files.push({ name: c.name, path: path + '/' + c.name });
+          }
+        }
+      });
+    }
+  });
+  if (files.length === 0) { teNewFile(); return; }
+  const file = files[0];
+  teCurrentFile = file.path;
+  const content = teFileContent[file.path] || getFileContent(file.path);
+  document.getElementById('texteditArea').value = content;
+  document.querySelector('#textedit-window .window-title').textContent = file.name + ' — TextEdit';
+}
+
+function teSaveFile() {
+  const content = document.getElementById('texteditArea').value;
+  if (teCurrentFile) {
+    teFileContent[teCurrentFile] = content;
+    document.querySelector('#textedit-window .window-title').textContent = teCurrentFile.split('/').pop() + ' — TextEdit';
+  } else {
+    const name = 'Untitled.txt';
+    const path = currentPath + '/' + name;
+    teCurrentFile = path;
+    teFileContent[path] = content;
+    const parent = getNode(currentPath);
+    if (parent && parent.type === 'folder') {
+      parent.children.push({ name, type: 'file', icon: 'doc', size: (content.length / 1024).toFixed(1) + ' KB', kind: 'Plain Text', date: 'Just now' });
+    }
+    document.querySelector('#textedit-window .window-title').textContent = name + ' — TextEdit';
+    updateFinder();
+  }
+}
+
 // ---- Search ----
 function finderSearch(query) {
   if (!query) { updateFinder(); return; }
@@ -1320,6 +1379,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('teFontSize').addEventListener('change', function () {
     document.getElementById('texteditArea').style.fontSize = this.value + 'px';
   });
+
+  // TextEdit new/open/save
+  document.getElementById('teNew').addEventListener('click', teNewFile);
+  document.getElementById('teOpen').addEventListener('click', teOpenFile);
+  document.getElementById('teSave').addEventListener('click', teSaveFile);
 
   // Settings sidebar
   document.querySelectorAll('.settings-nav-item').forEach(el => {
