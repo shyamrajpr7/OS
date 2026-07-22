@@ -280,6 +280,102 @@ body, html { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 @keyframes dock-bounce { 0%,100% { transform: translateY(0); } 25% { transform: translateY(-12px); } 50% { transform: translateY(-4px); } 75% { transform: translateY(-10px); } }
 .dock-item.bouncing { animation: dock-bounce 0.6s ease; }
 
+/* ===================== LAUNCHPAD (Apps) ===================== */
+.launchpad-overlay {
+  position: fixed;
+  inset: 28px 0 0 0;
+  background: rgba(10, 10, 20, 0.85);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.1);
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.3s;
+}
+.launchpad-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+.launchpad-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--mac-text);
+  margin-bottom: 32px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.launchpad-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px 40px;
+  max-width: 600px;
+  width: 100%;
+  padding: 0 40px;
+}
+.launchpad-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.launchpad-item:hover {
+  transform: scale(1.12);
+}
+.launchpad-item:active {
+  transform: scale(0.95);
+}
+.launchpad-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s;
+}
+.launchpad-item:hover .launchpad-icon {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+}
+.launchpad-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.launchpad-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mac-text);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .launchpad-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px 24px;
+  }
+  .launchpad-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+  }
+}
+
 /* CONTEXT MENU */
 .context-menu { position: fixed; background: var(--mac-window-bg); backdrop-filter: blur(40px); border: 1px solid var(--mac-border); border-radius: 8px; padding: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 10001; min-width: 200px; display: none; }
 .context-menu.visible { display: block; }

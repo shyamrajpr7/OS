@@ -545,6 +545,17 @@ function finderSearch(query) {
 function showContextMenu(e) { e.preventDefault(); const menu = document.getElementById('contextMenu'); menu.style.left = e.clientX + 'px'; menu.style.top = e.clientY + 'px'; menu.classList.add('visible'); }
 function hideContextMenu() { document.getElementById('contextMenu').classList.remove('visible'); }
 
+// ---- Launchpad (Apps) ----
+function toggleLaunchpad() {
+  const overlay = document.getElementById('launchpadOverlay');
+  overlay.classList.toggle('visible');
+}
+
+function closeLaunchpad() {
+  const overlay = document.getElementById('launchpadOverlay');
+  overlay.classList.remove('visible');
+}
+
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
   // Init all app windows as minimized
@@ -645,6 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.dock-item').forEach(el => {
     el.addEventListener('click', () => {
       const appName = el.dataset.app;
+      if (appName === 'launchpad') { toggleLaunchpad(); return; }
       if (appName === 'trash' || appName === 'finder') {
         // Finder: toggle visibility
         const finderWin = document.getElementById('finder-window');
@@ -691,8 +703,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') hideContextMenu();
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
+  });
+
+  // Launchpad - click overlay background to close
+  document.getElementById('launchpadOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget || e.target.classList.contains('launchpad-grid')) {
+      closeLaunchpad();
+    }
+  });
+
+  // Launchpad - click app item to launch and close
+  document.querySelectorAll('.launchpad-item').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const appName = el.dataset.app;
+      if (appName === 'Finder') {
+        const finderWin = document.getElementById('finder-window');
+        finderWin.classList.remove('minimized');
+        focusWindow('finder-window');
+      } else {
+        openApp(appName);
+      }
+      closeLaunchpad();
+    });
   });
 });
