@@ -296,7 +296,38 @@ function focusWindow(winId) {
   if (win) { zCounter++; win.style.zIndex = zCounter; win.classList.add('focused'); focusedApp = winId; }
 }
 
-// ---- Window Dragging & Resizing ----
+// ---- Window Dragging & Resizing & Snapping ----
+let snapPreview = null;
+
+function createSnapPreview() {
+  if (snapPreview) return snapPreview;
+  snapPreview = document.createElement('div');
+  snapPreview.className = 'snap-preview';
+  document.body.appendChild(snapPreview);
+  return snapPreview;
+}
+
+function getSnapZone(x, y) {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const threshold = 20;
+  if (x <= threshold) return 'left';
+  if (x >= vw - threshold) return 'right';
+  if (y <= threshold) return 'top';
+  return null;
+}
+
+function getSnapRect(zone, winW, winH) {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight - 28;
+  switch (zone) {
+    case 'left': return { left: 0, top: 28, width: vw / 2, height: vh };
+    case 'right': return { left: vw / 2, top: 28, width: vw / 2, height: vh };
+    case 'top': return { left: 0, top: 28, width: vw, height: vh };
+    default: return null;
+  }
+}
+
 function initWindowDrag(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
@@ -304,15 +335,54 @@ function initWindowDrag(winId) {
   if (!titlebar) return;
 
   let isDragging = false, startX, startY, origX, origY;
+  let origW, origH;
 
   titlebar.addEventListener('mousedown', e => {
     if (e.target.closest('.tl-btn') || e.target.closest('.tb-nav-btn') || e.target.closest('button')) return;
-    isDragging = true; startX = e.clientX; startY = e.clientY; origX = win.offsetLeft; origY = win.offsetTop;
+    isDragging = true; startX = e.clientX; startY = e.clientY;
+    origX = win.offsetLeft; origY = win.offsetTop;
+    origW = win.offsetWidth; origH = win.offsetHeight;
+    win.style.transition = 'none';
     focusWindow(winId); e.preventDefault();
   });
 
-  document.addEventListener('mousemove', e => { if (isDragging) { win.style.left = (origX + e.clientX - startX) + 'px'; win.style.top = (origY + e.clientY - startY) + 'px'; } });
-  document.addEventListener('mouseup', () => { isDragging = false; });
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const newX = origX + e.clientX - startX;
+    const newY = origY + e.clientY - startY;
+    win.style.left = newX + 'px';
+    win.style.top = newY + 'px';
+
+    const zone = getSnapZone(e.clientX, e.clientY);
+    const preview = createSnapPreview();
+    if (zone) {
+      const rect = getSnapRect(zone, origW, origH);
+      preview.style.left = rect.left + 'px';
+      preview.style.top = rect.top + 'px';
+      preview.style.width = rect.width + 'px';
+      preview.style.height = rect.height + 'px';
+      preview.classList.add('visible');
+    } else {
+      preview.classList.remove('visible');
+    }
+  });
+
+  document.addEventListener('mouseup', e => {
+    if (!isDragging) return;
+    isDragging = false;
+    win.style.transition = '';
+
+    const preview = createSnapPreview();
+    const zone = getSnapZone(e.clientX, e.clientY);
+    if (zone) {
+      const rect = getSnapRect(zone, origW, origH);
+      win.style.left = rect.left + 'px';
+      win.style.top = rect.top + 'px';
+      win.style.width = rect.width + 'px';
+      win.style.height = rect.height + 'px';
+    }
+    preview.classList.remove('visible');
+  });
 
   const handle = win.querySelector('.window-resize-handle');
   if (handle) {
