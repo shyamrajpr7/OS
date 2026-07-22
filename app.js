@@ -239,6 +239,101 @@ function openItem(index) {
   if (!item) return;
   if (item.type === 'folder') navigateTo(item.path);
   else if (item.type === 'app') openApp(item.name);
+  else if (item.type === 'file') openFileInApp(item);
+}
+
+function openFileInApp(item) {
+  const ext = item.name.split('.').pop().toLowerCase();
+  if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp', 'ico'].includes(ext)) {
+    openPreview(item, 'image');
+  } else if (['txt', 'md', 'json', 'js', 'css', 'html', 'xml', 'csv', 'log', 'py', 'java', 'c', 'cpp', 'h'].includes(ext)) {
+    openPreview(item, 'text');
+  } else if (ext === 'pdf') {
+    openPreview(item, 'pdf');
+  } else if (['mp3', 'wav', 'ogg', 'flac', 'aac'].includes(ext)) {
+    openPreview(item, 'audio');
+  } else if (['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(ext)) {
+    openPreview(item, 'video');
+  } else {
+    openPreview(item, 'generic');
+  }
+}
+
+function openPreview(item, type) {
+  const win = document.getElementById('preview-window');
+  const body = document.getElementById('previewBody');
+  const title = document.getElementById('previewTitle');
+  title.textContent = item.name + ' — Preview';
+
+  let html = '';
+  if (type === 'image') {
+    const colors = ['#47A3FF', '#AF52DE', '#FF5F57', '#28C840', '#FEBC2E', '#FF2D55'];
+    const c1 = colors[Math.floor(Math.random() * colors.length)];
+    const c2 = colors[Math.floor(Math.random() * colors.length)];
+    html = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,${c1}30,${c2}30);border-radius:8px;">
+      <div style="text-align:center;color:#888;">
+        <i class="ri-image-line" style="font-size:64px;display:block;margin-bottom:8px;"></i>
+        <div style="font-size:13px;">${item.name}</div>
+        <div style="font-size:11px;color:#666;margin-top:4px;">${item.size || 'Unknown size'}</div>
+      </div>
+    </div>`;
+  } else if (type === 'text') {
+    const fileContent = getFileContent(item.path);
+    html = `<div style="padding:16px;height:100%;overflow:auto;">
+      <pre style="margin:0;font-family:'SF Mono',monospace;font-size:13px;color:#e0e0e0;white-space:pre-wrap;word-wrap:break-word;">${escapeHtml(fileContent)}</pre>
+    </div>`;
+  } else if (type === 'pdf') {
+    html = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#1e1e1e;border-radius:8px;">
+      <div style="text-align:center;color:#888;">
+        <i class="ri-file-pdf-2-line" style="font-size:64px;display:block;margin-bottom:8px;color:#FF5F57;"></i>
+        <div style="font-size:13px;">${item.name}</div>
+        <div style="font-size:11px;color:#666;margin-top:4px;">${item.size || 'Unknown size'}</div>
+        <div style="font-size:11px;color:#555;margin-top:8px;">PDF Preview</div>
+      </div>
+    </div>`;
+  } else if (type === 'audio') {
+    html = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#1e1e1e;border-radius:8px;">
+      <div style="text-align:center;color:#888;">
+        <i class="ri-music-2-line" style="font-size:64px;display:block;margin-bottom:8px;color:#FF5F57;"></i>
+        <div style="font-size:13px;">${item.name}</div>
+        <div style="font-size:11px;color:#666;margin-top:4px;">${item.size || 'Unknown size'}</div>
+        <div style="margin-top:12px;width:200px;height:4px;background:#333;border-radius:2px;margin-left:auto;margin-right:auto;">
+          <div style="width:0%;height:100%;background:#FF5F57;border-radius:2px;"></div>
+        </div>
+      </div>
+    </div>`;
+  } else if (type === 'video') {
+    html = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#000;border-radius:8px;">
+      <div style="text-align:center;color:#888;">
+        <i class="ri-movie-2-line" style="font-size:64px;display:block;margin-bottom:8px;color:#FF2D55;"></i>
+        <div style="font-size:13px;">${item.name}</div>
+        <div style="font-size:11px;color:#666;margin-top:4px;">${item.size || 'Unknown size'}</div>
+      </div>
+    </div>`;
+  } else {
+    html = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#1e1e1e;border-radius:8px;">
+      <div style="text-align:center;color:#888;">
+        <i class="ri-file-line" style="font-size:64px;display:block;margin-bottom:8px;"></i>
+        <div style="font-size:13px;">${item.name}</div>
+        <div style="font-size:11px;color:#666;margin-top:4px;">${item.kind || 'File'} — ${item.size || 'Unknown size'}</div>
+      </div>
+    </div>`;
+  }
+  body.innerHTML = html;
+  openApp('Preview.app');
+}
+
+function getFileContent(path) {
+  const textFiles = {
+    '/Users/shyamraj/Desktop/project-ideas.txt': 'Project Ideas:\n\n1. Thread OS - A macOS-style web desktop\n2. AI Chat Interface\n3. Markdown Editor\n4. Portfolio Website\n5. Task Management App',
+    '/Users/shyamraj/Documents/notes.txt': 'Meeting Notes - May 12, 2026\n\n- Discussed Q3 roadmap\n- New feature requests from beta users\n- Performance improvements needed for large files\n- Release target: end of June',
+    '/Users/shyamraj/Documents/resume.pdf': '[PDF Document]\n\nThis is a PDF file preview.\nOpen with Preview to view contents.'
+  };
+  return textFiles[path] || '[Contents of ' + path.split('/').pop() + ']';
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 // ---- File Drag & Drop in Finder ----
