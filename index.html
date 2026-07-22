@@ -569,13 +569,37 @@
 
   <!-- CONTEXT MENU -->
   <div class="context-menu" id="contextMenu">
-    <div class="context-menu-item"><i class="ri-folder-open-line"></i>Open</div>
+    <div class="context-menu-item" data-action="open"><i class="ri-folder-open-line"></i>Open</div>
     <div class="context-menu-separator"></div>
-    <div class="context-menu-item"><i class="ri-file-copy-line"></i>Copy</div>
-    <div class="context-menu-item"><i class="ri-scissors-line"></i>Cut</div>
-    <div class="context-menu-item"><i class="ri-clipboard-line"></i>Paste</div>
+    <div class="context-menu-item" data-action="getInfo"><i class="ri-information-line"></i>Get Info</div>
+    <div class="context-menu-item" data-action="rename"><i class="ri-edit-line"></i>Rename</div>
     <div class="context-menu-separator"></div>
-    <div class="context-menu-item"><i class="ri-delete-bin-line"></i>Move to Trash</div>
+    <div class="context-menu-item" data-action="copy"><i class="ri-file-copy-line"></i>Copy</div>
+    <div class="context-menu-item" data-action="paste"><i class="ri-clipboard-line"></i>Paste</div>
+    <div class="context-menu-item" data-action="duplicate"><i class="ri-file-copy-2-line"></i>Duplicate</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="newFolder"><i class="ri-folder-add-line"></i>New Folder</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item context-menu-danger" data-action="trash"><i class="ri-delete-bin-line"></i>Move to Trash</div>
+  </div>
+
+  <!-- INFO DIALOG -->
+  <div class="info-dialog-overlay" id="infoDialogOverlay">
+    <div class="info-dialog">
+      <div class="info-dialog-header">
+        <div class="info-dialog-icon"><i class="ri-file-line"></i></div>
+        <div class="info-dialog-title" id="infoDialogTitle">file.txt</div>
+      </div>
+      <div class="info-dialog-body">
+        <div class="info-row"><span>Kind</span><span id="infoKind">Document</span></div>
+        <div class="info-row"><span>Size</span><span id="infoSize">2.4 KB</span></div>
+        <div class="info-row"><span>Created</span><span id="infoDate">May 15, 2026</span></div>
+        <div class="info-row"><span>Path</span><span id="infoPath" style="font-size:10px;word-break:break-all;">/Users/shyamraj/Desktop/file.txt</span></div>
+      </div>
+      <div class="info-dialog-footer">
+        <button class="info-dialog-btn" id="infoDialogClose">OK</button>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>

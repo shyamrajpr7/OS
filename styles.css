@@ -940,7 +940,83 @@ body, html { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .context-menu-item { display: flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 4px; font-size: 13px; color: var(--mac-text); cursor: pointer; transition: background 0.1s; }
 .context-menu-item:hover { background: var(--mac-accent); color: white; }
 .context-menu-item i { width: 14px; height: 14px; opacity: 0.7; }
+.context-menu-danger { color: var(--mac-red); }
+.context-menu-danger:hover { background: var(--mac-red); color: white; }
 .context-menu-separator { height: 1px; background: var(--mac-border); margin: 4px 8px; }
+
+/* ===================== INFO DIALOG ===================== */
+.info-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 10002;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.info-dialog-overlay.visible {
+  display: flex;
+}
+.info-dialog {
+  background: var(--mac-window-bg);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--mac-border);
+  border-radius: 12px;
+  width: 320px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: fadeIn 0.2s;
+}
+.info-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 20px 12px;
+}
+.info-dialog-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--mac-accent);
+}
+.info-dialog-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mac-text);
+}
+.info-dialog-body {
+  padding: 0 20px;
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 12px;
+  border-bottom: 1px solid var(--mac-border);
+}
+.info-row span:first-child { color: var(--mac-text-muted); }
+.info-row span:last-child { color: var(--mac-text); }
+.info-dialog-footer {
+  padding: 12px 20px 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+.info-dialog-btn {
+  background: var(--mac-accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 20px;
+  font-size: 13px;
+  font-family: var(--font-system);
+  cursor: pointer;
+  transition: filter 0.12s;
+}
+.info-dialog-btn:hover { filter: brightness(1.1); }
 
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }

@@ -844,8 +844,116 @@ function dismissNotification(card) {
 }
 
 // ---- Context Menu ----
-function showContextMenu(e) { e.preventDefault(); const menu = document.getElementById('contextMenu'); menu.style.left = e.clientX + 'px'; menu.style.top = e.clientY + 'px'; menu.classList.add('visible'); }
+let contextTarget = null; // the right-clicked file/folder item
+let clipboardItem = null;
+
+function showContextMenu(e, target) {
+  e.preventDefault();
+  contextTarget = target || null;
+  const menu = document.getElementById('contextMenu');
+  menu.style.left = e.clientX + 'px';
+  menu.style.top = e.clientY + 'px';
+  menu.classList.add('visible');
+}
 function hideContextMenu() { document.getElementById('contextMenu').classList.remove('visible'); }
+
+function showInfoDialog(name, kind, size, date, path) {
+  document.getElementById('infoDialogTitle').textContent = name;
+  document.getElementById('infoKind').textContent = kind || 'Document';
+  document.getElementById('infoSize').textContent = size || '--';
+  document.getElementById('infoDate').textContent = date || 'May 15, 2026';
+  document.getElementById('infoPath').textContent = path || '';
+  document.getElementById('infoDialogOverlay').classList.add('visible');
+}
+
+function hideInfoDialog() {
+  document.getElementById('infoDialogOverlay').classList.remove('visible');
+}
+
+function handleContextAction(action) {
+  if (!contextTarget && action !== 'paste' && action !== 'newFolder') return;
+  const children = getChildren(currentPath);
+  const sorted = sortItems(children);
+
+  switch (action) {
+    case 'open':
+      if (contextTarget) {
+        if (contextTarget.type === 'folder') navigateTo(contextTarget.path);
+        else if (contextTarget.type === 'app') openApp(contextTarget.name);
+      }
+      break;
+    case 'getInfo':
+      if (contextTarget) showInfoDialog(contextTarget.name, contextTarget.kind, contextTarget.size, contextTarget.date, contextTarget.path);
+      break;
+    case 'rename': {
+      if (!contextTarget) return;
+      const newName = prompt('Rename "' + contextTarget.name + '" to:', contextTarget.name);
+      if (newName && newName !== contextTarget.name && contextTarget.path) {
+        const parts = contextTarget.path.split('/').filter(Boolean);
+        const oldName = parts.pop();
+        const parentPath = '/' + parts.join('/');
+        const parentNode = getNode(parentPath);
+        if (parentNode) {
+          parentNode.children = parentNode.children.map(c => {
+            const cName = typeof c === 'string' ? c : c.name;
+            return cName === oldName ? (typeof c === 'string' ? newName : { ...c, name: newName }) : c;
+          });
+          updateFinder();
+        }
+      }
+      break;
+    }
+    case 'copy':
+      if (contextTarget) clipboardItem = { ...contextTarget };
+      break;
+    case 'paste':
+      if (clipboardItem) {
+        const newFile = { ...clipboardItem, name: clipboardItem.name + ' copy', date: 'Just now' };
+        const node = getNode(currentPath);
+        if (node && node.type === 'folder') {
+          node.children.push(newFile);
+          updateFinder();
+        }
+      }
+      break;
+    case 'duplicate':
+      if (contextTarget) {
+        const dupe = { ...contextTarget, name: contextTarget.name + ' copy', date: 'Just now' };
+        const node = getNode(currentPath);
+        if (node && node.type === 'folder') {
+          node.children.push(dupe);
+          updateFinder();
+        }
+      }
+      break;
+    case 'newFolder': {
+      const folderName = prompt('New folder name:', 'Untitled Folder');
+      if (folderName) {
+        const node = getNode(currentPath);
+        if (node && node.type === 'folder') {
+          const newPath = currentPath + '/' + folderName;
+          fileSystem[newPath] = { type: 'folder', children: [] };
+          node.children.push(folderName);
+          updateFinder();
+        }
+      }
+      break;
+    }
+    case 'trash':
+      if (contextTarget && contextTarget.path) {
+        const parts = contextTarget.path.split('/').filter(Boolean);
+        const itemName = parts.pop();
+        const parentPath = '/' + parts.join('/');
+        const parentNode = getNode(parentPath);
+        if (parentNode) {
+          parentNode.children = parentNode.children.filter(c => (typeof c === 'string' ? c : c.name) !== itemName);
+          updateFinder();
+        }
+      }
+      break;
+  }
+  hideContextMenu();
+}
 
 // ---- Launchpad (Apps) ----
 function toggleLaunchpad() {
@@ -979,8 +1087,29 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Desktop right-click context menu
-  document.getElementById('desktop').addEventListener('contextmenu', showContextMenu);
+  document.getElementById('desktop').addEventListener('contextmenu', e => showContextMenu(e, null));
   document.addEventListener('click', e => { if (!e.target.closest('.context-menu')) hideContextMenu(); });
+
+  // Context menu item clicks
+  document.querySelectorAll('.context-menu-item[data-action]').forEach(el => {
+    el.addEventListener('click', () => handleContextAction(el.dataset.action));
+  });
+
+  // Info dialog close
+  document.getElementById('infoDialogClose').addEventListener('click', hideInfoDialog);
+  document.getElementById('infoDialogOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) hideInfoDialog(); });
+
+  // Finder row right-click
+  document.getElementById('finderList').addEventListener('contextmenu', e => {
+    const row = e.target.closest('.finder-row');
+    if (row) {
+      const idx = parseInt(row.dataset.index);
+      const children = getChildren(currentPath);
+      const sorted = sortItems(children);
+      e.stopPropagation();
+      showContextMenu(e, sorted[idx] || null);
+    }
+  });
 
   // Desktop icon double-click
   document.querySelectorAll('.desktop-icon').forEach(el => {
