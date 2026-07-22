@@ -541,6 +541,39 @@ function finderSearch(query) {
   document.getElementById('finderStatus').textContent = `${sorted.length} result${sorted.length !== 1 ? 's' : ''}`;
 }
 
+// ---- Notification Center ----
+function toggleNotifCenter() {
+  const nc = document.getElementById('notifCenter');
+  const overlay = document.getElementById('notifOverlay');
+  const isOpen = nc.classList.contains('open');
+  if (isOpen) { nc.classList.remove('open'); overlay.classList.remove('visible'); }
+  else { nc.classList.add('open'); overlay.classList.add('visible'); }
+}
+
+function closeNotifCenter() {
+  document.getElementById('notifCenter').classList.remove('open');
+  const overlay = document.getElementById('notifOverlay');
+  if (overlay) overlay.classList.remove('visible');
+}
+
+function clearAllNotifications() {
+  const list = document.getElementById('notifList');
+  list.innerHTML = '<div class="notif-empty">No new notifications</div>';
+}
+
+function dismissNotification(card) {
+  card.style.transition = 'opacity 0.25s, transform 0.25s';
+  card.style.opacity = '0';
+  card.style.transform = 'translateX(40px)';
+  setTimeout(() => {
+    card.remove();
+    const list = document.getElementById('notifList');
+    if (!list.querySelector('.notif-card')) {
+      list.innerHTML = '<div class="notif-empty">No new notifications</div>';
+    }
+  }, 250);
+}
+
 // ---- Context Menu ----
 function showContextMenu(e) { e.preventDefault(); const menu = document.getElementById('contextMenu'); menu.style.left = e.clientX + 'px'; menu.style.top = e.clientY + 'px'; menu.classList.add('visible'); }
 function hideContextMenu() { document.getElementById('contextMenu').classList.remove('visible'); }
@@ -703,7 +736,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
   });
@@ -729,5 +762,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       closeLaunchpad();
     });
+  });
+
+  // Notification Center - clock click toggles it
+  document.getElementById('menuClock').addEventListener('click', toggleNotifCenter);
+
+  // Notification Center - overlay click closes
+  document.getElementById('notifOverlay').addEventListener('click', closeNotifCenter);
+
+  // Notification Center - clear all button
+  document.getElementById('notifClearAll').addEventListener('click', clearAllNotifications);
+
+  // Notification Center - click card to dismiss
+  document.getElementById('notifList').addEventListener('click', e => {
+    const card = e.target.closest('.notif-card');
+    if (card) dismissNotification(card);
   });
 });
