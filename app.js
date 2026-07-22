@@ -541,6 +541,54 @@ function finderSearch(query) {
   document.getElementById('finderStatus').textContent = `${sorted.length} result${sorted.length !== 1 ? 's' : ''}`;
 }
 
+// ---- Calendar Dropdown ----
+let calYear, calMonth;
+
+function initCalendar() {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calMonthYear').textContent = months[calMonth] + ' ' + calYear;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === calYear && today.getMonth() === calMonth;
+
+  let html = '';
+  // Previous month trailing days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    html += `<div class="cal-day other-month">${daysInPrev - i}</div>`;
+  }
+  // Current month days
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = isCurrentMonth && d === today.getDate();
+    html += `<div class="cal-day${isToday ? ' today' : ''}">${d}</div>`;
+  }
+  // Next month leading days
+  const totalCells = firstDay + daysInMonth;
+  const remaining = (7 - (totalCells % 7)) % 7;
+  for (let i = 1; i <= remaining; i++) {
+    html += `<div class="cal-day other-month">${i}</div>`;
+  }
+  document.getElementById('calDays').innerHTML = html;
+}
+
+function toggleCalendar() {
+  const cal = document.getElementById('calendarDropdown');
+  cal.classList.toggle('open');
+}
+
+function closeCalendar() {
+  document.getElementById('calendarDropdown').classList.remove('open');
+}
+
 // ---- Control Center ----
 function toggleControlCenter() {
   const cc = document.getElementById('controlCenter');
@@ -750,7 +798,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
   });
@@ -778,8 +826,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Notification Center - clock click toggles it
-  document.getElementById('menuClock').addEventListener('click', toggleNotifCenter);
+  // Calendar - clock click toggles calendar
+  document.getElementById('menuClock').addEventListener('click', toggleCalendar);
+  document.getElementById('calPrev').addEventListener('click', e => { e.stopPropagation(); calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
+  document.getElementById('calNext').addEventListener('click', e => { e.stopPropagation(); calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
+  initCalendar();
 
   // Notification Center - overlay click closes
   document.getElementById('notifOverlay').addEventListener('click', closeNotifCenter);
@@ -793,7 +844,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (card) dismissNotification(card);
   });
 
+  // Notification bell icon
+  document.getElementById('notifTrayBtn').addEventListener('click', toggleNotifCenter);
+
   // Control Center - tray icon click
+  document.querySelector('.ri-equalizer-line').addEventListener('click', toggleControlCenter);
   document.querySelector('.ri-equalizer-line').addEventListener('click', toggleControlCenter);
 
   // Control Center - overlay click closes

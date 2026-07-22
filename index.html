@@ -24,12 +24,24 @@
     </div>
     <div class="menu-bar-right">
       <div class="system-tray">
+        <i class="ri-notification-3-line tray-icon" id="notifTrayBtn"></i>
         <i class="ri-wifi-line tray-icon"></i>
         <i class="ri-battery-2-fill tray-icon"></i>
         <i class="ri-search-line tray-icon"></i>
         <i class="ri-equalizer-line tray-icon"></i>
       </div>
       <div class="menu-clock" id="menuClock"></div>
+      <div class="calendar-dropdown" id="calendarDropdown">
+        <div class="cal-header">
+          <button class="cal-nav" id="calPrev"><i class="ri-arrow-left-s-line"></i></button>
+          <span class="cal-month-year" id="calMonthYear"></span>
+          <button class="cal-nav" id="calNext"><i class="ri-arrow-right-s-line"></i></button>
+        </div>
+        <div class="cal-weekdays">
+          <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+        </div>
+        <div class="cal-days" id="calDays"></div>
+      </div>
     </div>
   </header>
 
