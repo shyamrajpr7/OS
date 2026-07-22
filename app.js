@@ -1561,7 +1561,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Control Center - tray icon click
   document.querySelector('.ri-equalizer-line').addEventListener('click', toggleControlCenter);
-  document.querySelector('.ri-equalizer-line').addEventListener('click', toggleControlCenter);
 
   // Control Center - overlay click closes
   document.getElementById('ccOverlay').addEventListener('click', closeControlCenter);
