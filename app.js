@@ -1327,12 +1327,33 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Safari navigation
+  let safariHistory = ['https://www.apple.com'];
+  let safariIndex = 0;
+
+  function safariNavigate(url) {
+    const fullUrl = url.startsWith('http') ? url : 'https://' + url;
+    document.getElementById('safariUrl').value = fullUrl;
+    document.getElementById('safariFrame').src = fullUrl;
+    if (safariHistory[safariIndex] !== fullUrl) {
+      safariHistory = safariHistory.slice(0, safariIndex + 1);
+      safariHistory.push(fullUrl);
+      safariIndex = safariHistory.length - 1;
+    }
+    document.getElementById('safariBack').disabled = safariIndex <= 0;
+    document.getElementById('safariForward').disabled = safariIndex >= safariHistory.length - 1;
+  }
+
   document.getElementById('safariGo').addEventListener('click', () => {
-    const url = document.getElementById('safariUrl').value;
-    document.getElementById('safariFrame').src = url.startsWith('http') ? url : 'https://' + url;
+    safariNavigate(document.getElementById('safariUrl').value);
   });
   document.getElementById('safariUrl').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('safariGo').click();
+  });
+  document.getElementById('safariBack').addEventListener('click', () => {
+    if (safariIndex > 0) { safariIndex--; document.getElementById('safariUrl').value = safariHistory[safariIndex]; document.getElementById('safariFrame').src = safariHistory[safariIndex]; }
+  });
+  document.getElementById('safariForward').addEventListener('click', () => {
+    if (safariIndex < safariHistory.length - 1) { safariIndex++; document.getElementById('safariUrl').value = safariHistory[safariIndex]; document.getElementById('safariFrame').src = safariHistory[safariIndex]; }
   });
 
   // Dock clicks
