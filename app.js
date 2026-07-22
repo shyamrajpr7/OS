@@ -461,6 +461,7 @@ function closeWindow(winId) {
   if (!win) return;
   win.classList.add('minimized');
   win.classList.remove('focused');
+  if (winId === 'activity-window') stopActivityMonitor();
   const entry = Object.entries(appIdMap).find(([, v]) => v === winId);
   if (entry) { const dockItem = document.querySelector(`.dock-item[data-app="${entry[0]}"]`); if (dockItem) { const ind = dockItem.querySelector('.dock-indicator'); if (ind) ind.classList.remove('active'); } }
 }
@@ -713,26 +714,60 @@ function terminalExec(cmd) {
 let activityInterval = null;
 let cpuHistory = [];
 let memHistory = [];
+let diskHistory = [];
+let netHistory = [];
+let activityTab = 'cpu';
+
+const processList = [
+  { name: 'WindowServer', pid: 142, baseCpu: 12.3, baseMem: 312 },
+  { name: 'Safari', pid: 584, baseCpu: 8.7, baseMem: 1200 },
+  { name: 'kernel_task', pid: 0, baseCpu: 5.1, baseMem: 256 },
+  { name: 'Finder', pid: 312, baseCpu: 2.4, baseMem: 84 },
+  { name: 'launchd', pid: 1, baseCpu: 0.8, baseMem: 12 },
+  { name: 'Spotlight', pid: 401, baseCpu: 1.2, baseMem: 148 },
+  { name: 'mds_stores', pid: 205, baseCpu: 3.5, baseMem: 220 },
+  { name: 'SystemUIServer', pid: 278, baseCpu: 1.8, baseMem: 96 },
+  { name: 'Dock', pid: 290, baseCpu: 0.9, baseMem: 64 },
+  { name: 'WindowManager', pid: 305, baseCpu: 2.1, baseMem: 180 }
+];
 
 function initActivityMonitor() {
   if (activityInterval) return;
   cpuHistory = Array(60).fill(0).map(() => Math.random() * 30 + 5);
   memHistory = Array(60).fill(0).map(() => Math.random() * 20 + 40);
+  diskHistory = Array(60).fill(0).map(() => Math.random() * 15 + 2);
+  netHistory = Array(60).fill(0).map(() => Math.random() * 25 + 5);
   activityInterval = setInterval(updateActivityMonitor, 1000);
   drawActivityGraphs();
+  updateProcessList();
+}
+
+function stopActivityMonitor() {
+  if (activityInterval) { clearInterval(activityInterval); activityInterval = null; }
 }
 
 function updateActivityMonitor() {
   cpuHistory.push(Math.max(1, Math.min(100, cpuHistory[cpuHistory.length - 1] + (Math.random() - 0.5) * 20)));
   memHistory.push(Math.max(30, Math.min(85, memHistory[memHistory.length - 1] + (Math.random() - 0.5) * 5)));
+  diskHistory.push(Math.max(1, Math.min(40, diskHistory[diskHistory.length - 1] + (Math.random() - 0.5) * 8)));
+  netHistory.push(Math.max(0, Math.min(60, netHistory[netHistory.length - 1] + (Math.random() - 0.5) * 15)));
   if (cpuHistory.length > 60) cpuHistory.shift();
   if (memHistory.length > 60) memHistory.shift();
+  if (diskHistory.length > 60) diskHistory.shift();
+  if (netHistory.length > 60) netHistory.shift();
   document.getElementById('cpuValue').textContent = cpuHistory[cpuHistory.length - 1].toFixed(1) + '%';
   document.getElementById('memValue').textContent = memHistory[memHistory.length - 1].toFixed(1) + '%';
+  document.getElementById('diskValue').textContent = diskHistory[diskHistory.length - 1].toFixed(1) + '%';
+  document.getElementById('netValue').textContent = netHistory[netHistory.length - 1].toFixed(1) + ' MB/s';
   drawActivityGraphs();
+  updateProcessList();
 }
 
-function drawActivityGraphs() { drawGraph('cpuCanvas', cpuHistory, '#28C840'); }
+function drawActivityGraphs() {
+  const map = { cpu: { data: cpuHistory, color: '#28C840' }, memory: { data: memHistory, color: '#5AC8FA' }, disk: { data: diskHistory, color: '#FEBC2E' }, network: { data: netHistory, color: '#FF2D55' } };
+  const cfg = map[activityTab] || map.cpu;
+  drawGraph('activityCanvas', cfg.data, cfg.color);
+}
 
 function drawGraph(canvasId, data, color) {
   const canvas = document.getElementById(canvasId);
@@ -756,6 +791,21 @@ function drawGraph(canvasId, data, color) {
   ctx.beginPath();
   data.forEach((v, i) => { const x = i * step, y = h - (v / 100) * h; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
   ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+}
+
+function updateProcessList() {
+  const list = document.getElementById('activityProcessList');
+  if (!list) return;
+  let html = '<div class="proc-header"><span class="proc-name">Process Name</span><span class="proc-pid">PID</span><span class="proc-cpu">CPU</span><span class="proc-mem">Memory</span></div>';
+  processList.forEach(p => {
+    const cpu = (p.baseCpu + (Math.random() - 0.5) * 2).toFixed(1);
+    const mem = Math.round(p.baseMem + (Math.random() - 0.5) * 20);
+    const memStr = mem > 1024 ? (mem / 1024).toFixed(1) + ' GB' : mem + ' MB';
+    html += `<div class="proc-row"><span class="proc-name">${p.name}</span><span class="proc-pid">${p.pid}</span><span class="proc-cpu">${cpu}%</span><span class="proc-mem">${memStr}</span></div>`;
+  });
+  list.innerHTML = html;
+  const countEl = document.querySelector('#activity-window .stat-value:nth-child(3)');
+  if (countEl) countEl.textContent = processList.length;
 }
 
 // ---- System Settings ----
@@ -1372,6 +1422,8 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('click', () => {
       document.querySelectorAll('.activity-tab').forEach(t => t.classList.remove('active'));
       el.classList.add('active');
+      activityTab = el.dataset.tab;
+      drawActivityGraphs();
     });
   });
 
