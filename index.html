@@ -26,7 +26,24 @@
       <div class="system-tray">
         <i class="ri-notification-3-line tray-icon" id="notifTrayBtn"></i>
         <i class="ri-wifi-line tray-icon"></i>
-        <i class="ri-battery-2-fill tray-icon"></i>
+        <i class="ri-battery-2-fill tray-icon" id="batteryTrayBtn"></i>
+        <div class="battery-popup" id="batteryPopup">
+          <div class="battery-popup-header">
+            <div class="battery-visual">
+              <div class="battery-body"><div class="battery-level" id="batteryLevel" style="width:87%;"></div></div>
+              <div class="battery-tip"></div>
+            </div>
+            <span class="battery-pct" id="batteryPct">87%</span>
+          </div>
+          <div class="battery-popup-info">
+            <div class="battery-info-row"><span>Power Source</span><span>Battery</span></div>
+            <div class="battery-info-row"><span>Time Remaining</span><span id="batteryTime">4:23 remaining</span></div>
+            <div class="battery-info-row"><span>Cycle Count</span><span>247</span></div>
+          </div>
+          <div class="battery-popup-footer">
+            <button class="battery-lpm-btn" id="batteryLpm">Low Power Mode</button>
+          </div>
+        </div>
         <i class="ri-search-line tray-icon"></i>
         <i class="ri-equalizer-line tray-icon"></i>
       </div>

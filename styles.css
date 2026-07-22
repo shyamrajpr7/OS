@@ -44,6 +44,107 @@ body, html { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .menu-clock { font-size: 13px; font-weight: 500; color: var(--mac-text); padding-left: 8px; cursor: pointer; border-radius: 4px; padding: 2px 8px; transition: background 0.12s; }
 .menu-clock:hover { background: rgba(255,255,255,0.1); }
 
+/* ===================== BATTERY POPUP ===================== */
+.battery-popup {
+  position: fixed;
+  top: 34px;
+  right: 60px;
+  width: 240px;
+  background: rgba(30, 30, 42, 0.95);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid var(--mac-border);
+  border-radius: 12px;
+  padding: 14px;
+  z-index: 9600;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+}
+.battery-popup.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.battery-popup-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.battery-visual {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.battery-body {
+  width: 40px;
+  height: 20px;
+  border: 2px solid var(--mac-text-secondary);
+  border-radius: 4px;
+  padding: 2px;
+  position: relative;
+}
+.battery-level {
+  height: 100%;
+  background: var(--mac-green);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.battery-tip {
+  width: 4px;
+  height: 10px;
+  background: var(--mac-text-secondary);
+  border-radius: 0 2px 2px 0;
+}
+.battery-pct {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--mac-text);
+}
+.battery-popup-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.battery-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--mac-text-secondary);
+  padding: 3px 0;
+}
+.battery-info-row span:last-child {
+  color: var(--mac-text);
+}
+.battery-popup-footer {
+  border-top: 1px solid var(--mac-border);
+  padding-top: 8px;
+}
+.battery-lpm-btn {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  color: var(--mac-text-secondary);
+  font-size: 12px;
+  font-family: var(--font-system);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.battery-lpm-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--mac-text);
+}
+.battery-lpm-btn.active {
+  background: var(--mac-yellow);
+  color: #1a1a2e;
+}
+
 /* ===================== CALENDAR DROPDOWN ===================== */
 .calendar-dropdown {
   position: fixed;

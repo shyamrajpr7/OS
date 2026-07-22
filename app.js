@@ -541,6 +541,16 @@ function finderSearch(query) {
   document.getElementById('finderStatus').textContent = `${sorted.length} result${sorted.length !== 1 ? 's' : ''}`;
 }
 
+// ---- Battery Popup ----
+function toggleBatteryPopup() {
+  const popup = document.getElementById('batteryPopup');
+  popup.classList.toggle('open');
+}
+
+function closeBatteryPopup() {
+  document.getElementById('batteryPopup').classList.remove('open');
+}
+
 // ---- Calendar Dropdown ----
 let calYear, calMonth;
 
@@ -798,7 +808,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
   });
@@ -831,6 +841,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('calPrev').addEventListener('click', e => { e.stopPropagation(); calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
   document.getElementById('calNext').addEventListener('click', e => { e.stopPropagation(); calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
   initCalendar();
+
+  // Battery popup
+  document.getElementById('batteryTrayBtn').addEventListener('click', toggleBatteryPopup);
+  document.getElementById('batteryLpm').addEventListener('click', function() { this.classList.toggle('active'); });
 
   // Notification Center - overlay click closes
   document.getElementById('notifOverlay').addEventListener('click', closeNotifCenter);
