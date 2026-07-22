@@ -1418,6 +1418,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Finder grid item right-click
+  document.getElementById('finderGrid').addEventListener('contextmenu', e => {
+    const item = e.target.closest('.finder-grid-item');
+    if (item) {
+      const idx = parseInt(item.dataset.index);
+      const children = getChildren(currentPath);
+      const sorted = sortItems(children);
+      e.stopPropagation();
+      showContextMenu(e, sorted[idx] || null);
+    }
+  });
+
   // Desktop icon double-click
   document.querySelectorAll('.desktop-icon').forEach(el => {
     el.addEventListener('dblclick', () => {
