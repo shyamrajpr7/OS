@@ -541,6 +541,48 @@ function finderSearch(query) {
   document.getElementById('finderStatus').textContent = `${sorted.length} result${sorted.length !== 1 ? 's' : ''}`;
 }
 
+// ---- Screenshot Tool ----
+let ssMode = null; // 'full' or 'region'
+let ssStartX, ssStartY;
+
+function startScreenshot(mode) {
+  ssMode = mode;
+  const overlay = document.getElementById('screenshotOverlay');
+  overlay.classList.add('active');
+
+  if (mode === 'full') {
+    setTimeout(() => captureScreenshot(), 150);
+  } else {
+    // Region mode — wait for drag
+    document.getElementById('screenshotSelection').classList.remove('visible');
+  }
+}
+
+function captureScreenshot(x, y, w, h) {
+  const overlay = document.getElementById('screenshotOverlay');
+  overlay.classList.remove('active');
+  document.getElementById('screenshotSelection').classList.remove('visible');
+  ssMode = null;
+
+  // Flash effect
+  const flash = document.createElement('div');
+  flash.style.cssText = 'position:fixed;inset:0;background:white;z-index:100000;pointer-events:none;';
+  document.body.appendChild(flash);
+  setTimeout(() => { flash.style.transition = 'opacity 0.3s'; flash.style.opacity = '0'; setTimeout(() => flash.remove(), 300); }, 50);
+
+  // Show thumbnail
+  const thumb = document.getElementById('screenshotThumb');
+  thumb.classList.add('visible');
+  setTimeout(() => thumb.classList.remove('visible'), 2500);
+}
+
+function cancelScreenshot() {
+  const overlay = document.getElementById('screenshotOverlay');
+  overlay.classList.remove('active');
+  document.getElementById('screenshotSelection').classList.remove('visible');
+  ssMode = null;
+}
+
 // ---- Battery Popup ----
 function toggleBatteryPopup() {
   const popup = document.getElementById('batteryPopup');
@@ -808,9 +850,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
+    // Cmd+Shift+3 -> full screenshot
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === '3') { e.preventDefault(); startScreenshot('full'); }
+    // Cmd+Shift+4 -> region screenshot
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === '4') { e.preventDefault(); startScreenshot('region'); }
   });
 
   // Launchpad - click overlay background to close
@@ -845,6 +891,44 @@ document.addEventListener('DOMContentLoaded', () => {
   // Battery popup
   document.getElementById('batteryTrayBtn').addEventListener('click', toggleBatteryPopup);
   document.getElementById('batteryLpm').addEventListener('click', function() { this.classList.toggle('active'); });
+
+  // Screenshot overlay - mouse events for region selection
+  const ssOverlay = document.getElementById('screenshotOverlay');
+  const ssSelection = document.getElementById('screenshotSelection');
+
+  ssOverlay.addEventListener('mousedown', e => {
+    if (ssMode !== 'region') return;
+    ssStartX = e.clientX; ssStartY = e.clientY;
+    ssSelection.style.left = ssStartX + 'px';
+    ssSelection.style.top = ssStartY + 'px';
+    ssSelection.style.width = '0';
+    ssSelection.style.height = '0';
+    ssSelection.classList.add('visible');
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (ssMode !== 'region' || !ssStartX) return;
+    const x = Math.min(e.clientX, ssStartX);
+    const y = Math.min(e.clientY, ssStartY);
+    const w = Math.abs(e.clientX - ssStartX);
+    const h = Math.abs(e.clientY - ssStartY);
+    ssSelection.style.left = x + 'px';
+    ssSelection.style.top = y + 'px';
+    ssSelection.style.width = w + 'px';
+    ssSelection.style.height = h + 'px';
+  });
+
+  document.addEventListener('mouseup', e => {
+    if (ssMode !== 'region' || !ssStartX) return;
+    const w = Math.abs(e.clientX - ssStartX);
+    const h = Math.abs(e.clientY - ssStartY);
+    if (w > 10 && h > 10) {
+      captureScreenshot();
+    } else {
+      ssSelection.classList.remove('visible');
+    }
+    ssStartX = null;
+  });
 
   // Notification Center - overlay click closes
   document.getElementById('notifOverlay').addEventListener('click', closeNotifCenter);
