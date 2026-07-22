@@ -195,7 +195,7 @@ function updateFinder() {
     let rows = '';
     sorted.forEach((item, i) => {
       const iconClass = item.type === 'folder' ? 'folder-icon' : item.type === 'app' ? 'app-icon' : 'doc-icon';
-      rows += `<div class="finder-row" data-index="${i}" onclick="selectItem(${i})" ondblclick="openItem(${i})">
+      rows += `<div class="finder-row" data-index="${i}" data-type="${item.type}" data-name="${item.name}" draggable="true" onclick="selectItem(${i})" ondblclick="openItem(${i})">
         <span class="col-name"><span class="file-icon ${iconClass}">${getFileIcon(item)}</span><span>${item.name}</span></span>
         <span class="col-size">${item.size || '--'}</span>
         <span class="col-kind">${item.kind || ''}</span>
@@ -239,6 +239,91 @@ function openItem(index) {
   if (!item) return;
   if (item.type === 'folder') navigateTo(item.path);
   else if (item.type === 'app') openApp(item.name);
+}
+
+// ---- File Drag & Drop in Finder ----
+let dragItem = null;
+
+function moveFile(sourcePath, destFolderPath) {
+  const sourceParts = sourcePath.split('/').filter(Boolean);
+  const fileName = sourceParts.pop();
+  const sourceParentPath = '/' + sourceParts.join('/');
+  const sourceParent = getNode(sourceParentPath);
+  const destFolder = getNode(destFolderPath);
+  if (!sourceParent || !destFolder || destFolderPath === sourceParentPath) return false;
+  if (destFolder.type !== 'folder') return false;
+
+  sourceParent.children = sourceParent.children.filter(c => {
+    const name = typeof c === 'string' ? c : c.name;
+    return name !== fileName;
+  });
+
+  const sourceItem = getNode(sourcePath);
+  if (sourceItem) {
+    delete fileSystem[sourcePath];
+    const newPath = destFolderPath + '/' + fileName;
+    fileSystem[newPath] = sourceItem;
+    const children = destFolder.children;
+    if (typeof children[0] === 'string') {
+      destFolder.children = children.map(c => c === fileName ? { name: fileName, type: sourceItem.type, icon: 'folder', size: '--', kind: sourceItem.type === 'folder' ? 'Folder' : 'File', date: 'Just now', path: newPath } : c);
+    } else {
+      children.push({ name: fileName, type: sourceItem.type, icon: 'folder', size: '--', kind: sourceItem.type === 'folder' ? 'Folder' : 'File', date: 'Just now', path: newPath });
+    }
+  }
+  return true;
+}
+
+function initFinderDragDrop() {
+  const listEl = document.getElementById('finderList');
+  const gridEl = document.getElementById('finderGrid');
+
+  [listEl, gridEl].forEach(container => {
+    container.addEventListener('dragstart', e => {
+      const row = e.target.closest('.finder-row, .finder-grid-item');
+      if (!row) return;
+      dragItem = { index: parseInt(row.dataset.index), type: row.dataset.type, name: row.dataset.name };
+      e.dataTransfer.effectAllowed = 'move';
+      row.style.opacity = '0.5';
+    });
+
+    container.addEventListener('dragend', e => {
+      const row = e.target.closest('.finder-row, .finder-grid-item');
+      if (row) row.style.opacity = '';
+      document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+      dragItem = null;
+    });
+
+    container.addEventListener('dragover', e => {
+      e.preventDefault();
+      const row = e.target.closest('.finder-row, .finder-grid-item');
+      if (row && row.dataset.type === 'folder') {
+        row.classList.add('drag-over');
+        e.dataTransfer.dropEffect = 'move';
+      }
+    });
+
+    container.addEventListener('dragleave', e => {
+      const row = e.target.closest('.finder-row, .finder-grid-item');
+      if (row) row.classList.remove('drag-over');
+    });
+
+    container.addEventListener('drop', e => {
+      e.preventDefault();
+      const row = e.target.closest('.finder-row, .finder-grid-item');
+      if (!row || !dragItem || row.dataset.type !== 'folder') return;
+      row.classList.remove('drag-over');
+
+      const children = getChildren(currentPath);
+      const sorted = sortItems(children);
+      const destItem = sorted[parseInt(row.dataset.index)];
+      if (!destItem || !destItem.path) return;
+
+      if (moveFile(dragItem.path, destItem.path)) {
+        updateFinder();
+      }
+      dragItem = null;
+    });
+  });
 }
 
 // ---- App Windows ----
@@ -784,6 +869,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Init Finder
   initWindowDrag('finder-window');
   updateFinder();
+  initFinderDragDrop();
 
   // Traffic light buttons (event delegation)
   document.addEventListener('click', e => {
