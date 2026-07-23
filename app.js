@@ -1357,6 +1357,60 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- Force Quit Dialog ----
+let forcequitSelected = null;
+
+function openForceQuit() {
+  const overlay = document.getElementById('forcequitOverlay');
+  const list = document.getElementById('forcequitList');
+  forcequitSelected = null;
+  document.getElementById('forcequitBtn').disabled = true;
+
+  const runningApps = [
+    { name: 'Finder', app: 'Finder', icon: 'ri-folder-line', status: 'Running' },
+    { name: 'Safari', app: 'Safari.app', icon: 'ri-safari-line', status: 'Running' },
+    { name: 'Calculator', app: 'Calculator.app', icon: 'ri-calculator-line', status: 'Running' },
+    { name: 'Terminal', app: 'Terminal.app', icon: 'ri-terminal-box-line', status: 'Running' },
+    { name: 'TextEdit', app: 'TextEdit.app', icon: 'ri-file-text-line', status: 'Running' },
+    { name: 'Activity Monitor', app: 'Activity Monitor.app', icon: 'ri-pulse-line', status: 'Running' },
+    { name: 'System Settings', app: 'System Settings.app', icon: 'ri-settings-3-line', status: 'Running' }
+  ];
+
+  let html = '';
+  runningApps.forEach((a, i) => {
+    const isRunning = a.app === 'Finder' || !document.getElementById(appIdMap[a.app])?.classList.contains('minimized');
+    html += `<div class="forcequit-item" data-index="${i}" data-app="${a.app}">
+      <div class="forcequit-app-icon"><i class="${a.icon}"></i></div>
+      <span class="forcequit-app-name">${a.name}</span>
+      <span class="forcequit-app-status">${isRunning ? a.status : 'Stopped'}</span>
+    </div>`;
+  });
+  list.innerHTML = html;
+
+  list.querySelectorAll('.forcequit-item').forEach(el => {
+    el.addEventListener('click', () => {
+      list.querySelectorAll('.forcequit-item').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+      forcequitSelected = el.dataset.app;
+      document.getElementById('forcequitBtn').disabled = false;
+    });
+  });
+
+  overlay.classList.add('visible');
+}
+
+function closeForceQuit() {
+  document.getElementById('forcequitOverlay').classList.remove('visible');
+}
+
+function forceQuitApp() {
+  if (!forcequitSelected) return;
+  if (forcequitSelected === 'Finder') return;
+  const winId = appIdMap[forcequitSelected];
+  if (winId) closeWindow(winId);
+  closeForceQuit();
+}
+
 // ---- Wallpaper Picker ----
 function openWallpaperPicker() {
   document.getElementById('wallpaperPickerOverlay').classList.add('visible');
@@ -1565,6 +1619,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Force Quit dialog
+  document.getElementById('forcequitCancel').addEventListener('click', closeForceQuit);
+  document.getElementById('forcequitBtn').addEventListener('click', forceQuitApp);
+  document.getElementById('forcequitOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeForceQuit(); });
+
   // Spotlight search input
   document.getElementById('spotlightInput').addEventListener('input', e => spotlightSearch(e.target.value));
   document.getElementById('spotlightInput').addEventListener('keydown', e => {
@@ -1644,7 +1703,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
     // Cmd+Shift+3 -> full screenshot
@@ -1653,6 +1712,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === '4') { e.preventDefault(); startScreenshot('region'); }
     // Cmd+Space -> Spotlight
     if ((e.metaKey || e.ctrlKey) && e.key === ' ') { e.preventDefault(); toggleSpotlight(); }
+    // Cmd+Option+Esc -> Force Quit
+    if ((e.metaKey || e.ctrlKey) && e.altKey && e.key === 'Escape') { e.preventDefault(); openForceQuit(); }
   });
 
   // Launchpad - click overlay background to close

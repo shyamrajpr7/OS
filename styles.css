@@ -1063,6 +1063,105 @@ body, html { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
   box-shadow: 0 0 0 2px rgba(0,122,255,0.3);
 }
 
+/* ===================== FORCE QUIT DIALOG ===================== */
+.forcequit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 10004;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.forcequit-overlay.visible { display: flex; }
+.forcequit-dialog {
+  background: var(--mac-window-bg);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--mac-border);
+  border-radius: 12px;
+  width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: fadeIn 0.2s;
+  overflow: hidden;
+}
+.forcequit-header {
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mac-text);
+  border-bottom: 1px solid var(--mac-border);
+}
+.forcequit-list {
+  max-height: 260px;
+  overflow-y: auto;
+}
+.forcequit-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.forcequit-item:hover { background: rgba(255,255,255,0.05); }
+.forcequit-item.selected { background: var(--mac-accent); }
+.forcequit-item.selected .forcequit-app-name,
+.forcequit-item.selected .forcequit-app-status { color: white; }
+.forcequit-app-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--mac-accent);
+  flex-shrink: 0;
+}
+.forcequit-app-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mac-text);
+}
+.forcequit-app-status {
+  font-size: 11px;
+  color: var(--mac-text-muted);
+  margin-left: auto;
+}
+.forcequit-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--mac-border);
+}
+.forcequit-cancel {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-family: var(--font-system);
+  color: var(--mac-text);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.forcequit-cancel:hover { background: rgba(255,255,255,0.14); }
+.forcequit-btn {
+  background: var(--mac-red);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-family: var(--font-system);
+  color: white;
+  cursor: pointer;
+  transition: filter 0.12s;
+}
+.forcequit-btn:disabled { opacity: 0.4; cursor: default; }
+.forcequit-btn:hover:not(:disabled) { filter: brightness(1.1); }
+
 /* ===================== SHUTDOWN / LOGOUT DIALOG ===================== */
 .shutdown-overlay {
   position: fixed;
