@@ -452,6 +452,10 @@ function openApp(appName) {
   if (dockItem) { dockItem.classList.add('bouncing'); setTimeout(() => dockItem.classList.remove('bouncing'), 700); }
 
   win.classList.remove('minimized');
+  win.style.transition = '';
+  win.style.transform = '';
+  win.style.opacity = '';
+  win.style.transformOrigin = '';
   focusWindow(winId);
 
   if (!win.style.left || win.offsetLeft === 0) {
@@ -478,7 +482,39 @@ function closeWindow(winId) {
 
 function minimizeWindow(winId) {
   const win = document.getElementById(winId);
-  if (win) win.classList.add('minimized');
+  if (!win) return;
+  // Find the dock icon position for this app
+  const entry = Object.entries(appIdMap).find(([, v]) => v === winId);
+  let dockX = window.innerWidth / 2;
+  let dockY = window.innerHeight - 30;
+  if (entry) {
+    const dockItem = document.querySelector(`.dock-item[data-app="${entry[0]}"]`);
+    if (dockItem) {
+      const rect = dockItem.getBoundingClientRect();
+      dockX = rect.left + rect.width / 2;
+      dockY = rect.top + rect.height / 2;
+    }
+  }
+  const winRect = win.getBoundingClientRect();
+  const origLeft = winRect.left;
+  const origTop = winRect.top;
+  const origW = winRect.width;
+  const origH = winRect.height;
+  const scaleX = 40 / origW;
+  const scaleY = 30 / origH;
+  const translateX = (dockX - origLeft - origW / 2);
+  const translateY = (dockY - origTop - origH / 2);
+  win.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease';
+  win.style.transformOrigin = 'center center';
+  win.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
+  win.style.opacity = '0';
+  setTimeout(() => {
+    win.classList.add('minimized');
+    win.style.transition = '';
+    win.style.transform = '';
+    win.style.opacity = '';
+    win.style.transformOrigin = '';
+  }, 400);
 }
 
 function focusWindow(winId) {
