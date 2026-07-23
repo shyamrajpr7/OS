@@ -1184,6 +1184,38 @@ function showContextMenu(e, target) {
   const menu = document.getElementById('contextMenu');
   menu.style.left = e.clientX + 'px';
   menu.style.top = e.clientY + 'px';
+
+  // Desktop right-click: show desktop-specific menu
+  if (!target) {
+    menu.innerHTML = `
+      <div class="context-menu-item" data-action="changeWallpaper"><i class="ri-image-line"></i>Change Wallpaper...</div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item" data-action="newFolder"><i class="ri-folder-add-line"></i>New Folder</div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item" data-action="getInfo"><i class="ri-information-line"></i>Get Info</div>
+    `;
+    menu.querySelectorAll('.context-menu-item[data-action]').forEach(el => {
+      el.addEventListener('click', () => handleContextAction(el.dataset.action));
+    });
+  } else {
+    menu.innerHTML = `
+      <div class="context-menu-item" data-action="open"><i class="ri-folder-open-line"></i>Open</div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item" data-action="getInfo"><i class="ri-information-line"></i>Get Info</div>
+      <div class="context-menu-item" data-action="rename"><i class="ri-edit-line"></i>Rename</div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item" data-action="copy"><i class="ri-file-copy-line"></i>Copy</div>
+      <div class="context-menu-item" data-action="paste"><i class="ri-clipboard-line"></i>Paste</div>
+      <div class="context-menu-item" data-action="duplicate"><i class="ri-file-copy-2-line"></i>Duplicate</div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item" data-action="newFolder"><i class="ri-folder-add-line"></i>New Folder</div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item context-menu-danger" data-action="trash"><i class="ri-delete-bin-line"></i>Move to Trash</div>
+    `;
+    menu.querySelectorAll('.context-menu-item[data-action]').forEach(el => {
+      el.addEventListener('click', () => handleContextAction(el.dataset.action));
+    });
+  }
   menu.classList.add('visible');
 }
 function hideContextMenu() { document.getElementById('contextMenu').classList.remove('visible'); }
@@ -1282,8 +1314,25 @@ function handleContextAction(action) {
         }
       }
       break;
+    case 'changeWallpaper':
+      openWallpaperPicker();
+      break;
   }
   hideContextMenu();
+}
+
+// ---- Wallpaper Picker ----
+function openWallpaperPicker() {
+  document.getElementById('wallpaperPickerOverlay').classList.add('visible');
+}
+function closeWallpaperPicker() {
+  document.getElementById('wallpaperPickerOverlay').classList.remove('visible');
+}
+function changeWallpaper(gradient) {
+  document.getElementById('desktop').style.background = gradient;
+  document.querySelectorAll('.wallpaper-option').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  closeWallpaperPicker();
 }
 
 // ---- Launchpad (Apps) ----
@@ -1471,6 +1520,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('desktop').addEventListener('contextmenu', e => showContextMenu(e, null));
   document.addEventListener('click', e => { if (!e.target.closest('.context-menu')) hideContextMenu(); });
 
+  // Wallpaper picker
+  document.getElementById('wallpaperPickerClose').addEventListener('click', closeWallpaperPicker);
+  document.getElementById('wallpaperPickerOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeWallpaperPicker(); });
+  document.querySelectorAll('.wallpaper-option').forEach(el => {
+    el.addEventListener('click', function() {
+      changeWallpaper(this.dataset.gradient);
+    });
+  });
+
   // Spotlight search input
   document.getElementById('spotlightInput').addEventListener('input', e => spotlightSearch(e.target.value));
   document.getElementById('spotlightInput').addEventListener('keydown', e => {
@@ -1550,7 +1608,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
     // Cmd+Shift+3 -> full screenshot

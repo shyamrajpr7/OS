@@ -990,6 +990,79 @@ body, html { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .context-menu-danger:hover { background: var(--mac-red); color: white; }
 .context-menu-separator { height: 1px; background: var(--mac-border); margin: 4px 8px; }
 
+/* ===================== WALLPAPER PICKER ===================== */
+.wallpaper-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 10003;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.wallpaper-picker-overlay.visible { display: flex; }
+.wallpaper-picker {
+  background: var(--mac-window-bg);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--mac-border);
+  border-radius: 12px;
+  width: 520px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: fadeIn 0.2s;
+}
+.wallpaper-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--mac-border);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mac-text);
+}
+.wallpaper-picker-close {
+  width: 24px;
+  height: 24px;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  border-radius: 50%;
+  color: var(--mac-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+}
+.wallpaper-picker-close:hover { background: rgba(255,255,255,0.16); color: var(--mac-text); }
+.wallpaper-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 16px 18px;
+}
+.wallpaper-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.wallpaper-option:hover { transform: scale(1.05); }
+.wallpaper-option span { font-size: 10px; color: var(--mac-text-secondary); }
+.wallpaper-option.active span { color: var(--mac-accent); font-weight: 600; }
+.wallpaper-preview {
+  width: 100%;
+  aspect-ratio: 16/10;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.wallpaper-option.active .wallpaper-preview {
+  border-color: var(--mac-accent);
+  box-shadow: 0 0 0 2px rgba(0,122,255,0.3);
+}
+
 /* ===================== SHUTDOWN / LOGOUT DIALOG ===================== */
 .shutdown-overlay {
   position: fixed;
