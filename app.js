@@ -1494,6 +1494,21 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('click', () => { if (el.dataset.path) navigateTo(el.dataset.path); });
   });
 
+  // Sidebar eject buttons
+  document.querySelectorAll('.sidebar-eject-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const volume = btn.dataset.volume;
+      const item = btn.closest('.sidebar-item');
+      if (item) {
+        item.style.transition = 'opacity 0.3s';
+        item.style.opacity = '0.3';
+        item.style.pointerEvents = 'none';
+        setTimeout(() => { item.style.opacity = ''; item.style.pointerEvents = ''; }, 2000);
+      }
+    });
+  });
+
   // Nav buttons
   document.getElementById('btnBack').addEventListener('click', goBack);
   document.getElementById('btnForward').addEventListener('click', goForward);
