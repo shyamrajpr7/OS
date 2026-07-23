@@ -1297,8 +1297,32 @@ function closeLaunchpad() {
   overlay.classList.remove('visible');
 }
 
+// ---- Boot Screen ----
+function startBootScreen() {
+  const bootScreen = document.getElementById('bootScreen');
+  const progressBar = document.getElementById('bootProgressBar');
+  if (!bootScreen || !progressBar) return;
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 15 + 5;
+    if (progress >= 100) {
+      progress = 100;
+      progressBar.style.width = '100%';
+      clearInterval(interval);
+      setTimeout(() => {
+        bootScreen.classList.add('hidden');
+        setTimeout(() => bootScreen.remove(), 600);
+      }, 300);
+    } else {
+      progressBar.style.width = progress + '%';
+    }
+  }, 120);
+}
+
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
+  // Boot screen
+  startBootScreen();
   // Init all app windows as minimized
   Object.values(appIdMap).forEach(id => {
     const win = document.getElementById(id);

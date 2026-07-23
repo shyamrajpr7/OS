@@ -11,6 +11,17 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- BOOT SCREEN -->
+  <div class="boot-screen" id="bootScreen">
+    <div class="boot-logo">
+      <svg width="80" height="80" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="bootBg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7DD3FC"/><stop offset="45%" stop-color="#818CF8"/><stop offset="100%" stop-color="#C084FC"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="8" fill="url(#bootBg)" opacity="0.9"/><rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/><path d="M9 11.5C9 10.1 10.1 9 11.5 9H14C15.4 9 16.5 10.1 16.5 11.5V13H13.5C12.1 13 11 14.1 11 15.5V18H9V11.5Z" fill="rgba(255,255,255,0.9)"/><path d="M15.5 14H18C19.4 14 20.5 15.1 20.5 16.5V21H18.5V17.5C18.5 16.95 18.05 16.5 17.5 16.5H15.5V14Z" fill="rgba(255,255,255,0.9)" opacity="0.8"/><circle cx="22" cy="10" r="2" fill="rgba(255,255,255,0.5)"/></svg>
+    </div>
+    <div class="boot-progress-container">
+      <div class="boot-progress-bar" id="bootProgressBar"></div>
+    </div>
+    <div class="boot-text">Thread OS</div>
+  </div>
+
   <!-- MENU BAR -->
   <header class="menu-bar">
     <div class="menu-bar-left">
