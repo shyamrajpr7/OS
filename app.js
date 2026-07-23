@@ -1357,6 +1357,42 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- Lock Screen ----
+let isLocked = false;
+
+function updateLockClock() {
+  if (!isLocked) return;
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes().toString().padStart(2, '0');
+  const h12 = h % 12 || 12;
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  document.getElementById('lockTime').textContent = `${h12}:${m}`;
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('lockDate').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+}
+
+function lockScreen() {
+  isLocked = true;
+  const ls = document.getElementById('lockScreen');
+  ls.classList.add('visible');
+  updateLockClock();
+  document.getElementById('lockPassword').value = '';
+  setTimeout(() => document.getElementById('lockPassword').focus(), 100);
+}
+
+function unlockScreen() {
+  isLocked = false;
+  document.getElementById('lockScreen').classList.remove('visible');
+}
+
+function attemptUnlock() {
+  const pw = document.getElementById('lockPassword').value;
+  // Accept any password or empty for demo
+  unlockScreen();
+}
+
 // ---- Force Quit Dialog ----
 let forcequitSelected = null;
 
@@ -1639,6 +1675,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('forcequitBtn').addEventListener('click', forceQuitApp);
   document.getElementById('forcequitOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeForceQuit(); });
 
+  // Lock screen
+  document.getElementById('lockSubmit').addEventListener('click', attemptUnlock);
+  document.getElementById('lockPassword').addEventListener('keydown', e => { if (e.key === 'Enter') attemptUnlock(); });
+
   // Spotlight search input
   document.getElementById('spotlightInput').addEventListener('input', e => spotlightSearch(e.target.value));
   document.getElementById('spotlightInput').addEventListener('keydown', e => {
@@ -1729,6 +1769,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if ((e.metaKey || e.ctrlKey) && e.key === ' ') { e.preventDefault(); toggleSpotlight(); }
     // Cmd+Option+Esc -> Force Quit
     if ((e.metaKey || e.ctrlKey) && e.altKey && e.key === 'Escape') { e.preventDefault(); openForceQuit(); }
+    // Cmd+L -> Lock Screen
+    if ((e.metaKey || e.ctrlKey) && e.key === 'l') { e.preventDefault(); lockScreen(); }
   });
 
   // Launchpad - click overlay background to close
