@@ -1339,6 +1339,99 @@ kbd {
   color: var(--mac-text);
 }
 
+/* ===================== ABOUT THIS MAC ===================== */
+.aboutmac-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 10006;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.aboutmac-overlay.visible { display: flex; }
+.aboutmac-dialog {
+  background: var(--mac-window-bg);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--mac-border);
+  border-radius: 14px;
+  width: 340px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: fadeIn 0.25s;
+  text-align: center;
+  padding: 28px 24px 18px;
+  position: relative;
+}
+.aboutmac-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  border-radius: 50%;
+  color: var(--mac-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+}
+.aboutmac-close:hover { background: rgba(255,255,255,0.16); color: var(--mac-text); }
+.aboutmac-logo { margin-bottom: 12px; }
+.aboutmac-logo svg { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3)); }
+.aboutmac-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--mac-text);
+  margin-bottom: 2px;
+}
+.aboutmac-version {
+  font-size: 12px;
+  color: var(--mac-text-muted);
+  margin-bottom: 18px;
+}
+.aboutmac-specs {
+  text-align: left;
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+}
+.aboutmac-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 12px;
+  border-bottom: 1px solid var(--mac-border);
+}
+.aboutmac-row:last-child { border-bottom: none; }
+.aboutmac-label { color: var(--mac-text-muted); }
+.aboutmac-value { color: var(--mac-text); font-weight: 500; }
+.aboutmac-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.aboutmac-btn {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 18px;
+  font-size: 12px;
+  font-family: var(--font-system);
+  color: var(--mac-text);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.aboutmac-btn:hover { background: rgba(255,255,255,0.14); }
+.aboutmac-btn-primary {
+  background: var(--mac-accent);
+  color: white;
+}
+.aboutmac-btn-primary:hover { filter: brightness(1.1); }
+
 /* ===================== SHUTDOWN / LOGOUT DIALOG ===================== */
 .shutdown-overlay {
   position: fixed;

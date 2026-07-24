@@ -1357,6 +1357,14 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- About This Mac ----
+function openAboutMac() {
+  document.getElementById('aboutmacOverlay').classList.add('visible');
+}
+function closeAboutMac() {
+  document.getElementById('aboutmacOverlay').classList.remove('visible');
+}
+
 // ---- OSD Popup ----
 let osdTimeout = null;
 
@@ -1753,6 +1761,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('shortcutsClose').addEventListener('click', closeShortcuts);
   document.getElementById('shortcutsOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeShortcuts(); });
 
+  // About This Mac
+  document.getElementById('aboutmacClose').addEventListener('click', closeAboutMac);
+  document.getElementById('aboutmacOk').addEventListener('click', closeAboutMac);
+  document.getElementById('aboutmacOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeAboutMac(); });
+
   // Spotlight search input
   document.getElementById('spotlightInput').addEventListener('input', e => spotlightSearch(e.target.value));
   document.getElementById('spotlightInput').addEventListener('keydown', e => {
@@ -1810,7 +1823,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Shutdown dialog - brand logo click
-  document.getElementById('brandLogo').addEventListener('click', toggleShutdownDialog);
+  document.getElementById('brandLogo').addEventListener('click', e => {
+    if (e.altKey || e.optionKey) { openAboutMac(); }
+    else { toggleShutdownDialog(); }
+  });
 
   // Shutdown dialog - buttons
   document.getElementById('btnSleep').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
@@ -1832,7 +1848,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
     // Cmd+Shift+3 -> full screenshot
