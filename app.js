@@ -1357,6 +1357,65 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- App Switcher (Cmd+Tab) ----
+let appSwitcherVisible = false;
+let appSwitcherIndex = 0;
+let appSwitcherApps = [];
+
+function showAppSwitcher() {
+  const list = document.getElementById('appSwitcherList');
+  const switcher = document.getElementById('appSwitcher');
+  appSwitcherApps = [
+    { name: 'Finder', winId: 'finder-window', icon: 'ri-folder-line', color: '#47A3FF' },
+    { name: 'Safari', winId: 'safari-window', icon: 'ri-safari-line', color: '#006CFF' },
+    { name: 'Calculator', winId: 'calculator-window', icon: 'ri-calculator-line', color: '#1C1C1E' },
+    { name: 'Terminal', winId: 'terminal-window', icon: 'ri-terminal-box-line', color: '#0D1117' },
+    { name: 'TextEdit', winId: 'textedit-window', icon: 'ri-file-text-line', color: '#4A90D9' },
+    { name: 'Activity Monitor', winId: 'activity-window', icon: 'ri-pulse-line', color: '#1A1A2E' },
+    { name: 'Settings', winId: 'settings-window', icon: 'ri-settings-3-line', color: '#6B6B7B' },
+    { name: 'Preview', winId: 'preview-window', icon: 'ri-image-line', color: '#FF9500' }
+  ];
+  appSwitcherIndex = 0;
+  renderAppSwitcher();
+  switcher.classList.add('visible');
+  appSwitcherVisible = true;
+}
+
+function hideAppSwitcher() {
+  document.getElementById('appSwitcher').classList.remove('visible');
+  appSwitcherVisible = false;
+}
+
+function renderAppSwitcher() {
+  const list = document.getElementById('appSwitcherList');
+  list.innerHTML = appSwitcherApps.map((a, i) => {
+    const win = document.getElementById(a.winId);
+    const isOpen = win && !win.classList.contains('minimized');
+    return `<div class="app-switcher-item${i === appSwitcherIndex ? ' selected' : ''}${isOpen ? ' active' : ''}">
+      <div class="app-switcher-icon" style="background:${a.color};"><i class="${a.icon}" style="color:white;"></i></div>
+      <span class="app-switcher-name">${a.name}</span>
+    </div>`;
+  }).join('');
+}
+
+function cycleAppSwitcher(dir) {
+  appSwitcherIndex = (appSwitcherIndex + dir + appSwitcherApps.length) % appSwitcherApps.length;
+  renderAppSwitcher();
+}
+
+function selectAppSwitcher() {
+  if (appSwitcherIndex >= 0 && appSwitcherIndex < appSwitcherApps.length) {
+    const app = appSwitcherApps[appSwitcherIndex];
+    const win = document.getElementById(app.winId);
+    if (win && !win.classList.contains('minimized')) {
+      focusWindow(app.winId);
+    } else {
+      openApp(app.name + (app.name === 'Finder' ? '' : '.app'));
+    }
+  }
+  hideAppSwitcher();
+}
+
 // ---- About This Mac ----
 function openAboutMac() {
   document.getElementById('aboutmacOverlay').classList.add('visible');
@@ -1863,6 +1922,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'l') { e.preventDefault(); lockScreen(); }
     // Cmd+/ -> Keyboard Shortcuts
     if ((e.metaKey || e.ctrlKey) && e.key === '/') { e.preventDefault(); toggleShortcuts(); }
+    // Cmd+Tab -> App Switcher
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Tab') {
+      e.preventDefault();
+      if (!appSwitcherVisible) { showAppSwitcher(); }
+      else { cycleAppSwitcher(e.shiftKey ? -1 : 1); }
+    }
+  });
+
+  document.addEventListener('keyup', e => {
+    if ((e.metaKey || e.ctrlKey) === false && appSwitcherVisible) {
+      selectAppSwitcher();
+    }
   });
 
   // Launchpad - click overlay background to close
