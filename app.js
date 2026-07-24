@@ -545,6 +545,16 @@ function focusWindow(winId) {
   document.querySelectorAll('.mac-window').forEach(w => w.classList.remove('focused'));
   const win = document.getElementById(winId);
   if (win) { zCounter++; win.style.zIndex = zCounter; win.classList.add('focused'); focusedApp = winId; }
+  // Update menu bar app name
+  const appNameMap = {
+    'finder-window': 'Finder', 'calculator-window': 'Calculator', 'textedit-window': 'TextEdit',
+    'terminal-window': 'Terminal', 'activity-window': 'Activity Monitor', 'settings-window': 'System Settings',
+    'preview-window': 'Preview', 'safari-window': 'Safari'
+  };
+  const menuName = document.getElementById('menuAppName');
+  if (menuName && appNameMap[winId]) {
+    menuName.innerHTML = `<strong>${appNameMap[winId]}</strong>`;
+  }
 }
 
 // ---- Window Dragging & Resizing & Snapping ----
