@@ -557,6 +557,39 @@ function focusWindow(winId) {
   }
 }
 
+function getOpenWindows() {
+  return Array.from(document.querySelectorAll('.mac-window')).filter(w => !w.classList.contains('minimized'));
+}
+function cascadeWindows() {
+  const wins = getOpenWindows();
+  wins.forEach((w, i) => {
+    w.style.width = '640px';
+    w.style.height = '420px';
+    w.style.top = (80 + i * 30) + 'px';
+    w.style.left = (100 + i * 30) + 'px';
+    zCounter++; w.style.zIndex = zCounter;
+  });
+}
+function tileWindow(side) {
+  const focused = document.querySelector('.mac-window.focused');
+  if (!focused) return;
+  const wins = getOpenWindows();
+  const otherWins = wins.filter(w => w !== focused);
+  focused.style.width = '50vw';
+  focused.style.height = 'calc(100vh - 80px)';
+  focused.style.top = '52px';
+  focused.style.left = side === 'left' ? '0' : '50vw';
+  zCounter++; focused.style.zIndex = zCounter;
+  if (otherWins.length > 0) {
+    const other = otherWins[0];
+    other.style.width = '50vw';
+    other.style.height = 'calc(100vh - 80px)';
+    other.style.top = '52px';
+    other.style.left = side === 'left' ? '50vw' : '0';
+    zCounter++; other.style.zIndex = zCounter;
+  }
+}
+
 // ---- Window Dragging & Resizing & Snapping ----
 let snapPreview = null;
 
@@ -2129,6 +2162,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Calendar - clock click toggles calendar
   document.getElementById('menuClock').addEventListener('click', toggleCalendar);
+
+  // Window menu dropdown
+  document.getElementById('menuWindow').addEventListener('click', e => {
+    e.stopPropagation();
+    document.getElementById('windowDropdown').classList.toggle('visible');
+  });
+  document.querySelectorAll('#windowDropdown .menu-dropdown-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const action = el.dataset.action;
+      if (action === 'cascade') cascadeWindows();
+      else if (action === 'tileLeft') tileWindow('left');
+      else if (action === 'tileRight') tileWindow('right');
+      else if (action === 'minimizeAll') getOpenWindows().forEach(w => minimizeWindow(w.id));
+      document.getElementById('windowDropdown').classList.remove('visible');
+    });
+  });
+  document.addEventListener('click', () => {
+    const dd = document.getElementById('windowDropdown');
+    if (dd) dd.classList.remove('visible');
+  });
   document.getElementById('calPrev').addEventListener('click', e => { e.stopPropagation(); calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
   document.getElementById('calNext').addEventListener('click', e => { e.stopPropagation(); calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
   initCalendar();

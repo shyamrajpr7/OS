@@ -30,7 +30,14 @@
       </div>
       <div class="menu-app-name" id="menuAppName"><strong>Finder</strong></div>
       <div class="menu-items" id="menuItems">
-        <span class="menu-item">File</span><span class="menu-item">Edit</span><span class="menu-item">View</span><span class="menu-item">Go</span><span class="menu-item">Window</span><span class="menu-item">Help</span>
+        <span class="menu-item">File</span><span class="menu-item">Edit</span><span class="menu-item">View</span><span class="menu-item">Go</span><span class="menu-item" id="menuWindow">Window</span><span class="menu-item">Help</span>
+      </div>
+      <div class="window-dropdown" id="windowDropdown">
+        <div class="menu-dropdown-item" data-action="cascade">Cascade Windows</div>
+        <div class="menu-dropdown-item" data-action="tileLeft">Tile Window to Left of Screen</div>
+        <div class="menu-dropdown-item" data-action="tileRight">Tile Window to Right of Screen</div>
+        <div class="menu-separator"></div>
+        <div class="menu-dropdown-item" data-action="minimizeAll">Minimize All</div>
       </div>
     </div>
     <div class="menu-bar-right">
