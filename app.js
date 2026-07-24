@@ -1389,6 +1389,14 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- Empty Trash Dialog ----
+function showEmptyTrashDialog() {
+  document.getElementById('emptyTrashOverlay').classList.add('visible');
+}
+function hideEmptyTrashDialog() {
+  document.getElementById('emptyTrashOverlay').classList.remove('visible');
+}
+
 // ---- Unsaved Changes Dialog ----
 let unsavedCallback = null;
 
@@ -1904,8 +1912,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Clear badge on click
       const badge = el.querySelector('.dock-badge');
       if (badge) badge.remove();
+      if (appName === 'trash') { showEmptyTrashDialog(); return; }
       if (appName === 'launchpad') { toggleLaunchpad(); return; }
-      if (appName === 'trash' || appName === 'finder') {
+      if (appName === 'finder') {
         // Finder: toggle visibility
         const finderWin = document.getElementById('finder-window');
         if (finderWin.classList.contains('minimized')) { finderWin.classList.remove('minimized'); focusWindow('finder-window'); }
@@ -1968,6 +1977,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('unsavedDontSave').addEventListener('click', () => { if (unsavedCallback) unsavedCallback(); hideUnsavedDialog(); });
   document.getElementById('unsavedCancel').addEventListener('click', hideUnsavedDialog);
   document.getElementById('unsavedSave').addEventListener('click', () => { teSaveFile(); teModified = false; hideUnsavedDialog(); });
+
+  // Empty trash dialog
+  document.getElementById('emptyTrashCancel').addEventListener('click', hideEmptyTrashDialog);
+  document.getElementById('emptyTrashConfirm').addEventListener('click', () => { hideEmptyTrashDialog(); });
+  document.getElementById('emptyTrashOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) hideEmptyTrashDialog(); });
 
   // Spotlight search input
   document.getElementById('spotlightInput').addEventListener('input', e => spotlightSearch(e.target.value));

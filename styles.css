@@ -1646,6 +1646,56 @@ kbd {
   color: white;
 }
 .unsaved-btn-primary:hover { filter: brightness(1.1); }
+.unsaved-btn-danger {
+  background: var(--mac-red);
+  color: white;
+}
+.unsaved-btn-danger:hover { filter: brightness(1.1); }
+
+/* ===================== EMPTY TRASH DIALOG ===================== */
+.emptytrash-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 10008;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.emptytrash-overlay.visible { display: flex; }
+.emptytrash-dialog {
+  background: var(--mac-window-bg);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--mac-border);
+  border-radius: 12px;
+  padding: 24px;
+  width: 360px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: fadeIn 0.2s;
+}
+.emptytrash-icon {
+  font-size: 36px;
+  color: var(--mac-text-muted);
+  margin-bottom: 12px;
+}
+.emptytrash-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mac-text);
+  margin-bottom: 6px;
+}
+.emptytrash-desc {
+  font-size: 12px;
+  color: var(--mac-text-muted);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.emptytrash-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
 
 /* ===================== DESKTOP CLOCK WIDGET ===================== */
 .desktop-clock-widget {
