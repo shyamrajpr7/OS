@@ -1357,6 +1357,23 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- Dock Badge Manager ----
+function setDockBadge(appName, count) {
+  const dockItem = document.querySelector(`.dock-item[data-app="${appName}"]`);
+  if (!dockItem) return;
+  let badge = dockItem.querySelector('.dock-badge');
+  if (count <= 0) {
+    if (badge) badge.remove();
+    return;
+  }
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.className = 'dock-badge';
+    dockItem.appendChild(badge);
+  }
+  badge.textContent = count;
+}
+
 // ---- Keyboard Shortcuts Overlay ----
 function toggleShortcuts() {
   document.getElementById('shortcutsOverlay').classList.toggle('visible');
@@ -1646,6 +1663,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.dock-item').forEach(el => {
     el.addEventListener('click', () => {
       const appName = el.dataset.app;
+      // Clear badge on click
+      const badge = el.querySelector('.dock-badge');
+      if (badge) badge.remove();
       if (appName === 'launchpad') { toggleLaunchpad(); return; }
       if (appName === 'trash' || appName === 'finder') {
         // Finder: toggle visibility
