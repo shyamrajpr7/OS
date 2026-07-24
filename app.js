@@ -1357,6 +1357,24 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- Do Not Disturb ----
+let dndEnabled = false;
+
+function toggleDND() {
+  dndEnabled = !dndEnabled;
+  const icon = document.getElementById('dndTrayBtn');
+  const ccBtn = document.getElementById('ccDoNotDisturb');
+  if (dndEnabled) {
+    icon.style.display = '';
+    icon.classList.add('active');
+    if (ccBtn) ccBtn.classList.add('active');
+  } else {
+    icon.style.display = 'none';
+    icon.classList.remove('active');
+    if (ccBtn) ccBtn.classList.remove('active');
+  }
+}
+
 // ---- Dock Badge Manager ----
 function setDockBadge(appName, count) {
   const dockItem = document.querySelector(`.dock-item[data-app="${appName}"]`);
@@ -1893,6 +1911,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Notification bell icon
   document.getElementById('notifTrayBtn').addEventListener('click', toggleNotifCenter);
 
+  // DND tray icon
+  document.getElementById('dndTrayBtn').addEventListener('click', toggleDND);
+
   // Control Center - tray icon click
   document.querySelector('.ri-equalizer-line').addEventListener('click', toggleControlCenter);
 
@@ -1922,6 +1943,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Control Center - bottom button toggles
   ['ccDoNotDisturb', 'ccScreenMirror', 'ccStageManager'].forEach(id => {
     document.getElementById(id).addEventListener('click', function() {
+      if (id === 'ccDoNotDisturb') { toggleDND(); return; }
       this.classList.toggle('active');
     });
   });
