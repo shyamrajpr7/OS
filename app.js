@@ -655,6 +655,8 @@ function calcEqual() {
 
 // ---- Terminal ----
 let termCwd = '/Users/shyamraj';
+let termHistory = [];
+let termHistoryIndex = -1;
 
 function initTerminal() {
   const output = document.getElementById('terminalOutput');
@@ -693,6 +695,11 @@ function terminalExec(cmd) {
   const cmdLine = document.createElement('div');
   cmdLine.innerHTML = `<span class="cmd">${termPromptText()}${cmd}</span>`;
   output.appendChild(cmdLine);
+
+  if (cmd.trim()) {
+    termHistory.push(cmd.trim());
+    termHistoryIndex = termHistory.length;
+  }
 
   const parts = cmd.trim().split(/\s+/);
   const command = parts[0];
@@ -1760,6 +1767,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // Terminal input
   document.getElementById('terminalInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') { const val = e.target.value.trim(); e.target.value = ''; terminalExec(val); }
+    else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (termHistory.length > 0 && termHistoryIndex > 0) {
+        termHistoryIndex--;
+        e.target.value = termHistory[termHistoryIndex];
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (termHistoryIndex < termHistory.length - 1) {
+        termHistoryIndex++;
+        e.target.value = termHistory[termHistoryIndex];
+      } else {
+        termHistoryIndex = termHistory.length;
+        e.target.value = '';
+      }
+    }
   });
 
   // Terminal window focus -> focus input
