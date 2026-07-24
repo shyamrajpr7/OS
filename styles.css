@@ -1494,6 +1494,36 @@ kbd {
   max-width: 70px;
 }
 
+/* ===================== SCREENSAVER ===================== */
+.screensaver {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 999998;
+  display: none;
+  cursor: none;
+}
+.screensaver.visible {
+  display: block;
+}
+.screensaver canvas {
+  width: 100%;
+  height: 100%;
+}
+.screensaver-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.screensaver.visible:hover .screensaver-hint {
+  opacity: 1;
+}
+
 /* ===================== SHUTDOWN / LOGOUT DIALOG ===================== */
 .shutdown-overlay {
   position: fixed;

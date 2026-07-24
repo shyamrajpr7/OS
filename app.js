@@ -1357,6 +1357,65 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- Screensaver ----
+let screensaverActive = false;
+let screensaverInterval = null;
+let screensaverTimeout = null;
+const SCREENSAVER_DELAY = 30000; // 30 seconds
+
+function startScreensaver() {
+  if (screensaverActive) return;
+  screensaverActive = true;
+  const ss = document.getElementById('screensaver');
+  ss.classList.add('visible');
+  const canvas = document.getElementById('screensaverCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth * 2;
+  canvas.height = window.innerHeight * 2;
+
+  const particles = [];
+  for (let i = 0; i < 50; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 3 + 1,
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+      color: `hsla(${Math.random() * 360}, 70%, 60%, 0.6)`
+    });
+  }
+
+  function draw() {
+    ctx.fillStyle = 'rgba(0,0,0,0.08)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    });
+  }
+  screensaverInterval = setInterval(draw, 50);
+}
+
+function stopScreensaver() {
+  if (!screensaverActive) return;
+  screensaverActive = false;
+  const ss = document.getElementById('screensaver');
+  ss.classList.remove('visible');
+  clearInterval(screensaverInterval);
+  resetScreensaverTimer();
+}
+
+function resetScreensaverTimer() {
+  clearTimeout(screensaverTimeout);
+  screensaverTimeout = setTimeout(startScreensaver, SCREENSAVER_DELAY);
+}
+
 // ---- App Switcher (Cmd+Tab) ----
 let appSwitcherVisible = false;
 let appSwitcherIndex = 0;
@@ -1815,6 +1874,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Lock screen
   document.getElementById('lockSubmit').addEventListener('click', attemptUnlock);
   document.getElementById('lockPassword').addEventListener('keydown', e => { if (e.key === 'Enter') attemptUnlock(); });
+
+  // Screensaver - wake on mouse/key
+  document.getElementById('screensaver').addEventListener('mousemove', stopScreensaver);
+  document.getElementById('screensaver').addEventListener('click', stopScreensaver);
+  document.addEventListener('keydown', e => { if (screensaverActive) stopScreensaver(); });
+  resetScreensaverTimer();
 
   // Keyboard shortcuts overlay
   document.getElementById('shortcutsClose').addEventListener('click', closeShortcuts);
