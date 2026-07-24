@@ -1357,6 +1357,26 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- OSD Popup ----
+let osdTimeout = null;
+
+function showOSD(type, value) {
+  const popup = document.getElementById('osdPopup');
+  const icon = document.getElementById('osdIcon');
+  const bar = document.getElementById('osdBar');
+  const val = document.getElementById('osdValue');
+  if (type === 'volume') {
+    icon.innerHTML = value === 0 ? '<i class="ri-volume-mute-line"></i>' : value < 50 ? '<i class="ri-volume-down-line"></i>' : '<i class="ri-volume-up-line"></i>';
+  } else {
+    icon.innerHTML = value === 0 ? '<i class="ri-moon-line"></i>' : '<i class="ri-sun-line"></i>';
+  }
+  bar.style.width = value + '%';
+  val.textContent = value + '%';
+  popup.classList.add('visible');
+  clearTimeout(osdTimeout);
+  osdTimeout = setTimeout(() => popup.classList.remove('visible'), 1500);
+}
+
 // ---- Do Not Disturb ----
 let dndEnabled = false;
 
@@ -1715,6 +1735,10 @@ document.addEventListener('DOMContentLoaded', () => {
       changeWallpaper(this.dataset.gradient);
     });
   });
+
+  // CC sliders -> OSD
+  document.getElementById('ccBrightness').addEventListener('input', function() { showOSD('brightness', this.value); });
+  document.getElementById('ccVolume').addEventListener('input', function() { showOSD('volume', this.value); });
 
   // Force Quit dialog
   document.getElementById('forcequitCancel').addEventListener('click', closeForceQuit);

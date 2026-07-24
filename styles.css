@@ -1289,6 +1289,56 @@ kbd {
   text-align: center;
 }
 
+/* ===================== OSD POPUP ===================== */
+.osd-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: rgba(30, 30, 42, 0.92);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--mac-border);
+  border-radius: 14px;
+  padding: 16px 24px;
+  z-index: 99998;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  min-width: 140px;
+}
+.osd-popup.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.osd-icon {
+  font-size: 28px;
+  color: var(--mac-text);
+}
+.osd-bar-wrap {
+  width: 120px;
+  height: 6px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.osd-bar {
+  height: 100%;
+  background: white;
+  border-radius: 3px;
+  transition: width 0.15s ease;
+}
+.osd-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mac-text);
+}
+
 /* ===================== SHUTDOWN / LOGOUT DIALOG ===================== */
 .shutdown-overlay {
   position: fixed;
