@@ -102,6 +102,7 @@ let focusedApp = null;
 let calcState = { current: '0', previous: null, operator: null, waitingForOperand: false, display: '0' };
 let teCurrentFile = null;
 let teFileContent = {};
+let teModified = false;
 
 // ---- Clock ----
 function updateClock() {
@@ -471,6 +472,20 @@ function openApp(appName) {
 }
 
 function closeWindow(winId) {
+  const win = document.getElementById(winId);
+  if (!win) return;
+  // Check for unsaved TextEdit changes
+  if (winId === 'textedit-window' && teModified) {
+    showUnsavedDialog(() => {
+      teModified = false;
+      doCloseWindow(winId);
+    });
+    return;
+  }
+  doCloseWindow(winId);
+}
+
+function doCloseWindow(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
   win.classList.add('minimized');
@@ -874,6 +889,7 @@ function switchSettingsPanel(panel) {
 // ---- TextEdit ----
 function teNewFile() {
   teCurrentFile = null;
+  teModified = false;
   document.getElementById('texteditArea').value = '';
   document.querySelector('#textedit-window .window-title').textContent = 'Untitled — TextEdit';
 }
@@ -1364,6 +1380,18 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- Unsaved Changes Dialog ----
+let unsavedCallback = null;
+
+function showUnsavedDialog(callback) {
+  unsavedCallback = callback;
+  document.getElementById('unsavedOverlay').classList.add('visible');
+}
+function hideUnsavedDialog() {
+  document.getElementById('unsavedOverlay').classList.remove('visible');
+  unsavedCallback = null;
+}
+
 // ---- WiFi Dropdown ----
 function toggleWifiDropdown() {
   document.getElementById('wifiDropdown').classList.toggle('open');
@@ -1817,6 +1845,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('texteditArea').style.fontSize = this.value + 'px';
   });
 
+  // TextEdit change tracking
+  document.getElementById('texteditArea').addEventListener('input', () => { teModified = true; });
+
   // TextEdit new/open/save
   document.getElementById('teNew').addEventListener('click', teNewFile);
   document.getElementById('teOpen').addEventListener('click', teOpenFile);
@@ -1923,6 +1954,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('aboutmacClose').addEventListener('click', closeAboutMac);
   document.getElementById('aboutmacOk').addEventListener('click', closeAboutMac);
   document.getElementById('aboutmacOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeAboutMac(); });
+
+  // Unsaved changes dialog
+  document.getElementById('unsavedDontSave').addEventListener('click', () => { if (unsavedCallback) unsavedCallback(); hideUnsavedDialog(); });
+  document.getElementById('unsavedCancel').addEventListener('click', hideUnsavedDialog);
+  document.getElementById('unsavedSave').addEventListener('click', () => { teSaveFile(); teModified = false; hideUnsavedDialog(); });
 
   // Spotlight search input
   document.getElementById('spotlightInput').addEventListener('input', e => spotlightSearch(e.target.value));
