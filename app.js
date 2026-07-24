@@ -1773,12 +1773,31 @@ function startBootScreen() {
   const progressBar = document.getElementById('bootProgressBar');
   if (!bootScreen || !progressBar) return;
   let progress = 0;
+  function playLoginChime() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.8);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + i * 0.12);
+        osc.stop(ctx.currentTime + i * 0.12 + 0.8);
+      });
+    } catch(e) {}
+  }
   const interval = setInterval(() => {
     progress += Math.random() * 15 + 5;
     if (progress >= 100) {
       progress = 100;
       progressBar.style.width = '100%';
       clearInterval(interval);
+      playLoginChime();
       setTimeout(() => {
         bootScreen.classList.add('hidden');
         setTimeout(() => bootScreen.remove(), 600);
