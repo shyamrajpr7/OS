@@ -1364,6 +1364,17 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- WiFi Dropdown ----
+function toggleWifiDropdown() {
+  document.getElementById('wifiDropdown').classList.toggle('open');
+}
+function closeWifiDropdown() {
+  document.getElementById('wifiDropdown').classList.remove('open');
+}
+function toggleWifiSwitch(el) {
+  el.classList.toggle('on');
+}
+
 // ---- Screensaver ----
 let screensaverActive = false;
 let screensaverInterval = null;
@@ -1995,7 +2006,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
     // Cmd+Shift+3 -> full screenshot
@@ -2112,6 +2123,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // DND tray icon
   document.getElementById('dndTrayBtn').addEventListener('click', toggleDND);
+
+  // WiFi tray icon
+  document.getElementById('wifiTrayBtn').addEventListener('click', toggleWifiDropdown);
 
   // Control Center - tray icon click
   document.querySelector('.ri-equalizer-line').addEventListener('click', toggleControlCenter);

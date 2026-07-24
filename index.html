@@ -37,7 +37,38 @@
       <div class="system-tray">
         <i class="ri-notification-3-line tray-icon" id="notifTrayBtn"></i>
         <i class="ri-moon-line tray-icon dnd-icon" id="dndTrayBtn" style="display:none;" title="Do Not Disturb: On"></i>
-        <i class="ri-wifi-line tray-icon"></i>
+        <i class="ri-wifi-line tray-icon" id="wifiTrayBtn"></i>
+        <div class="wifi-dropdown" id="wifiDropdown">
+          <div class="wifi-header">
+            <span class="wifi-title">Wi-Fi</span>
+            <div class="toggle-switch on" id="wifiToggle" onclick="toggleWifiSwitch(this)"></div>
+          </div>
+          <div class="wifi-networks">
+            <div class="wifi-network-label">Preferred Networks</div>
+            <div class="wifi-network connected">
+              <i class="ri-wifi-fill"></i>
+              <span>ThreadOS-5G</span>
+              <i class="ri-lock-fill wifi-lock"></i>
+              <i class="ri-check-line wifi-check"></i>
+            </div>
+            <div class="wifi-network">
+              <i class="ri-wifi-line"></i>
+              <span>Neighbor-5G</span>
+              <i class="ri-lock-fill wifi-lock"></i>
+            </div>
+            <div class="wifi-network">
+              <i class="ri-wifi-line"></i>
+              <span>CoffeeShop</span>
+            </div>
+            <div class="wifi-network">
+              <i class="ri-wifi-line"></i>
+              <span>Guest Network</span>
+            </div>
+          </div>
+          <div class="wifi-footer">
+            <span class="wifi-ip">IP: 192.168.1.42</span>
+          </div>
+        </div>
         <i class="ri-battery-2-fill tray-icon" id="batteryTrayBtn"></i>
         <span class="battery-menu-pct" id="batteryMenuPct">87%</span>
         <div class="battery-popup" id="batteryPopup">
