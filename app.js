@@ -1357,6 +1357,14 @@ function handleContextAction(action) {
   hideContextMenu();
 }
 
+// ---- Keyboard Shortcuts Overlay ----
+function toggleShortcuts() {
+  document.getElementById('shortcutsOverlay').classList.toggle('visible');
+}
+function closeShortcuts() {
+  document.getElementById('shortcutsOverlay').classList.remove('visible');
+}
+
 // ---- Lock Screen ----
 let isLocked = false;
 
@@ -1679,6 +1687,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('lockSubmit').addEventListener('click', attemptUnlock);
   document.getElementById('lockPassword').addEventListener('keydown', e => { if (e.key === 'Enter') attemptUnlock(); });
 
+  // Keyboard shortcuts overlay
+  document.getElementById('shortcutsClose').addEventListener('click', closeShortcuts);
+  document.getElementById('shortcutsOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeShortcuts(); });
+
   // Spotlight search input
   document.getElementById('spotlightInput').addEventListener('input', e => spotlightSearch(e.target.value));
   document.getElementById('spotlightInput').addEventListener('keydown', e => {
@@ -1758,7 +1770,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); }
+    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); }
     // Cmd+F or Ctrl+F -> focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
     // Cmd+Shift+3 -> full screenshot
@@ -1771,6 +1783,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if ((e.metaKey || e.ctrlKey) && e.altKey && e.key === 'Escape') { e.preventDefault(); openForceQuit(); }
     // Cmd+L -> Lock Screen
     if ((e.metaKey || e.ctrlKey) && e.key === 'l') { e.preventDefault(); lockScreen(); }
+    // Cmd+/ -> Keyboard Shortcuts
+    if ((e.metaKey || e.ctrlKey) && e.key === '/') { e.preventDefault(); toggleShortcuts(); }
   });
 
   // Launchpad - click overlay background to close
