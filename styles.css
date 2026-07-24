@@ -1647,6 +1647,35 @@ kbd {
 }
 .unsaved-btn-primary:hover { filter: brightness(1.1); }
 
+/* ===================== DESKTOP CLOCK WIDGET ===================== */
+.desktop-clock-widget {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 16px 22px;
+  background: rgba(30, 30, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  z-index: 10;
+  user-select: none;
+  cursor: default;
+}
+.dcw-time {
+  font-size: 36px;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.dcw-date {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  margin-top: 4px;
+  font-weight: 400;
+}
+
 /* ===================== SHUTDOWN / LOGOUT DIALOG ===================== */
 .shutdown-overlay {
   position: fixed;

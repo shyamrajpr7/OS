@@ -114,6 +114,15 @@ function updateClock() {
   const ampm = h >= 12 ? 'PM' : 'AM';
   const h12 = h % 12 || 12;
   document.getElementById('menuClock').textContent = `${days[now.getDay()]} ${months[now.getMonth()]} ${now.getDate()}  ${h12}:${m} ${ampm}`;
+  // Desktop clock widget
+  const dcwTime = document.getElementById('dcwTime');
+  const dcwDate = document.getElementById('dcwDate');
+  if (dcwTime) dcwTime.textContent = `${h12}:${m}`;
+  if (dcwDate) {
+    const fullDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const fullMonths = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    dcwDate.textContent = `${fullDays[now.getDay()]}, ${fullMonths[now.getMonth()]} ${now.getDate()}`;
+  }
 }
 updateClock();
 setInterval(updateClock, 10000);
