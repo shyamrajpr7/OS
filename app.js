@@ -354,13 +354,32 @@ function openPreview(item, type) {
       </div>
     </div>`;
   } else if (type === 'video') {
-    html = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#000;border-radius:8px;">
-      <div style="text-align:center;color:#888;">
-        <i class="ri-movie-2-line" style="font-size:64px;display:block;margin-bottom:8px;color:#FF2D55;"></i>
-        <div style="font-size:13px;">${item.name}</div>
-        <div style="font-size:11px;color:#666;margin-top:4px;">${item.size || 'Unknown size'}</div>
+    html = `<div class="preview-video-container">
+      <div class="preview-video-stage" id="previewVideoStage">
+        <div class="preview-video-poster">
+          <div class="preview-video-play-big" onclick="previewVideoTogglePlay()">
+            <i class="ri-play-fill"></i>
+          </div>
+          <div class="preview-video-title">${item.name}</div>
+        </div>
+      </div>
+      <div class="preview-video-controls">
+        <button class="preview-video-btn" id="previewVideoPlayBtn" onclick="previewVideoTogglePlay()"><i class="ri-play-fill"></i></button>
+        <div class="preview-video-progress" id="previewVideoProgress" onclick="previewVideoSeek(event)">
+          <div class="preview-video-progress-bg"></div>
+          <div class="preview-video-progress-fill" id="previewVideoProgressFill"></div>
+          <div class="preview-video-progress-thumb" id="previewVideoProgressThumb"></div>
+        </div>
+        <span class="preview-video-time" id="previewVideoTime">0:00 / 0:00</span>
+        <div class="preview-video-sep"></div>
+        <button class="preview-video-btn" onclick="previewVideoMute()" title="Mute"><i class="ri-volume-up-line" id="previewVideoVolIcon"></i></button>
+        <div class="preview-video-volume" id="previewVideoVolumeWrap">
+          <input type="range" class="preview-video-vol-slider" id="previewVideoVolSlider" min="0" max="100" value="80" oninput="previewVideoSetVolume(this.value)">
+        </div>
+        <button class="preview-video-btn preview-video-btn-fullscreen" onclick="previewVideoFullscreen()" title="Fullscreen"><i class="ri-fullscreen-line"></i></button>
       </div>
     </div>`;
+    setTimeout(() => initVideoPreview(item), 0);
   } else {
     html = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#1e1e1e;border-radius:8px;">
       <div style="text-align:center;color:#888;">
@@ -418,6 +437,81 @@ function applyPreviewImgTransform() {
   if (!wrapper || !zoomLabel) return;
   zoomLabel.textContent = previewImgZoomLevel + '%';
   wrapper.style.transform = `scale(${previewImgZoomLevel / 100}) rotate(${previewImgRotation}deg)`;
+}
+
+// ---- Video Preview Controls ----
+let videoPlaying = false;
+let videoProgress = 0;
+let videoDuration = 180;
+let videoInterval = null;
+
+function initVideoPreview(item) {
+  const nameLower = item.name.toLowerCase();
+  if (nameLower.includes('short') || nameLower.includes('clip')) videoDuration = 45;
+  else if (nameLower.includes('long')) videoDuration = 600;
+  else videoDuration = 180;
+  videoPlaying = false;
+  videoProgress = 0;
+  updateVideoUI();
+}
+
+function previewVideoTogglePlay() {
+  videoPlaying = !videoPlaying;
+  if (videoPlaying) {
+    videoInterval = setInterval(() => {
+      videoProgress += 1;
+      if (videoProgress >= videoDuration) { videoProgress = 0; videoPlaying = false; clearInterval(videoInterval); }
+      updateVideoUI();
+    }, 1000);
+  } else {
+    clearInterval(videoInterval);
+  }
+  updateVideoUI();
+}
+
+function previewVideoSeek(e) {
+  const bar = document.getElementById('previewVideoProgress');
+  if (!bar) return;
+  const rect = bar.getBoundingClientRect();
+  videoProgress = Math.round(((e.clientX - rect.left) / rect.width) * videoDuration);
+  videoProgress = Math.max(0, Math.min(videoDuration, videoProgress));
+  updateVideoUI();
+}
+
+function previewVideoMute() {
+  const slider = document.getElementById('previewVideoVolSlider');
+  const icon = document.getElementById('previewVideoVolIcon');
+  if (!slider || !icon) return;
+  if (parseInt(slider.value) > 0) { slider.dataset.prevVol = slider.value; slider.value = 0; icon.className = 'ri-volume-mute-line'; }
+  else { slider.value = slider.dataset.prevVol || 80; icon.className = parseInt(slider.value) > 50 ? 'ri-volume-up-line' : 'ri-volume-down-line'; }
+}
+
+function previewVideoSetVolume(val) {
+  const icon = document.getElementById('previewVideoVolIcon');
+  if (icon) icon.className = parseInt(val) === 0 ? 'ri-volume-mute-line' : parseInt(val) > 50 ? 'ri-volume-up-line' : 'ri-volume-down-line';
+}
+
+function previewVideoFullscreen() {
+  const stage = document.getElementById('previewVideoStage');
+  if (stage) { if (stage.requestFullscreen) stage.requestFullscreen(); else if (stage.webkitRequestFullscreen) stage.webkitRequestFullscreen(); }
+}
+
+function formatVideoTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return m + ':' + sec.toString().padStart(2, '0');
+}
+
+function updateVideoUI() {
+  const playBtn = document.getElementById('previewVideoPlayBtn');
+  const fill = document.getElementById('previewVideoProgressFill');
+  const thumb = document.getElementById('previewVideoProgressThumb');
+  const time = document.getElementById('previewVideoTime');
+  if (playBtn) playBtn.innerHTML = videoPlaying ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
+  const pct = videoDuration > 0 ? (videoProgress / videoDuration) * 100 : 0;
+  if (fill) fill.style.width = pct + '%';
+  if (thumb) thumb.style.left = pct + '%';
+  if (time) time.textContent = formatVideoTime(videoProgress) + ' / ' + formatVideoTime(videoDuration);
 }
 
 // ---- File Drag & Drop in Finder ----
