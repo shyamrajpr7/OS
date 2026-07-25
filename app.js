@@ -2693,6 +2693,67 @@ function renderDiskUtil() {
 
 renderDiskUtil();
 
+// ---- Clipboard Manager ----
+const clipboardHistory = [];
+
+function addClipboardItem(text) {
+  if (!text || !text.trim()) return;
+  if (clipboardHistory.length > 0 && clipboardHistory[0].text === text) return;
+  clipboardHistory.unshift({ text: text.trim(), time: new Date() });
+  if (clipboardHistory.length > 20) clipboardHistory.pop();
+  renderClipboardList();
+}
+
+function renderClipboardList() {
+  const list = document.getElementById('clipboardList');
+  if (!clipboardHistory.length) {
+    list.innerHTML = '<div class="clipboard-empty">No items copied yet</div>';
+    return;
+  }
+  list.innerHTML = clipboardHistory.map((item, i) =>
+    `<div class="clipboard-item" data-idx="${i}">
+      <div class="clipboard-item-text">${item.text.replace(/</g, '&lt;')}</div>
+      <div class="clipboard-item-time">${item.time.toLocaleTimeString()}</div>
+    </div>`
+  ).join('');
+  list.querySelectorAll('.clipboard-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const text = clipboardHistory[parseInt(el.dataset.idx)].text;
+      navigator.clipboard.writeText(text).catch(() => {});
+      document.getElementById('clipboardDropdown').classList.remove('open');
+    });
+  });
+}
+
+document.addEventListener('copy', (e) => {
+  const sel = window.getSelection()?.toString();
+  if (sel) addClipboardItem(sel);
+});
+
+document.addEventListener('cut', (e) => {
+  const sel = window.getSelection()?.toString();
+  if (sel) addClipboardItem(sel);
+});
+
+document.getElementById('clipboardTrayBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('clipboardDropdown').classList.toggle('open');
+});
+
+document.getElementById('clipboardClearBtn').addEventListener('click', () => {
+  clipboardHistory.length = 0;
+  renderClipboardList();
+});
+
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('clipboardDropdown');
+  if (dd.classList.contains('open') && !dd.contains(e.target) && !document.getElementById('clipboardTrayBtn').contains(e.target)) {
+    dd.classList.remove('open');
+  }
+});
+
+renderClipboardList();
+
 // Dock clicks
 document.querySelectorAll('.dock-item').forEach(el => {
   el.addEventListener('click', () => {
