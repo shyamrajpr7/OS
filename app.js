@@ -2947,6 +2947,83 @@ document.querySelectorAll('.reminders-cat').forEach(cat => {
 loadReminders();
 renderReminders();
 
+// ---- Notification Badges System ----
+const notifState = { badges: {}, history: [] };
+
+function setDockBadge(appName, count) {
+  const dockItem = document.querySelector(`.dock-item[data-app="${appName}"]`);
+  if (!dockItem) return;
+  let badge = dockItem.querySelector('.dock-badge');
+  if (count <= 0) { if (badge) badge.remove(); return; }
+  if (!badge) { badge = document.createElement('div'); badge.className = 'dock-badge'; dockItem.appendChild(badge); }
+  badge.textContent = count;
+}
+
+function showNotifToast(title, body, app) {
+  const toast = document.createElement('div');
+  toast.className = 'notif-toast';
+  toast.innerHTML = `<div class="notif-toast-title">${title}</div><div class="notif-toast-body">${body}</div>`;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('visible'));
+  setTimeout(() => { toast.classList.remove('visible'); setTimeout(() => toast.remove(), 400); }, 4000);
+  notifState.history.unshift({ title, body, app, time: new Date() });
+  if (notifState.history.length > 50) notifState.history.pop();
+  if (app) { notifState.badges[app] = (notifState.badges[app] || 0) + 1; setDockBadge(app, notifState.badges[app]); }
+}
+
+function clearNotifBadge(app) {
+  notifState.badges[app] = 0;
+  setDockBadge(app, 0);
+}
+
+function renderNotifCenter() {
+  const center = document.getElementById('notifList');
+  if (!center) return;
+  if (!notifState.history.length) return;
+  notifState.history.forEach(n => {
+    const card = document.createElement('div');
+    card.className = 'notif-card';
+    card.innerHTML = `<div class="notif-card-header"><i class="ri-notification-3-fill notif-app-icon" style="color:var(--mac-accent);"></i><span class="notif-app-name">${n.title}</span><span class="notif-time">just now</span></div><div class="notif-card-body">${n.body}</div>`;
+    center.prepend(card);
+  });
+}
+
+// Clear badge when dock item clicked
+document.querySelectorAll('.dock-item').forEach(el => {
+  el.addEventListener('click', () => {
+    const appName = el.dataset.app;
+    clearNotifBadge(appName);
+  });
+});
+
+// Simulate periodic notifications
+const notifMessages = [
+  { title: 'Mail', body: 'New message from Team Lead', app: 'Finder' },
+  { title: 'Messages', body: 'John: Are you free for lunch?', app: 'Finder' },
+  { title: 'Calendar', body: 'Team standup in 5 minutes', app: 'Clock.app' },
+  { title: 'Reminders', body: 'Buy groceries - due today', app: 'Reminders.app' },
+  { title: 'Notes', body: 'Synced with iCloud', app: 'Notes.app' },
+  { title: 'Music', body: 'New release from your favorite artist', app: 'Music.app' },
+];
+
+let notifTimer = null;
+function startNotifSimulation() {
+  notifTimer = setInterval(() => {
+    if (document.getElementById('dndToggle')?.classList.contains('on')) return;
+    const msg = notifMessages[Math.floor(Math.random() * notifMessages.length)];
+    showNotifToast(msg.title, msg.body, msg.app);
+  }, 25000);
+}
+
+setTimeout(startNotifSimulation, 10000);
+
+// Render notif center on open
+if (document.getElementById('notifTrayBtn')) {
+  document.getElementById('notifTrayBtn').addEventListener('click', () => {
+    setTimeout(renderNotifCenter, 50);
+  });
+}
+
 // ---- Desktop Stacks ----
 let stacksEnabled = false;
 
