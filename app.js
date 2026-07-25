@@ -301,26 +301,37 @@ function openPreview(item, type) {
       <button class="preview-img-btn" onclick="previewImgFit()" title="Fit to Window"><i class="ri-fullscreen-line"></i></button>
       <button class="preview-img-btn" onclick="previewImgActual()" title="Actual Size"><i class="ri-crop-2-line"></i></button>
       <div class="preview-img-sep"></div>
-      <button class="preview-img-btn" onclick="previewImgRotate(-90)" title="Rotate Left"><i class="ri-rotate-left-line"></i></button>
-      <button class="preview-img-btn" onclick="previewImgRotate(90)" title="Rotate Right"><i class="ri-rotate-right-line"></i></button>
+      <button class="preview-img-btn" onclick="previewImgRotate(-90)" title="Rotate Left"><i class="ri-arrow-go-back-line"></i></button>
+      <button class="preview-img-btn" onclick="previewImgRotate(90)" title="Rotate Right"><i class="ri-arrow-go-forward-line"></i></button>
     </div>
     <div class="preview-img-canvas" id="previewImgCanvas">
+      <div class="preview-img-checker"></div>
       <div class="preview-img-wrapper" id="previewImgWrapper">
-        <div class="preview-img-placeholder" style="background:linear-gradient(135deg,${c1}40,${c2}30,${c3}20);">
-          <svg viewBox="0 0 200 160" width="200" height="160" style="filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));">
+        <div class="preview-img-simulated" style="background:linear-gradient(145deg, ${c1}35, ${c2}25, ${c3}35);">
+          <svg viewBox="0 0 480 320" width="480" height="320" class="preview-img-svg">
             <defs>
-              <linearGradient id="imgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="${c1}" stop-opacity="0.8"/>
-                <stop offset="50%" stop-color="${c2}" stop-opacity="0.6"/>
-                <stop offset="100%" stop-color="${c3}" stop-opacity="0.8"/>
+              <linearGradient id="imgSky" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="${c1}" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="${c2}" stop-opacity="0.3"/>
               </linearGradient>
+              <linearGradient id="imgMount" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="${c2}" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="${c3}" stop-opacity="0.7"/>
+              </linearGradient>
+              <radialGradient id="imgSun" cx="75%" cy="25%" r="15%">
+                <stop offset="0%" stop-color="#FEBC2E" stop-opacity="0.9"/>
+                <stop offset="60%" stop-color="${c1}" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+              </radialGradient>
             </defs>
-            <rect x="10" y="10" width="180" height="140" rx="12" fill="url(#imgGrad)"/>
-            <circle cx="55" cy="50" r="18" fill="rgba(255,255,255,0.3)"/>
-            <circle cx="55" cy="50" r="12" fill="rgba(255,255,255,0.2)"/>
-            <polygon points="10,130 60,80 100,110 130,85 190,130 190,140 10,140" fill="rgba(255,255,255,0.15)"/>
-            <polygon points="80,130 120,90 190,130 190,140 80,140" fill="rgba(255,255,255,0.1)"/>
+            <rect width="480" height="320" rx="10" fill="url(#imgSky)"/>
+            <circle cx="360" cy="80" r="50" fill="url(#imgSun)"/>
+            <circle cx="360" cy="80" r="22" fill="#FEBC2E" opacity="0.8"/>
+            <polygon points="0,220 120,120 200,170 280,100 400,160 480,130 480,320 0,320" fill="url(#imgMount)" opacity="0.6"/>
+            <polygon points="0,260 80,180 160,210 260,150 350,200 480,170 480,320 0,320" fill="${c3}" opacity="0.25"/>
+            <ellipse cx="240" cy="300" rx="280" ry="40" fill="rgba(255,255,255,0.05)"/>
           </svg>
+          <div class="preview-img-label">${item.name}</div>
         </div>
       </div>
     </div>
@@ -408,6 +419,7 @@ function openPreview(item, type) {
             <i class="ri-play-fill"></i>
           </div>
           <div class="preview-video-title">${item.name}</div>
+          <div class="preview-video-meta">${item.size || 'Unknown size'} &middot; ${item.kind || 'Video'}</div>
         </div>
       </div>
       <div class="preview-video-controls">
