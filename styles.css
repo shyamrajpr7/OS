@@ -2406,6 +2406,27 @@ kbd {
 .weather-forecast-day-temp { font-size: 11px; color: var(--mac-text); }
 .weather-forecast-day-lo { font-size: 11px; color: var(--mac-text-muted); }
 
+/* ===================== DISK UTILITY ===================== */
+.diskutil-body { display: flex; flex-direction: column; padding: 20px; gap: 16px; background: var(--mac-bg); overflow-y: auto; }
+.diskutil-header { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--mac-border); }
+.diskutil-drive { display: flex; align-items: center; gap: 12px; }
+.diskutil-drive-icon { font-size: 36px; color: var(--mac-accent); }
+.diskutil-drive-name { font-size: 16px; font-weight: 600; color: var(--mac-text); }
+.diskutil-drive-size { font-size: 12px; color: var(--mac-text-muted); }
+.diskutil-chart {
+  display: flex; height: 28px; border-radius: 6px; overflow: hidden; gap: 2px;
+  background: rgba(255,255,255,0.05); margin-top: 8px;
+}
+.diskutil-chart-seg { transition: flex 0.5s cubic-bezier(0.4,0,0.2,1); position: relative; cursor: pointer; }
+.diskutil-chart-seg:hover { filter: brightness(1.2); }
+.diskutil-chart-seg:first-child { border-radius: 6px 0 0 6px; }
+.diskutil-chart-seg:last-child { border-radius: 0 6px 6px 0; }
+.diskutil-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.diskutil-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.diskutil-legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.diskutil-legend-label { color: var(--mac-text-muted); flex: 1; }
+.diskutil-legend-value { color: var(--mac-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
 /* ===================== MUSIC APP ===================== */
 .music-body { display: flex; flex-direction: column; height: 100%; overflow: hidden; background: var(--mac-bg); }
 .music-main-area { display: flex; flex: 1; overflow: hidden; }

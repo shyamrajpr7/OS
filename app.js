@@ -715,7 +715,8 @@ const appIdMap = {
   'Google Chrome.app': 'chrome-window',
   'YouTube.app': 'youtube-window',
   'Notes.app': 'notes-window',
-  'Music.app': 'music-window'
+  'Music.app': 'music-window',
+  'Disk Utility.app': 'diskutil-window'
 };
 
 function openApp(appName) {
@@ -2665,6 +2666,32 @@ document.addEventListener('click', (e) => {
 });
 
 renderWeatherForecast();
+
+// ---- Disk Utility ----
+const diskUsage = [
+  { label: 'Applications', size: 48.2, color: '#FF6B6B' },
+  { label: 'System Data', size: 32.5, color: '#4ECDC4' },
+  { label: 'Photos', size: 22.1, color: '#45B7D1' },
+  { label: 'Music', size: 18.4, color: '#96CEB4' },
+  { label: 'Documents', size: 15.8, color: '#FFEAA7' },
+  { label: 'Movies', size: 12.3, color: '#DDA0DD' },
+  { label: 'Other', size: 8.7, color: '#95A5A6' },
+];
+const diskTotal = 256;
+const diskUsed = diskUsage.reduce((a, b) => a + b.size, 0);
+
+function renderDiskUtil() {
+  const chart = document.getElementById('diskutilChart');
+  const legend = document.getElementById('diskutilLegend');
+  chart.innerHTML = diskUsage.map(d =>
+    `<div class="diskutil-chart-seg" style="flex:${d.size};background:${d.color};" title="${d.label}: ${d.size} GB"></div>`
+  ).join('') + `<div class="diskutil-chart-seg" style="flex:${diskTotal - diskUsed};background:rgba(255,255,255,0.05);" title="Available: ${(diskTotal - diskUsed).toFixed(1)} GB"></div>`;
+  legend.innerHTML = diskUsage.map(d =>
+    `<div class="diskutil-legend-item"><span class="diskutil-legend-dot" style="background:${d.color};"></span><span class="diskutil-legend-label">${d.label}</span><span class="diskutil-legend-value">${d.size} GB</span></div>`
+  ).join('') + `<div class="diskutil-legend-item"><span class="diskutil-legend-dot" style="background:rgba(255,255,255,0.1);"></span><span class="diskutil-legend-label">Available</span><span class="diskutil-legend-value">${(diskTotal - diskUsed).toFixed(1)} GB</span></div>`;
+}
+
+renderDiskUtil();
 
 // Dock clicks
 document.querySelectorAll('.dock-item').forEach(el => {
