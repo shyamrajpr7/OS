@@ -2468,6 +2468,58 @@ kbd {
 .launchpad-search:focus { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); width: 320px; }
 .launchpad-search::placeholder { color: rgba(255,255,255,0.4); }
 
+/* ===================== CLOCK APP ===================== */
+.clock-body { display: flex; flex-direction: column; height: 100%; background: var(--mac-bg); overflow: hidden; }
+.clock-tabs {
+  display: flex; border-bottom: 1px solid var(--mac-border); background: rgba(30,30,30,0.4);
+}
+.clock-tab {
+  flex: 1; padding: 10px; background: transparent; border: none; color: var(--mac-text-muted); font-size: 12px;
+  font-family: var(--font-system); cursor: pointer; transition: all 0.15s; display: flex; align-items: center;
+  justify-content: center; gap: 5px; border-bottom: 2px solid transparent;
+}
+.clock-tab:hover { color: var(--mac-text); background: rgba(255,255,255,0.03); }
+.clock-tab.active { color: var(--mac-accent); border-bottom-color: var(--mac-accent); }
+.clock-panel { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+.clock-world-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+.clock-world-city {
+  background: rgba(255,255,255,0.04); border-radius: 10px; padding: 14px; text-align: center;
+  border: 1px solid var(--mac-border); transition: background 0.15s;
+}
+.clock-world-city:hover { background: rgba(255,255,255,0.07); }
+.clock-world-city-name { font-size: 13px; font-weight: 600; color: var(--mac-text); }
+.clock-world-city-time { font-size: 28px; font-weight: 300; color: var(--mac-text); font-variant-numeric: tabular-nums; margin: 4px 0; }
+.clock-world-city-date { font-size: 11px; color: var(--mac-text-muted); }
+.clock-stopwatch-display, .clock-timer-display {
+  font-size: 64px; font-weight: 200; color: var(--mac-text); font-variant-numeric: tabular-nums;
+  margin: 20px 0 16px; letter-spacing: -2px;
+}
+.clock-stopwatch-btns, .clock-timer-btns { display: flex; gap: 12px; margin-bottom: 16px; }
+.clock-sbtn {
+  padding: 10px 28px; border-radius: 20px; border: 1px solid var(--mac-border); font-size: 14px;
+  font-family: var(--font-system); cursor: pointer; transition: all 0.15s; font-weight: 500;
+  background: rgba(255,255,255,0.06); color: var(--mac-text);
+}
+.clock-sbtn:hover { background: rgba(255,255,255,0.1); }
+.clock-sbtn-start { background: var(--mac-accent); color: white; border-color: var(--mac-accent); }
+.clock-sbtn-start:hover { background: #0066cc; }
+.clock-sbtn-start.running { background: #FF453A; border-color: #FF453A; }
+.clock-laps { width: 100%; max-width: 300px; }
+.clock-lap-item {
+  display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px;
+  color: var(--mac-text-muted); border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-variant-numeric: tabular-nums;
+}
+.clock-timer-inputs { display: flex; gap: 16px; margin-bottom: 16px; }
+.clock-timer-input-group { display: flex; align-items: center; gap: 6px; }
+.clock-timer-input-group input {
+  width: 60px; padding: 8px; text-align: center; border-radius: 8px; border: 1px solid var(--mac-border);
+  background: rgba(255,255,255,0.06); color: var(--mac-text); font-size: 20px; font-family: var(--font-system);
+  font-variant-numeric: tabular-nums; outline: none;
+}
+.clock-timer-input-group input:focus { border-color: var(--mac-accent); }
+.clock-timer-input-group span { font-size: 12px; color: var(--mac-text-muted); }
+
 /* ===================== MUSIC APP ===================== */
 .music-body { display: flex; flex-direction: column; height: 100%; overflow: hidden; background: var(--mac-bg); }
 .music-main-area { display: flex; flex: 1; overflow: hidden; }

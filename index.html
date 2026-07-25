@@ -725,6 +725,55 @@
         </div>
       </div>
 
+      <!-- ========== CLOCK APP ========== -->
+      <div class="mac-window app-window" id="clock-window" style="width:480px;height:420px;top:90px;left:280px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Clock</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body clock-body">
+          <div class="clock-tabs">
+            <button class="clock-tab active" data-tab="worldclock"><i class="ri-earth-line"></i> World Clock</button>
+            <button class="clock-tab" data-tab="stopwatch"><i class="ri-timer-line"></i> Stopwatch</button>
+            <button class="clock-tab" data-tab="timer"><i class="ri-alarm-line"></i> Timer</button>
+          </div>
+          <div class="clock-panel" id="clockWorldClock">
+            <div class="clock-world-grid" id="clockWorldGrid"></div>
+          </div>
+          <div class="clock-panel" id="clockStopwatch" style="display:none;">
+            <div class="clock-stopwatch-display" id="swDisplay">00:00.00</div>
+            <div class="clock-stopwatch-btns">
+              <button class="clock-sbtn clock-sbtn-reset" id="swReset">Reset</button>
+              <button class="clock-sbtn clock-sbtn-start" id="swStart">Start</button>
+              <button class="clock-sbtn clock-sbtn-lap" id="swLap" disabled>Lap</button>
+            </div>
+            <div class="clock-laps" id="clockLaps"></div>
+          </div>
+          <div class="clock-panel" id="clockTimer" style="display:none;">
+            <div class="clock-timer-display" id="timerDisplay">05:00</div>
+            <div class="clock-timer-inputs">
+              <div class="clock-timer-input-group">
+                <input type="number" id="timerMin" value="5" min="0" max="99">
+                <span>min</span>
+              </div>
+              <div class="clock-timer-input-group">
+                <input type="number" id="timerSec" value="0" min="0" max="59">
+                <span>sec</span>
+              </div>
+            </div>
+            <div class="clock-timer-btns">
+              <button class="clock-sbtn clock-sbtn-start" id="timerStart">Start</button>
+              <button class="clock-sbtn clock-sbtn-reset" id="timerReset">Reset</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -810,6 +859,12 @@
           </div>
           <span class="launchpad-label">Disk Utility</span>
         </div>
+        <div class="launchpad-item" data-app="Clock.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="16" fill="none" stroke="#FF9500" stroke-width="2.5"/><line x1="24" y1="24" x2="24" y2="14" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="24" x2="31" y2="24" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="24" r="2" fill="#FF9500"/></svg>
+          </div>
+          <span class="launchpad-label">Clock</span>
+        </div>
       </div>
     </div>
 
@@ -845,6 +900,10 @@
       </div>
       <div class="dock-item" data-app="Disk Utility.app" data-tooltip="Disk Utility">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1A1A2E"/><rect x="12" y="10" width="24" height="28" rx="3" fill="none" stroke="#4FC3F7" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="none" stroke="#4FC3F7" stroke-width="2"/><circle cx="24" cy="24" r="2" fill="#4FC3F7"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Clock.app" data-tooltip="Clock">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="16" fill="none" stroke="#FF9500" stroke-width="2.5"/><line x1="24" y1="24" x2="24" y2="14" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="24" x2="31" y2="24" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="24" r="2" fill="#FF9500"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-item" data-app="Calculator.app" data-tooltip="Calculator">

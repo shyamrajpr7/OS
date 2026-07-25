@@ -716,7 +716,8 @@ const appIdMap = {
   'YouTube.app': 'youtube-window',
   'Notes.app': 'notes-window',
   'Music.app': 'music-window',
-  'Disk Utility.app': 'diskutil-window'
+  'Disk Utility.app': 'diskutil-window',
+  'Clock.app': 'clock-window'
 };
 
 function openApp(appName) {
@@ -2768,6 +2769,103 @@ document.getElementById('launchpadSearch').addEventListener('input', (e) => {
 document.getElementById('launchpadSearch').addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { e.target.value = ''; e.target.dispatchEvent(new Event('input')); }
 });
+
+// ---- Clock App ----
+const worldCities = [
+  { name: 'San Francisco', tz: 'America/Los_Angeles' },
+  { name: 'New York', tz: 'America/New_York' },
+  { name: 'London', tz: 'Europe/London' },
+  { name: 'Tokyo', tz: 'Asia/Tokyo' },
+  { name: 'Sydney', tz: 'Australia/Sydney' },
+  { name: 'Dubai', tz: 'Asia/Dubai' },
+];
+
+function renderWorldClock() {
+  document.getElementById('clockWorldGrid').innerHTML = worldCities.map(c => {
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', { timeZone: c.tz, hour: '2-digit', minute: '2-digit', hour12: true });
+    const date = now.toLocaleDateString('en-US', { timeZone: c.tz, weekday: 'short', month: 'short', day: 'numeric' });
+    return `<div class="clock-world-city"><div class="clock-world-city-name">${c.name}</div><div class="clock-world-city-time">${time}</div><div class="clock-world-city-date">${date}</div></div>`;
+  }).join('');
+}
+
+setInterval(renderWorldClock, 1000);
+renderWorldClock();
+
+// Tab switching
+document.querySelectorAll('.clock-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.clock-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('clockWorldClock').style.display = tab.dataset.tab === 'worldclock' ? 'flex' : 'none';
+    document.getElementById('clockStopwatch').style.display = tab.dataset.tab === 'stopwatch' ? 'flex' : 'none';
+    document.getElementById('clockTimer').style.display = tab.dataset.tab === 'timer' ? 'flex' : 'none';
+  });
+});
+
+// Stopwatch
+let swRunning = false, swElapsed = 0, swTimer = null, swLaps = [];
+function updateSWDisplay() {
+  const min = Math.floor(swElapsed / 6000);
+  const sec = Math.floor((swElapsed % 6000) / 100);
+  const cs = Math.floor((swElapsed % 100));
+  document.getElementById('swDisplay').textContent = String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0') + '.' + String(cs).padStart(2, '0');
+}
+document.getElementById('swStart').addEventListener('click', () => {
+  swRunning = !swRunning;
+  const btn = document.getElementById('swStart');
+  btn.textContent = swRunning ? 'Stop' : 'Start';
+  btn.classList.toggle('running', swRunning);
+  document.getElementById('swLap').disabled = !swRunning;
+  if (swRunning) { swTimer = setInterval(() => { swElapsed++; updateSWDisplay(); }, 10); }
+  else clearInterval(swTimer);
+});
+document.getElementById('swReset').addEventListener('click', () => {
+  swRunning = false; swElapsed = 0; swLaps = [];
+  clearInterval(swTimer);
+  document.getElementById('swStart').textContent = 'Start';
+  document.getElementById('swStart').classList.remove('running');
+  document.getElementById('swLap').disabled = true;
+  updateSWDisplay();
+  document.getElementById('clockLaps').innerHTML = '';
+});
+document.getElementById('swLap').addEventListener('click', () => {
+  swLaps.push(swElapsed);
+  const lap = document.createElement('div');
+  lap.className = 'clock-lap-item';
+  lap.innerHTML = `<span>Lap ${swLaps.length}</span><span>${document.getElementById('swDisplay').textContent}</span>`;
+  document.getElementById('clockLaps').prepend(lap);
+});
+
+// Timer
+let timerRunning = false, timerRemaining = 300, timerInterval = null;
+function updateTimerDisplay() {
+  const m = Math.floor(timerRemaining / 60);
+  const s = timerRemaining % 60;
+  document.getElementById('timerDisplay').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+document.getElementById('timerStart').addEventListener('click', () => {
+  if (timerRunning) { clearInterval(timerInterval); timerRunning = false; document.getElementById('timerStart').textContent = 'Start'; document.getElementById('timerStart').classList.remove('running'); return; }
+  timerRemaining = parseInt(document.getElementById('timerMin').value) * 60 + parseInt(document.getElementById('timerSec').value);
+  if (timerRemaining <= 0) return;
+  timerRunning = true;
+  document.getElementById('timerStart').textContent = 'Pause';
+  document.getElementById('timerStart').classList.add('running');
+  timerInterval = setInterval(() => {
+    timerRemaining--;
+    updateTimerDisplay();
+    if (timerRemaining <= 0) { clearInterval(timerInterval); timerRunning = false; document.getElementById('timerStart').textContent = 'Start'; document.getElementById('timerStart').classList.remove('running'); }
+  }, 1000);
+});
+document.getElementById('timerReset').addEventListener('click', () => {
+  clearInterval(timerInterval); timerRunning = false;
+  timerRemaining = parseInt(document.getElementById('timerMin').value) * 60 + parseInt(document.getElementById('timerSec').value);
+  updateTimerDisplay();
+  document.getElementById('timerStart').textContent = 'Start';
+  document.getElementById('timerStart').classList.remove('running');
+});
+
+updateTimerDisplay();
 
 // Dock clicks
 document.querySelectorAll('.dock-item').forEach(el => {
