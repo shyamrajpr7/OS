@@ -714,7 +714,8 @@ const appIdMap = {
   'Safari.app': 'safari-window',
   'Google Chrome.app': 'chrome-window',
   'YouTube.app': 'youtube-window',
-  'Notes.app': 'notes-window'
+  'Notes.app': 'notes-window',
+  'Music.app': 'music-window'
 };
 
 function openApp(appName) {
@@ -2500,6 +2501,134 @@ document.getElementById('notesSearch').addEventListener('input', () => {
 
 loadNotes();
 renderNotesList();
+
+// ---- Music App ----
+const musicLibrary = [
+  { id: 1, title: 'Bohemian Rhapsody', artist: 'Queen', album: 'A Night at the Opera', duration: 355, color: '#673AB7' },
+  { id: 2, title: 'Shape of You', artist: 'Ed Sheeran', album: '÷ (Divide)', duration: 234, color: '#E91E63' },
+  { id: 3, title: 'Blinding Lights', artist: 'The Weeknd', album: 'After Hours', duration: 200, color: '#F44336' },
+  { id: 4, title: 'Hotel California', artist: 'Eagles', album: 'Hotel California', duration: 391, color: '#FF9800' },
+  { id: 5, title: 'Billie Jean', artist: 'Michael Jackson', album: 'Thriller', duration: 294, color: '#9C27B0' },
+  { id: 6, title: 'Stairway to Heaven', artist: 'Led Zeppelin', album: 'Led Zeppelin IV', duration: 482, color: '#795548' },
+  { id: 7, title: 'Smells Like Teen Spirit', artist: 'Nirvana', album: 'Nevermind', duration: 301, color: '#00BCD4' },
+  { id: 8, title: 'Yesterday', artist: 'The Beatles', album: 'Help!', duration: 125, color: '#4CAF50' },
+  { id: 9, title: 'Imagine', artist: 'John Lennon', album: 'Imagine', duration: 187, color: '#2196F3' },
+  { id: 10, title: 'Sweet Child O\' Mine', artist: 'Guns N\' Roses', album: 'Appetite for Destruction', duration: 356, color: '#FF5722' },
+  { id: 11, title: 'Uptown Funk', artist: 'Mark Ronson ft. Bruno Mars', album: 'Uptown Special', duration: 270, color: '#FFC107' },
+  { id: 12, title: 'Lose Yourself', artist: 'Eminem', album: '8 Mile Soundtrack', duration: 326, color: '#607D8B' },
+  { id: 13, title: 'Dream On', artist: 'Aerosmith', album: 'Aerosmith', duration: 268, color: '#3F51B5' },
+  { id: 14, title: 'Comfortably Numb', artist: 'Pink Floyd', album: 'The Wall', duration: 382, color: '#1565C0' },
+  { id: 15, title: 'Don\'t Stop Believin\'', artist: 'Journey', album: 'Escape', duration: 251, color: '#009688' },
+];
+
+const musicState = { queue: [...musicLibrary], currentIdx: -1, playing: false, elapsed: 0, timer: null, volume: 75, view: 'songs' };
+
+function formatMusicTime(s) { const m = Math.floor(s / 60); return m + ':' + String(Math.floor(s % 60)).padStart(2, '0'); }
+
+function renderMusicList(filter = '') {
+  const list = document.getElementById('musicList');
+  let songs = musicLibrary;
+  if (filter) { const f = filter.toLowerCase(); songs = songs.filter(s => s.title.toLowerCase().includes(f) || s.artist.toLowerCase().includes(f)); }
+  list.innerHTML = `<div class="music-list-header"><span>#</span><span>Title</span><span>Artist</span><span>Time</span></div>` +
+    songs.map((s, i) => {
+      const isPlaying = musicState.playing && musicState.queue[musicState.currentIdx]?.id === s.id;
+      return `<div class="music-list-item ${isPlaying ? 'playing' : ''}" data-id="${s.id}">
+        <span class="music-list-item-num">${isPlaying ? '<i class="ri-volume-up-fill" style="color:var(--mac-accent)"></i>' : i + 1}</span>
+        <span style="display:flex;align-items:center;gap:8px;"><span class="music-list-item-art" style="background:${s.color};">${s.title[0]}</span>${s.title}</span>
+        <span>${s.artist}</span>
+        <span class="music-list-item-duration">${formatMusicTime(s.duration)}</span>
+      </div>`;
+    }).join('');
+  list.querySelectorAll('.music-list-item').forEach(el => {
+    el.addEventListener('dblclick', () => {
+      const id = parseInt(el.dataset.id);
+      const idx = musicState.queue.findIndex(s => s.id === id);
+      if (idx >= 0) playMusicTrack(idx);
+    });
+  });
+}
+
+function playMusicTrack(idx) {
+  musicState.currentIdx = idx;
+  musicState.playing = true;
+  musicState.elapsed = 0;
+  const track = musicState.queue[idx];
+  document.getElementById('musicNpTitle').textContent = track.title;
+  document.getElementById('musicNpArtist').textContent = track.artist;
+  document.getElementById('musicNpArt').style.background = `linear-gradient(135deg, ${track.color}, ${track.color}88)`;
+  document.getElementById('musicNpArt').textContent = track.title[0];
+  document.getElementById('musicSeek').max = track.duration;
+  document.getElementById('musicTotalTime').textContent = formatMusicTime(track.duration);
+  document.getElementById('musicPlayPause').innerHTML = '<i class="ri-pause-fill"></i>';
+  clearInterval(musicState.timer);
+  musicState.timer = setInterval(() => {
+    if (!musicState.playing) return;
+    musicState.elapsed++;
+    if (musicState.elapsed >= track.duration) { playMusicNext(); return; }
+    document.getElementById('musicSeek').value = musicState.elapsed;
+    document.getElementById('musicCurrentTime').textContent = formatMusicTime(musicState.elapsed);
+  }, 1000);
+  renderMusicList(document.getElementById('musicSearch').value);
+}
+
+function playMusicNext() {
+  if (musicState.queue.length === 0) return;
+  const next = (musicState.currentIdx + 1) % musicState.queue.length;
+  playMusicTrack(next);
+}
+
+function playMusicPrev() {
+  if (musicState.elapsed > 3) { musicState.elapsed = 0; document.getElementById('musicSeek').value = 0; return; }
+  const prev = (musicState.currentIdx - 1 + musicState.queue.length) % musicState.queue.length;
+  playMusicTrack(prev);
+}
+
+function toggleMusicPlay() {
+  if (musicState.currentIdx < 0) { if (musicState.queue.length) playMusicTrack(0); return; }
+  musicState.playing = !musicState.playing;
+  document.getElementById('musicPlayPause').innerHTML = musicState.playing ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
+  if (!musicState.playing) clearInterval(musicState.timer);
+  else {
+    const track = musicState.queue[musicState.currentIdx];
+    musicState.timer = setInterval(() => {
+      if (!musicState.playing) return;
+      musicState.elapsed++;
+      if (musicState.elapsed >= track.duration) { playMusicNext(); return; }
+      document.getElementById('musicSeek').value = musicState.elapsed;
+      document.getElementById('musicCurrentTime').textContent = formatMusicTime(musicState.elapsed);
+    }, 1000);
+  }
+}
+
+document.getElementById('musicPlayPause').addEventListener('click', toggleMusicPlay);
+document.getElementById('musicNext').addEventListener('click', playMusicNext);
+document.getElementById('musicPrev').addEventListener('click', playMusicPrev);
+
+document.getElementById('musicSeek').addEventListener('input', () => {
+  musicState.elapsed = parseInt(document.getElementById('musicSeek').value);
+  document.getElementById('musicCurrentTime').textContent = formatMusicTime(musicState.elapsed);
+});
+
+document.getElementById('musicVolume').addEventListener('input', () => {
+  musicState.volume = parseInt(document.getElementById('musicVolume').value);
+  const icon = document.getElementById('musicVolIcon');
+  icon.className = musicState.volume === 0 ? 'ri-volume-mute-line' : musicState.volume < 50 ? 'ri-volume-down-line' : 'ri-volume-up-line';
+});
+
+document.getElementById('musicSearch').addEventListener('input', () => {
+  renderMusicList(document.getElementById('musicSearch').value);
+});
+
+document.querySelectorAll('.music-sidebar-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.music-sidebar-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    musicState.view = item.dataset.view;
+    renderMusicList(document.getElementById('musicSearch').value);
+  });
+});
+
+renderMusicList();
 
 // Dock clicks
 document.querySelectorAll('.dock-item').forEach(el => {
