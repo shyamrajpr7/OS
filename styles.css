@@ -2458,6 +2458,16 @@ kbd {
 .clipboard-item-time { font-size: 10px; color: var(--mac-text-muted); margin-top: 2px; }
 .clipboard-empty { padding: 20px; text-align: center; color: var(--mac-text-muted); font-size: 12px; }
 
+/* ===================== LAUNCHPAD SEARCH ===================== */
+.launchpad-search-wrap { display: flex; justify-content: center; margin-bottom: 20px; }
+.launchpad-search {
+  width: 260px; padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.1); color: white; font-size: 14px; font-family: var(--font-system);
+  outline: none; text-align: center; transition: all 0.2s;
+}
+.launchpad-search:focus { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); width: 320px; }
+.launchpad-search::placeholder { color: rgba(255,255,255,0.4); }
+
 /* ===================== MUSIC APP ===================== */
 .music-body { display: flex; flex-direction: column; height: 100%; overflow: hidden; background: var(--mac-bg); }
 .music-main-area { display: flex; flex: 1; overflow: hidden; }

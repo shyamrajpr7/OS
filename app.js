@@ -2033,6 +2033,8 @@ function toggleLaunchpad() {
 function closeLaunchpad() {
   const overlay = document.getElementById('launchpadOverlay');
   overlay.classList.remove('visible');
+  const search = document.getElementById('launchpadSearch');
+  if (search) { search.value = ''; search.dispatchEvent(new Event('input')); }
 }
 
 // ---- Boot Screen ----
@@ -2753,6 +2755,19 @@ document.addEventListener('click', (e) => {
 });
 
 renderClipboardList();
+
+// ---- Launchpad Search ----
+document.getElementById('launchpadSearch').addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase().trim();
+  document.querySelectorAll('.launchpad-item').forEach(item => {
+    const label = (item.querySelector('.launchpad-label')?.textContent || '').toLowerCase();
+    item.style.display = (!query || label.includes(query)) ? '' : 'none';
+  });
+});
+
+document.getElementById('launchpadSearch').addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { e.target.value = ''; e.target.dispatchEvent(new Event('input')); }
+});
 
 // Dock clicks
 document.querySelectorAll('.dock-item').forEach(el => {
