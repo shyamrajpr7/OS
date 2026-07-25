@@ -2236,6 +2236,16 @@ document.addEventListener('DOMContentLoaded', () => {
   let chromeHistory = [];
   let chromeHistoryIndex = -1;
 
+  function chromeGreeting() {
+    const h = new Date().getHours();
+    const el = document.getElementById('chromeGreeting');
+    if (!el) return;
+    if (h < 12) el.textContent = 'Good morning';
+    else if (h < 17) el.textContent = 'Good afternoon';
+    else el.textContent = 'Good evening';
+  }
+  chromeGreeting();
+
   function chromeNavigateTo(url) {
     const fullUrl = url.startsWith('http') ? url : 'https://' + url;
     document.getElementById('chromeUrl').value = fullUrl;
@@ -2248,7 +2258,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chromeHistory = chromeHistory.slice(0, chromeHistoryIndex + 1);
     chromeHistory.push(fullUrl);
     chromeHistoryIndex = chromeHistory.length - 1;
-    document.getElementById('chromeTab1').querySelector('span').textContent = fullUrl.replace('https://', '').replace('http://', '').split('/')[0];
+    const domain = fullUrl.replace('https://', '').replace('http://', '').split('/')[0];
+    document.getElementById('chromeTab1').querySelector('.chrome-tab-title').textContent = domain;
     document.getElementById('chromeBack').disabled = chromeHistoryIndex <= 0;
     document.getElementById('chromeForward').disabled = chromeHistoryIndex >= chromeHistory.length - 1;
   }
@@ -2256,9 +2267,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function chromeGoHome() {
     document.getElementById('chromeHomepage').style.display = 'flex';
     document.getElementById('chromeFrame').style.display = 'none';
+    document.getElementById('chromeFrame').src = 'about:blank';
     document.getElementById('chromeFallback').style.display = 'none';
     document.getElementById('chromeUrl').value = '';
     document.getElementById('chromeSearchInput').value = '';
+    document.getElementById('chromeTab1').querySelector('.chrome-tab-title').textContent = 'New Tab';
+    chromeGreeting();
   }
 
   function chromeOpenExternal() {
@@ -2266,32 +2280,48 @@ document.addEventListener('DOMContentLoaded', () => {
     if (url) window.open(url, '_blank');
   }
 
+  function chromeHandleInput(val) {
+    if (!val) return;
+    if (val.includes('.') && !val.includes(' ')) chromeNavigateTo(val);
+    else chromeNavigateTo('https://www.google.com/search?q=' + encodeURIComponent(val));
+  }
+
   document.getElementById('chromeSearchInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      const val = e.target.value.trim();
-      if (val) {
-        if (val.includes('.') && !val.includes(' ')) chromeNavigateTo(val);
-        else chromeNavigateTo('https://www.google.com/search?q=' + encodeURIComponent(val));
-      }
-    }
+    if (e.key === 'Enter') chromeHandleInput(e.target.value.trim());
   });
 
   document.getElementById('chromeUrl').addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      const val = e.target.value.trim();
-      if (val) {
-        if (val.includes('.') && !val.includes(' ')) chromeNavigateTo(val);
-        else chromeNavigateTo('https://www.google.com/search?q=' + encodeURIComponent(val));
-      }
-    }
+    if (e.key === 'Enter') chromeHandleInput(e.target.value.trim());
   });
 
   document.getElementById('chromeBack').addEventListener('click', () => {
-    if (chromeHistoryIndex > 0) { chromeHistoryIndex--; const url = chromeHistory[chromeHistoryIndex]; document.getElementById('chromeUrl').value = url; document.getElementById('chromeFrame').src = url; document.getElementById('chromeHomepage').style.display = 'none'; document.getElementById('chromeFrame').style.display = 'block'; document.getElementById('chromeFallback').style.display = 'none'; }
+    if (chromeHistoryIndex > 0) {
+      chromeHistoryIndex--;
+      const url = chromeHistory[chromeHistoryIndex];
+      document.getElementById('chromeUrl').value = url;
+      document.getElementById('chromeFrame').src = url;
+      document.getElementById('chromeHomepage').style.display = 'none';
+      document.getElementById('chromeFrame').style.display = 'block';
+      document.getElementById('chromeFallback').style.display = 'none';
+    }
   });
 
   document.getElementById('chromeForward').addEventListener('click', () => {
-    if (chromeHistoryIndex < chromeHistory.length - 1) { chromeHistoryIndex++; const url = chromeHistory[chromeHistoryIndex]; document.getElementById('chromeUrl').value = url; document.getElementById('chromeFrame').src = url; document.getElementById('chromeHomepage').style.display = 'none'; document.getElementById('chromeFrame').style.display = 'block'; document.getElementById('chromeFallback').style.display = 'none'; }
+    if (chromeHistoryIndex < chromeHistory.length - 1) {
+      chromeHistoryIndex++;
+      const url = chromeHistory[chromeHistoryIndex];
+      document.getElementById('chromeUrl').value = url;
+      document.getElementById('chromeFrame').src = url;
+      document.getElementById('chromeHomepage').style.display = 'none';
+      document.getElementById('chromeFrame').style.display = 'block';
+      document.getElementById('chromeFallback').style.display = 'none';
+    }
+  });
+
+  document.getElementById('chromeReload').addEventListener('click', () => {
+    const frame = document.getElementById('chromeFrame');
+    if (frame.style.display !== 'none' && frame.src && frame.src !== 'about:blank') frame.src = frame.src;
+  });
   });
 
   document.getElementById('chromeReload').addEventListener('click', () => {

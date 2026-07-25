@@ -440,66 +440,95 @@
       </div>
 
       <!-- ========== GOOGLE CHROME ========== -->
-      <div class="mac-window app-window" id="chrome-window" style="width:820px;height:540px;top:30px;left:180px;display:none;">
-        <div class="window-titlebar">
-          <div class="traffic-lights">
-            <button class="tl-btn tl-close" data-action="close"></button>
-            <button class="tl-btn tl-minimize" data-action="minimize"></button>
-            <button class="tl-btn tl-maximize" data-action="maximize"></button>
-          </div>
-          <div class="chrome-tabs">
-            <div class="chrome-tab active" id="chromeTab1">
-              <i class="ri-google-fill" style="font-size:12px;color:#4285F4;"></i>
-              <span>New Tab</span>
+      <div class="mac-window app-window" id="chrome-window" style="width:860px;height:560px;top:28px;left:160px;display:none;">
+        <div class="chrome-frame">
+          <div class="chrome-tabstrip">
+            <div class="chrome-tabstrip-left">
+              <div class="chrome-tab active" id="chromeTab1">
+                <div class="chrome-tab-favicon"><i class="ri-google-fill" style="font-size:13px;color:#4285F4;"></i></div>
+                <span class="chrome-tab-title">New Tab</span>
+                <div class="chrome-tab-close" onclick="chromeGoHome()"><i class="ri-close-line"></i></div>
+              </div>
+              <div class="chrome-tab-add" id="chromeTabAdd"><i class="ri-add-line"></i></div>
             </div>
-            <div class="chrome-tab-add" id="chromeTabAdd"><i class="ri-add-line"></i></div>
-          </div>
-        </div>
-        <div class="window-body chrome-body">
-          <div class="chrome-toolbar">
-            <button class="chrome-nav-btn" id="chromeBack"><i class="ri-arrow-left-s-line"></i></button>
-            <button class="chrome-nav-btn" id="chromeForward"><i class="ri-arrow-right-s-line"></i></button>
-            <button class="chrome-nav-btn" id="chromeReload"><i class="ri-refresh-line"></i></button>
-            <div class="chrome-url-bar">
-              <i class="ri-lock-line"></i>
-              <input type="text" id="chromeUrl" placeholder="Search Google or type a URL">
+            <div class="chrome-tabstrip-right">
+              <div class="chrome-window-controls">
+                <div class="tl-btn tl-close" data-action="close"></div>
+                <div class="tl-btn tl-minimize" data-action="minimize"></div>
+                <div class="tl-btn tl-maximize" data-action="maximize"></div>
+              </div>
             </div>
           </div>
-          <div class="chrome-content" id="chromeContent">
+          <div class="chrome-navstrip">
+            <button class="chrome-nav-btn chrome-nav-back" id="chromeBack" disabled><i class="ri-arrow-left-s-line"></i></button>
+            <button class="chrome-nav-btn chrome-nav-fwd" id="chromeForward" disabled><i class="ri-arrow-right-s-line"></i></button>
+            <button class="chrome-nav-btn chrome-nav-reload" id="chromeReload"><i class="ri-refresh-line"></i></button>
+            <button class="chrome-nav-btn chrome-nav-home" id="chromeHomeBtn" onclick="chromeGoHome()"><i class="ri-home-5-line"></i></button>
+            <div class="chrome-omnibox">
+              <i class="ri-search-line chrome-omnibox-icon"></i>
+              <input type="text" id="chromeUrl" class="chrome-omnibox-input" placeholder="Search Google or type a URL">
+              <i class="ri-mic-line chrome-omnibox-mic"></i>
+            </div>
+            <button class="chrome-nav-btn chrome-nav-ext" title="Extensions"><i class="ri-puzzle-line"></i></button>
+            <button class="chrome-nav-btn chrome-nav-menu" title="Customize Chrome"><i class="ri-more-2-fill"></i></button>
+          </div>
+          <div class="chrome-viewport" id="chromeViewport">
             <div class="chrome-homepage" id="chromeHomepage">
-              <div class="chrome-google-logo">
-                <span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span>
+              <div class="chrome-greeting" id="chromeGreeting">Good afternoon</div>
+              <div class="chrome-logo-wrap">
+                <svg class="chrome-logo-svg" viewBox="0 0 272 92" width="272">
+                  <path d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#EA4335"/>
+                  <path d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#FBBC05"/>
+                  <path d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z" fill="#4285F4"/>
+                  <path d="M225 3v65h-9.5V3h9.5z" fill="#34A853"/>
+                  <path d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.14zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z" fill="#EA4335"/>
+                  <path d="M35.29 41.19V32H67c.31 1.64.47 3.58.47 5.68 0 7.06-1.93 15.79-8.15 22.01-6.05 6.3-13.78 9.66-24.02 9.66C16.32 69.35.36 53.89.36 34.91.36 15.93 16.32.47 35.3.47c10.5 0 17.98 4.12 23.6 9.49l-6.64 6.64c-4.03-3.78-9.49-6.72-16.97-6.72-13.86 0-24.7 11.17-24.7 25.03 0 13.86 10.84 25.03 24.7 25.03 8.99 0 14.11-3.61 17.39-6.89 2.66-2.66 4.41-6.46 5.1-11.65l-22.49-.21z" fill="#4285F4"/>
+                </svg>
               </div>
-              <div class="chrome-search-box">
-                <i class="ri-search-line"></i>
-                <input type="text" id="chromeSearchInput" placeholder="Search Google or type a URL">
+              <div class="chrome-search-wrap">
+                <div class="chrome-search-pill">
+                  <i class="ri-search-line"></i>
+                  <input type="text" id="chromeSearchInput" placeholder="Search Google or type a URL" spellcheck="false">
+                  <i class="ri-mic-line"></i>
+                </div>
               </div>
-              <div class="chrome-shortcuts">
-                <div class="chrome-shortcut" onclick="chromeNavigateTo('https://www.youtube.com')">
-                  <div class="chrome-shortcut-icon" style="background:linear-gradient(135deg,#FF0000,#CC0000);"><i class="ri-youtube-fill" style="color:white;font-size:18px;"></i></div>
+              <div class="chrome-quick-links" id="chromeQuickLinks">
+                <div class="chrome-quick-link" onclick="chromeNavigateTo('https://www.youtube.com')">
+                  <div class="chrome-quick-link-icon" style="background:linear-gradient(135deg,#FF0000,#CC0000);"><i class="ri-youtube-fill"></i></div>
                   <span>YouTube</span>
                 </div>
-                <div class="chrome-shortcut" onclick="chromeNavigateTo('https://www.github.com')">
-                  <div class="chrome-shortcut-icon" style="background:#24292e;"><i class="ri-github-fill" style="color:white;font-size:18px;"></i></div>
+                <div class="chrome-quick-link" onclick="chromeNavigateTo('https://www.gmail.com')">
+                  <div class="chrome-quick-link-icon" style="background:linear-gradient(135deg,#EA4335,#C5221F);"><i class="ri-mail-fill"></i></div>
+                  <span>Gmail</span>
+                </div>
+                <div class="chrome-quick-link" onclick="chromeNavigateTo('https://www.github.com')">
+                  <div class="chrome-quick-link-icon" style="background:#24292e;"><i class="ri-github-fill"></i></div>
                   <span>GitHub</span>
                 </div>
-                <div class="chrome-shortcut" onclick="chromeNavigateTo('https://www.twitter.com')">
-                  <div class="chrome-shortcut-icon" style="background:#1DA1F2;"><i class="ri-twitter-x-fill" style="color:white;font-size:18px;"></i></div>
-                  <span>Twitter</span>
+                <div class="chrome-quick-link" onclick="chromeNavigateTo('https://www.twitter.com')">
+                  <div class="chrome-quick-link-icon" style="background:#000;"><i class="ri-twitter-x-fill"></i></div>
+                  <span>X</span>
                 </div>
-                <div class="chrome-shortcut" onclick="chromeNavigateTo('https://www.reddit.com')">
-                  <div class="chrome-shortcut-icon" style="background:#FF4500;"><i class="ri-reddit-fill" style="color:white;font-size:18px;"></i></div>
+                <div class="chrome-quick-link" onclick="chromeNavigateTo('https://www.reddit.com')">
+                  <div class="chrome-quick-link-icon" style="background:linear-gradient(135deg,#FF4500,#FF5722);"><i class="ri-reddit-fill"></i></div>
                   <span>Reddit</span>
+                </div>
+                <div class="chrome-quick-link" onclick="chromeNavigateTo('https://www.netflix.com')">
+                  <div class="chrome-quick-link-icon" style="background:#000;border:1px solid #333;"><i class="ri-movie-2-fill" style="color:#E50914;"></i></div>
+                  <span>Netflix</span>
                 </div>
               </div>
             </div>
-            <iframe id="chromeFrame" style="width:100%;height:100%;border:none;display:none;" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"></iframe>
-            <div id="chromeFallback" style="display:none;align-items:center;justify-content:center;height:100%;width:100%;background:#1e1e2e;color:#888;text-align:center;position:absolute;top:0;left:0;">
-              <div>
-                <i class="ri-window-line" style="font-size:48px;display:block;margin-bottom:12px;color:#4285F4;"></i>
-                <div style="font-size:15px;font-weight:500;">Page Unavailable</div>
-                <div style="font-size:12px;color:#666;margin-top:6px;max-width:300px;">This page can't be loaded in the embedded browser.</div>
-                <button onclick="chromeOpenExternal()" style="margin-top:12px;padding:6px 16px;background:#4285F4;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">Open in Real Browser</button>
+            <iframe id="chromeFrame" class="chrome-iframe" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"></iframe>
+            <div id="chromeFallback" class="chrome-fallback">
+              <div class="chrome-fallback-inner">
+                <div class="chrome-fallback-icon"><i class="ri-earth-line"></i></div>
+                <div class="chrome-fallback-title">This page can't be displayed</div>
+                <div class="chrome-fallback-desc">The site can't be loaded in the embedded browser due to security restrictions.</div>
+                <button class="chrome-fallback-btn" onclick="chromeOpenExternal()">
+                  <i class="ri-external-link-line"></i> Open in Real Browser
+                </button>
+                <button class="chrome-fallback-btn chrome-fallback-btn-secondary" onclick="chromeGoHome()">Back to Home</button>
               </div>
             </div>
           </div>
