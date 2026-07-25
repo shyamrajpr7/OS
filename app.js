@@ -717,7 +717,8 @@ const appIdMap = {
   'Notes.app': 'notes-window',
   'Music.app': 'music-window',
   'Disk Utility.app': 'diskutil-window',
-  'Clock.app': 'clock-window'
+  'Clock.app': 'clock-window',
+  'Reminders.app': 'reminders-window'
 };
 
 function openApp(appName) {
@@ -2866,6 +2867,80 @@ document.getElementById('timerReset').addEventListener('click', () => {
 });
 
 updateTimerDisplay();
+
+// ---- Reminders App ----
+const remindersState = { items: [], cat: 'today' };
+
+function loadReminders() {
+  const saved = localStorage.getItem('threados_reminders');
+  if (saved) remindersState.items = JSON.parse(saved);
+  if (!remindersState.items.length) {
+    remindersState.items = [
+      { id: 1, text: 'Buy groceries', done: false, created: new Date().toISOString() },
+      { id: 2, text: 'Call dentist', done: false, created: new Date().toISOString() },
+      { id: 3, text: 'Read for 30 minutes', done: true, created: new Date().toISOString() },
+    ];
+    saveReminders();
+  }
+}
+function saveReminders() { localStorage.setItem('threados_reminders', JSON.stringify(remindersState.items)); }
+
+function renderReminders() {
+  let items = remindersState.items;
+  if (remindersState.cat === 'today') items = items.filter(i => !i.done);
+  else if (remindersState.cat === 'completed') items = items.filter(i => i.done);
+  document.getElementById('remCountToday').textContent = remindersState.items.filter(i => !i.done).length;
+  document.getElementById('remCountAll').textContent = remindersState.items.length;
+  document.getElementById('remCountDone').textContent = remindersState.items.filter(i => i.done).length;
+  const list = document.getElementById('remindersList');
+  if (!items.length) { list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--mac-text-muted);font-size:13px;">No reminders</div>'; return; }
+  list.innerHTML = items.map(item =>
+    `<div class="reminders-item ${item.done ? 'done' : ''}" data-id="${item.id}">
+      <div class="reminders-check"></div>
+      <span class="reminders-item-text">${item.text.replace(/</g, '&lt;')}</span>
+      <button class="reminders-item-delete" data-id="${item.id}"><i class="ri-close-line"></i></button>
+    </div>`
+  ).join('');
+  list.querySelectorAll('.reminders-item').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('.reminders-item-delete')) return;
+      const id = parseInt(el.dataset.id);
+      const item = remindersState.items.find(i => i.id === id);
+      if (item) { item.done = !item.done; saveReminders(); renderReminders(); }
+    });
+  });
+  list.querySelectorAll('.reminders-item-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      remindersState.items = remindersState.items.filter(i => i.id !== parseInt(btn.dataset.id));
+      saveReminders(); renderReminders();
+    });
+  });
+}
+
+document.getElementById('remindersAddBtn').addEventListener('click', () => {
+  const input = document.getElementById('remindersInput');
+  const text = input.value.trim();
+  if (!text) return;
+  remindersState.items.push({ id: Date.now(), text, done: false, created: new Date().toISOString() });
+  saveReminders(); renderReminders(); input.value = '';
+});
+
+document.getElementById('remindersInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('remindersAddBtn').click();
+});
+
+document.querySelectorAll('.reminders-cat').forEach(cat => {
+  cat.addEventListener('click', () => {
+    document.querySelectorAll('.reminders-cat').forEach(c => c.classList.remove('active'));
+    cat.classList.add('active');
+    remindersState.cat = cat.dataset.cat;
+    renderReminders();
+  });
+});
+
+loadReminders();
+renderReminders();
 
 // Dock clicks
 document.querySelectorAll('.dock-item').forEach(el => {

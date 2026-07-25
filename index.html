@@ -774,6 +774,36 @@
         </div>
       </div>
 
+      <!-- ========== REMINDERS APP ========== -->
+      <div class="mac-window app-window" id="reminders-window" style="width:560px;height:440px;top:85px;left:250px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Reminders</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body reminders-body">
+          <div class="reminders-sidebar">
+            <div class="reminders-sidebar-header">Reminders</div>
+            <div class="reminders-cats" id="remindersCats">
+              <div class="reminders-cat active" data-cat="today"><i class="ri-calendar-check-line"></i> Today<span class="reminders-cat-count" id="remCountToday">0</span></div>
+              <div class="reminders-cat" data-cat="all"><i class="ri-list-check"></i> All<span class="reminders-cat-count" id="remCountAll">0</span></div>
+              <div class="reminders-cat" data-cat="completed"><i class="ri-check-double-line"></i> Completed<span class="reminders-cat-count" id="remCountDone">0</span></div>
+            </div>
+          </div>
+          <div class="reminders-main">
+            <div class="reminders-list" id="remindersList"></div>
+            <div class="reminders-add">
+              <input type="text" id="remindersInput" placeholder="Add a reminder..." class="reminders-add-input">
+              <button class="reminders-add-btn" id="remindersAddBtn"><i class="ri-add-line"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -865,6 +895,12 @@
           </div>
           <span class="launchpad-label">Clock</span>
         </div>
+        <div class="launchpad-item" data-app="Reminders.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="18" cy="18" r="5" fill="none" stroke="#FF453A" stroke-width="2.5"/><circle cx="30" cy="18" r="5" fill="none" stroke="#FF9500" stroke-width="2.5"/><circle cx="18" cy="30" r="5" fill="none" stroke="#30D158" stroke-width="2.5"/><circle cx="30" cy="30" r="5" fill="none" stroke="#007AFF" stroke-width="2.5"/></svg>
+          </div>
+          <span class="launchpad-label">Reminders</span>
+        </div>
       </div>
     </div>
 
@@ -904,6 +940,10 @@
       </div>
       <div class="dock-item" data-app="Clock.app" data-tooltip="Clock">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="16" fill="none" stroke="#FF9500" stroke-width="2.5"/><line x1="24" y1="24" x2="24" y2="14" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="24" x2="31" y2="24" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="24" r="2" fill="#FF9500"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Reminders.app" data-tooltip="Reminders">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="18" cy="18" r="5" fill="none" stroke="#FF453A" stroke-width="2.5"/><circle cx="30" cy="18" r="5" fill="none" stroke="#FF9500" stroke-width="2.5"/><circle cx="18" cy="30" r="5" fill="none" stroke="#30D158" stroke-width="2.5"/><circle cx="30" cy="30" r="5" fill="none" stroke="#007AFF" stroke-width="2.5"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-item" data-app="Calculator.app" data-tooltip="Calculator">
