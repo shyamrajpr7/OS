@@ -287,15 +287,46 @@ function openPreview(item, type) {
 
   let html = '';
   if (type === 'image') {
-    const colors = ['#47A3FF', '#AF52DE', '#FF5F57', '#28C840', '#FEBC2E', '#FF2D55'];
+    previewImgZoomLevel = 100;
+    previewImgRotation = 0;
+    const colors = ['#47A3FF', '#AF52DE', '#FF5F57', '#28C840', '#FEBC2E', '#FF2D55', '#5AC8FA', '#FF9500'];
     const c1 = colors[Math.floor(Math.random() * colors.length)];
     const c2 = colors[Math.floor(Math.random() * colors.length)];
-    html = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,${c1}30,${c2}30);border-radius:8px;">
-      <div style="text-align:center;color:#888;">
-        <i class="ri-image-line" style="font-size:64px;display:block;margin-bottom:8px;"></i>
-        <div style="font-size:13px;">${item.name}</div>
-        <div style="font-size:11px;color:#666;margin-top:4px;">${item.size || 'Unknown size'}</div>
+    const c3 = colors[Math.floor(Math.random() * colors.length)];
+    html = `<div class="preview-img-toolbar">
+      <button class="preview-img-btn" onclick="previewImgZoom(-1)" title="Zoom Out"><i class="ri-subtract-line"></i></button>
+      <span class="preview-img-zoom" id="previewImgZoom">100%</span>
+      <button class="preview-img-btn" onclick="previewImgZoom(1)" title="Zoom In"><i class="ri-add-line"></i></button>
+      <div class="preview-img-sep"></div>
+      <button class="preview-img-btn" onclick="previewImgFit()" title="Fit to Window"><i class="ri-fullscreen-line"></i></button>
+      <button class="preview-img-btn" onclick="previewImgActual()" title="Actual Size"><i class="ri-crop-2-line"></i></button>
+      <div class="preview-img-sep"></div>
+      <button class="preview-img-btn" onclick="previewImgRotate(-90)" title="Rotate Left"><i class="ri-rotate-left-line"></i></button>
+      <button class="preview-img-btn" onclick="previewImgRotate(90)" title="Rotate Right"><i class="ri-rotate-right-line"></i></button>
+    </div>
+    <div class="preview-img-canvas" id="previewImgCanvas">
+      <div class="preview-img-wrapper" id="previewImgWrapper">
+        <div class="preview-img-placeholder" style="background:linear-gradient(135deg,${c1}40,${c2}30,${c3}20);">
+          <svg viewBox="0 0 200 160" width="200" height="160" style="filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));">
+            <defs>
+              <linearGradient id="imgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="${c1}" stop-opacity="0.8"/>
+                <stop offset="50%" stop-color="${c2}" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="${c3}" stop-opacity="0.8"/>
+              </linearGradient>
+            </defs>
+            <rect x="10" y="10" width="180" height="140" rx="12" fill="url(#imgGrad)"/>
+            <circle cx="55" cy="50" r="18" fill="rgba(255,255,255,0.3)"/>
+            <circle cx="55" cy="50" r="12" fill="rgba(255,255,255,0.2)"/>
+            <polygon points="10,130 60,80 100,110 130,85 190,130 190,140 10,140" fill="rgba(255,255,255,0.15)"/>
+            <polygon points="80,130 120,90 190,130 190,140 80,140" fill="rgba(255,255,255,0.1)"/>
+          </svg>
+        </div>
       </div>
+    </div>
+    <div class="preview-img-statusbar">
+      <span>${item.name}</span>
+      <span>${item.size || 'Unknown size'}</span>
     </div>`;
   } else if (type === 'text') {
     const fileContent = getFileContent(item.path);
@@ -354,6 +385,39 @@ function getFileContent(path) {
 
 function escapeHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ---- Image Preview Controls ----
+let previewImgZoomLevel = 100;
+let previewImgRotation = 0;
+
+function previewImgZoom(dir) {
+  previewImgZoomLevel = Math.max(25, Math.min(400, previewImgZoomLevel + dir * 25));
+  applyPreviewImgTransform();
+}
+
+function previewImgFit() {
+  previewImgZoomLevel = 100;
+  previewImgRotation = 0;
+  applyPreviewImgTransform();
+}
+
+function previewImgActual() {
+  previewImgZoomLevel = 100;
+  applyPreviewImgTransform();
+}
+
+function previewImgRotate(deg) {
+  previewImgRotation = (previewImgRotation + deg) % 360;
+  applyPreviewImgTransform();
+}
+
+function applyPreviewImgTransform() {
+  const wrapper = document.getElementById('previewImgWrapper');
+  const zoomLabel = document.getElementById('previewImgZoom');
+  if (!wrapper || !zoomLabel) return;
+  zoomLabel.textContent = previewImgZoomLevel + '%';
+  wrapper.style.transform = `scale(${previewImgZoomLevel / 100}) rotate(${previewImgRotation}deg)`;
 }
 
 // ---- File Drag & Drop in Finder ----
@@ -462,6 +526,7 @@ function openApp(appName) {
   if (dockItem) { dockItem.classList.add('bouncing'); setTimeout(() => dockItem.classList.remove('bouncing'), 700); }
 
   win.classList.remove('minimized');
+  win.style.display = '';
   win.style.transition = '';
   win.style.transform = '';
   win.style.opacity = '';
