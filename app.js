@@ -711,7 +711,9 @@ const appIdMap = {
   'Activity Monitor.app': 'activity-window',
   'System Settings.app': 'settings-window',
   'Preview.app': 'preview-window',
-  'Safari.app': 'safari-window'
+  'Safari.app': 'safari-window',
+  'Google Chrome.app': 'chrome-window',
+  'YouTube.app': 'youtube-window'
 };
 
 function openApp(appName) {
@@ -2230,6 +2232,154 @@ document.addEventListener('DOMContentLoaded', () => {
     if (safariIndex < safariHistory.length - 1) { safariIndex++; document.getElementById('safariUrl').value = safariHistory[safariIndex]; document.getElementById('safariFrame').src = safariHistory[safariIndex]; }
   });
 
+  // ---- Google Chrome ----
+  let chromeHistory = [];
+  let chromeHistoryIndex = -1;
+
+  function chromeNavigateTo(url) {
+    const fullUrl = url.startsWith('http') ? url : 'https://' + url;
+    document.getElementById('chromeUrl').value = fullUrl;
+    document.getElementById('chromeHomepage').style.display = 'none';
+    document.getElementById('chromeFallback').style.display = 'none';
+    const frame = document.getElementById('chromeFrame');
+    frame.style.display = 'block';
+    frame.src = fullUrl;
+    frame.onerror = () => { frame.style.display = 'none'; document.getElementById('chromeFallback').style.display = 'flex'; };
+    chromeHistory = chromeHistory.slice(0, chromeHistoryIndex + 1);
+    chromeHistory.push(fullUrl);
+    chromeHistoryIndex = chromeHistory.length - 1;
+    document.getElementById('chromeTab1').querySelector('span').textContent = fullUrl.replace('https://', '').replace('http://', '').split('/')[0];
+    document.getElementById('chromeBack').disabled = chromeHistoryIndex <= 0;
+    document.getElementById('chromeForward').disabled = chromeHistoryIndex >= chromeHistory.length - 1;
+  }
+
+  function chromeGoHome() {
+    document.getElementById('chromeHomepage').style.display = 'flex';
+    document.getElementById('chromeFrame').style.display = 'none';
+    document.getElementById('chromeFallback').style.display = 'none';
+    document.getElementById('chromeUrl').value = '';
+    document.getElementById('chromeSearchInput').value = '';
+  }
+
+  function chromeOpenExternal() {
+    const url = document.getElementById('chromeUrl').value;
+    if (url) window.open(url, '_blank');
+  }
+
+  document.getElementById('chromeSearchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const val = e.target.value.trim();
+      if (val) {
+        if (val.includes('.') && !val.includes(' ')) chromeNavigateTo(val);
+        else chromeNavigateTo('https://www.google.com/search?q=' + encodeURIComponent(val));
+      }
+    }
+  });
+
+  document.getElementById('chromeUrl').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const val = e.target.value.trim();
+      if (val) {
+        if (val.includes('.') && !val.includes(' ')) chromeNavigateTo(val);
+        else chromeNavigateTo('https://www.google.com/search?q=' + encodeURIComponent(val));
+      }
+    }
+  });
+
+  document.getElementById('chromeBack').addEventListener('click', () => {
+    if (chromeHistoryIndex > 0) { chromeHistoryIndex--; const url = chromeHistory[chromeHistoryIndex]; document.getElementById('chromeUrl').value = url; document.getElementById('chromeFrame').src = url; document.getElementById('chromeHomepage').style.display = 'none'; document.getElementById('chromeFrame').style.display = 'block'; document.getElementById('chromeFallback').style.display = 'none'; }
+  });
+
+  document.getElementById('chromeForward').addEventListener('click', () => {
+    if (chromeHistoryIndex < chromeHistory.length - 1) { chromeHistoryIndex++; const url = chromeHistory[chromeHistoryIndex]; document.getElementById('chromeUrl').value = url; document.getElementById('chromeFrame').src = url; document.getElementById('chromeHomepage').style.display = 'none'; document.getElementById('chromeFrame').style.display = 'block'; document.getElementById('chromeFallback').style.display = 'none'; }
+  });
+
+  document.getElementById('chromeReload').addEventListener('click', () => {
+    const frame = document.getElementById('chromeFrame');
+    if (frame.style.display !== 'none') frame.src = frame.src;
+  });
+
+  // ---- YouTube ----
+  const youtubeVideos = [
+    { id: 'dQw4w9WgXcQ', title: 'Never Gonna Give You Up', channel: 'Rick Astley', views: '1.5B views', time: '3:33', cat: 'music', color: '#FF0000', letter: 'R' },
+    { id: 'jNQXAC9IVRw', title: 'Me at the zoo', channel: 'Jawed Karim', views: '320M views', time: '0:19', cat: 'all', color: '#4285F4', letter: 'J' },
+    { id: 'kJQP7kiw5Fk', title: 'Luis Fonsi - Despacito ft. Daddy Yankee', channel: 'Luis Fonsi', views: '8.1B views', time: '4:42', cat: 'music', color: '#E91E63', letter: 'L' },
+    { id: 'kJQP7kiw5Fk', title: 'Top 10 JavaScript Tips & Tricks', channel: 'Traversy Media', views: '2.4M views', time: '15:20', cat: 'tech', color: '#FF6D00', letter: 'T' },
+    { id: '9bZkp7q19f0', title: 'PSY - GANGNAM STYLE(강남스타일) MV', channel: 'officialpsy', views: '4.6B views', time: '4:13', cat: 'music', color: '#9C27B0', letter: 'P' },
+    { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', channel: 'Queen', views: '1.8B views', time: '5:55', cat: 'music', color: '#673AB7', letter: 'Q' },
+    { id: '9bZkp7q19f0', title: 'Build a macOS Clone in 1 Hour', channel: 'Fireship', views: '890K views', time: '12:08', cat: 'tech', color: '#FF5722', letter: 'F' },
+    { id: 'kXYiU_JCYtU', title: 'NCS: Infinity', channel: 'NoCopyrightSounds', views: '420M views', time: '5:08', cat: 'music', color: '#00BCD4', letter: 'N' },
+    { id: 'LXb3EKWsInQ', title: 'NASA Live - Earth From Space', channel: 'NASA', views: '24M views', time: 'LIVE', cat: 'live', color: '#1565C0', letter: 'N' },
+    { id: 'sXQk7LN5MVk', title: 'Minecraft but AI Controls My Mouse', channel: 'Mistah MegaManFan', views: '5.2M views', time: '18:42', cat: 'gaming', color: '#4CAF50', letter: 'M' },
+    { id: '60ItHLz5WEA', title: 'Alan Walker - Faded', channel: 'Alan Walker', views: '3.4B views', time: '3:33', cat: 'music', color: '#2196F3', letter: 'A' },
+    { id: 'OPf0YbXqDm0', title: 'Mark Ronson - Uptown Funk ft. Bruno Mars', channel: 'MarkRonson', views: '4.5B views', time: '4:30', cat: 'music', color: '#FF9800', letter: 'M' },
+    { id: 'JGwWNGJdvx8', title: 'Ed Sheeran - Shape of You', channel: 'Ed Sheeran', views: '5.9B views', time: '3:53', cat: 'music', color: '#E91E63', letter: 'E' },
+    { id: 'RgKAFK5djSk', title: 'Wiz Khalira - See You Again ft. Charlie Puth', channel: 'Wiz Khalifa', views: '3.8B views', time: '3:57', cat: 'music', color: '#795548', letter: 'W' },
+    { id: 'fJ9rUzIMcZQ', title: 'iPhone 16 Pro Review - The Best iPhone Yet?', channel: 'MKBHD', views: '12M views', time: '18:42', cat: 'tech', color: '#F44336', letter: 'M' },
+    { id: '5qap5aO4i9A', title: 'Taylor Swift - Anti-Hero', channel: 'Taylor Swift', views: '1.2B views', time: '3:20', cat: 'music', color: '#9C27B0', letter: 'T' },
+  ];
+
+  function renderYoutubeGrid(filter = 'all', search = '') {
+    const grid = document.getElementById('youtubeGrid');
+    let vids = youtubeVideos;
+    if (filter !== 'all') vids = vids.filter(v => v.cat === filter);
+    if (search) { const s = search.toLowerCase(); vids = youtubeVideos.filter(v => v.title.toLowerCase().includes(s) || v.channel.toLowerCase().includes(s)); }
+    grid.innerHTML = vids.map((v, i) => `
+      <div class="youtube-card" onclick="playYoutubeVideo('${v.id}', '${v.title.replace(/'/g, "\\'")}', '${v.channel.replace(/'/g, "\\'")}')">
+        <div class="youtube-card-thumb">
+          <div class="youtube-card-thumb-placeholder" style="background:linear-gradient(135deg, ${v.color}40, ${v.color}20);">
+            <i class="ri-play-fill" style="font-size:42px;color:${v.color};opacity:0.8;"></i>
+          </div>
+          <div class="youtube-card-duration">${v.time}</div>
+        </div>
+        <div class="youtube-card-info">
+          <div class="youtube-card-avatar" style="background:${v.color};">${v.letter}</div>
+          <div class="youtube-card-text">
+            <div class="youtube-card-title">${v.title}</div>
+            <div class="youtube-card-channel">${v.channel}</div>
+            <div class="youtube-card-meta">${v.views}</div>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function playYoutubeVideo(id, title, channel) {
+    document.getElementById('youtubeHomepage').style.display = 'none';
+    document.getElementById('youtubePlayer').style.display = 'flex';
+    document.getElementById('youtubeEmbed').src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+    document.getElementById('youtubePlayerInfo').innerHTML = `
+      <div class="youtube-player-back" onclick="youtubeGoHome()"><i class="ri-arrow-left-s-line"></i> Back to Home</div>
+      <div class="youtube-player-title">${title}</div>
+      <div class="youtube-player-channel">${channel}</div>`;
+  }
+
+  function youtubeGoHome() {
+    document.getElementById('youtubeHomepage').style.display = 'block';
+    document.getElementById('youtubePlayer').style.display = 'none';
+    document.getElementById('youtubeEmbed').src = '';
+  }
+
+  renderYoutubeGrid();
+
+  document.querySelectorAll('.youtube-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.youtube-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      renderYoutubeGrid(chip.dataset.cat);
+    });
+  });
+
+  document.getElementById('youtubeSearchBtn').addEventListener('click', () => {
+    const val = document.getElementById('youtubeSearchInput').value.trim();
+    document.querySelectorAll('.youtube-chip').forEach(c => c.classList.remove('active'));
+    document.querySelector('.youtube-chip[data-cat="all"]').classList.add('active');
+    renderYoutubeGrid('all', val);
+  });
+
+  document.getElementById('youtubeSearchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('youtubeSearchBtn').click();
+  });
+
   // Dock clicks
   document.querySelectorAll('.dock-item').forEach(el => {
     el.addEventListener('click', () => {
@@ -2239,7 +2389,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (badge) badge.remove();
       if (appName === 'trash') { showEmptyTrashDialog(); return; }
       if (appName === 'launchpad') { toggleLaunchpad(); return; }
-      if (appName === 'finder') {
+      if (appName === 'Finder' || appName === 'finder') {
         // Finder: toggle visibility
         const finderWin = document.getElementById('finder-window');
         if (finderWin.classList.contains('minimized')) { finderWin.classList.remove('minimized'); focusWindow('finder-window'); }

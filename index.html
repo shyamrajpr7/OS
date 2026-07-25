@@ -439,6 +439,117 @@
         </div>
       </div>
 
+      <!-- ========== GOOGLE CHROME ========== -->
+      <div class="mac-window app-window" id="chrome-window" style="width:820px;height:540px;top:30px;left:180px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="chrome-tabs">
+            <div class="chrome-tab active" id="chromeTab1">
+              <i class="ri-google-fill" style="font-size:12px;color:#4285F4;"></i>
+              <span>New Tab</span>
+            </div>
+            <div class="chrome-tab-add" id="chromeTabAdd"><i class="ri-add-line"></i></div>
+          </div>
+        </div>
+        <div class="window-body chrome-body">
+          <div class="chrome-toolbar">
+            <button class="chrome-nav-btn" id="chromeBack"><i class="ri-arrow-left-s-line"></i></button>
+            <button class="chrome-nav-btn" id="chromeForward"><i class="ri-arrow-right-s-line"></i></button>
+            <button class="chrome-nav-btn" id="chromeReload"><i class="ri-refresh-line"></i></button>
+            <div class="chrome-url-bar">
+              <i class="ri-lock-line"></i>
+              <input type="text" id="chromeUrl" placeholder="Search Google or type a URL">
+            </div>
+          </div>
+          <div class="chrome-content" id="chromeContent">
+            <div class="chrome-homepage" id="chromeHomepage">
+              <div class="chrome-google-logo">
+                <span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span>
+              </div>
+              <div class="chrome-search-box">
+                <i class="ri-search-line"></i>
+                <input type="text" id="chromeSearchInput" placeholder="Search Google or type a URL">
+              </div>
+              <div class="chrome-shortcuts">
+                <div class="chrome-shortcut" onclick="chromeNavigateTo('https://www.youtube.com')">
+                  <div class="chrome-shortcut-icon" style="background:linear-gradient(135deg,#FF0000,#CC0000);"><i class="ri-youtube-fill" style="color:white;font-size:18px;"></i></div>
+                  <span>YouTube</span>
+                </div>
+                <div class="chrome-shortcut" onclick="chromeNavigateTo('https://www.github.com')">
+                  <div class="chrome-shortcut-icon" style="background:#24292e;"><i class="ri-github-fill" style="color:white;font-size:18px;"></i></div>
+                  <span>GitHub</span>
+                </div>
+                <div class="chrome-shortcut" onclick="chromeNavigateTo('https://www.twitter.com')">
+                  <div class="chrome-shortcut-icon" style="background:#1DA1F2;"><i class="ri-twitter-x-fill" style="color:white;font-size:18px;"></i></div>
+                  <span>Twitter</span>
+                </div>
+                <div class="chrome-shortcut" onclick="chromeNavigateTo('https://www.reddit.com')">
+                  <div class="chrome-shortcut-icon" style="background:#FF4500;"><i class="ri-reddit-fill" style="color:white;font-size:18px;"></i></div>
+                  <span>Reddit</span>
+                </div>
+              </div>
+            </div>
+            <iframe id="chromeFrame" style="width:100%;height:100%;border:none;display:none;" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"></iframe>
+            <div id="chromeFallback" style="display:none;align-items:center;justify-content:center;height:100%;width:100%;background:#1e1e2e;color:#888;text-align:center;position:absolute;top:0;left:0;">
+              <div>
+                <i class="ri-window-line" style="font-size:48px;display:block;margin-bottom:12px;color:#4285F4;"></i>
+                <div style="font-size:15px;font-weight:500;">Page Unavailable</div>
+                <div style="font-size:12px;color:#666;margin-top:6px;max-width:300px;">This page can't be loaded in the embedded browser.</div>
+                <button onclick="chromeOpenExternal()" style="margin-top:12px;padding:6px 16px;background:#4285F4;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">Open in Real Browser</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== YOUTUBE ========== -->
+      <div class="mac-window app-window" id="youtube-window" style="width:820px;height:540px;top:30px;left:200px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">YouTube</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body youtube-body">
+          <div class="youtube-toolbar">
+            <div class="youtube-logo">
+              <i class="ri-youtube-fill" style="color:#FF0000;font-size:20px;"></i>
+              <span>YouTube</span>
+            </div>
+            <div class="youtube-search-bar">
+              <input type="text" id="youtubeSearchInput" placeholder="Search">
+              <button class="youtube-search-btn" id="youtubeSearchBtn"><i class="ri-search-line"></i></button>
+            </div>
+          </div>
+          <div class="youtube-content" id="youtubeContent">
+            <div class="youtube-homepage" id="youtubeHomepage">
+              <div class="youtube-chips">
+                <button class="youtube-chip active" data-cat="all">All</button>
+                <button class="youtube-chip" data-cat="music">Music</button>
+                <button class="youtube-chip" data-cat="gaming">Gaming</button>
+                <button class="youtube-chip" data-cat="news">News</button>
+                <button class="youtube-chip" data-cat="live">Live</button>
+                <button class="youtube-chip" data-cat="tech">Technology</button>
+              </div>
+              <div class="youtube-grid" id="youtubeGrid"></div>
+            </div>
+            <div class="youtube-player" id="youtubePlayer" style="display:none;">
+              <div class="youtube-embed-wrapper">
+                <iframe id="youtubeEmbed" style="width:100%;height:100%;border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+              </div>
+              <div class="youtube-player-info" id="youtubePlayerInfo"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- ========== LAUNCHPAD (Apps) ========== -->
@@ -493,6 +604,18 @@
           </div>
           <span class="launchpad-label">Preview</span>
         </div>
+        <div class="launchpad-item" data-app="Google Chrome.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#fff"/><circle cx="24" cy="24" r="8" fill="#4285F4"/><path d="M24,4 A20,20 0 0,1 41.3,14 L28,14 A8,8 0 0,0 16.5,20 Z" fill="#EA4335"/><path d="M41.3,14 A20,20 0 0,1 24,44 L24,32 A8,8 0 0,0 31.5,20 Z" fill="#FBBC05"/><path d="M24,44 A20,20 0 0,1 6.7,14 L20,24 A8,8 0 0,0 24,32 Z" fill="#34A853"/><circle cx="24" cy="24" r="8" fill="#4285F4"/><circle cx="24" cy="24" r="5" fill="white"/></svg>
+          </div>
+          <span class="launchpad-label">Chrome</span>
+        </div>
+        <div class="launchpad-item" data-app="YouTube.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#FF0000"/><polygon points="19,14 19,34 35,24" fill="white"/></svg>
+          </div>
+          <span class="launchpad-label">YouTube</span>
+        </div>
       </div>
     </div>
 
@@ -508,6 +631,14 @@
       <div class="dock-item" data-app="Safari.app" data-tooltip="Safari">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#006CFF"/><circle cx="24" cy="24" r="16" fill="none" stroke="white" stroke-width="1.5"/><polygon points="24,8 28,22 24,24 20,22" fill="white"/><polygon points="24,40 20,26 24,24 28,26" fill="rgba(255,255,255,0.5)"/><polygon points="8,24 22,20 24,24 22,28" fill="rgba(255,255,255,0.5)"/><polygon points="40,24 26,28 24,24 26,20" fill="white"/></svg></div>
         <div class="dock-badge">3</div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Google Chrome.app" data-tooltip="Google Chrome">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#fff"/><circle cx="24" cy="24" r="8" fill="#4285F4"/><path d="M24,4 A20,20 0 0,1 41.3,14 L28,14 A8,8 0 0,0 16.5,20 Z" fill="#EA4335"/><path d="M41.3,14 A20,20 0 0,1 24,44 L24,32 A8,8 0 0,0 31.5,20 Z" fill="#FBBC05"/><path d="M24,44 A20,20 0 0,1 6.7,14 L20,24 A8,8 0 0,0 24,32 Z" fill="#34A853"/><circle cx="24" cy="24" r="8" fill="#4285F4"/><circle cx="24" cy="24" r="5" fill="white"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="YouTube.app" data-tooltip="YouTube">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#FF0000"/><polygon points="19,14 19,34 35,24" fill="white"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-item" data-app="Calculator.app" data-tooltip="Calculator">
