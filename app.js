@@ -119,8 +119,8 @@ function updateClock() {
   const dcwDate = document.getElementById('dcwDate');
   if (dcwTime) dcwTime.textContent = `${h12}:${m}`;
   if (dcwDate) {
-    const fullDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const fullMonths = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const fullDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const fullMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     dcwDate.textContent = `${fullDays[now.getDay()]}, ${fullMonths[now.getMonth()]} ${now.getDate()}`;
   }
 }
@@ -713,7 +713,8 @@ const appIdMap = {
   'Preview.app': 'preview-window',
   'Safari.app': 'safari-window',
   'Google Chrome.app': 'chrome-window',
-  'YouTube.app': 'youtube-window'
+  'YouTube.app': 'youtube-window',
+  'Notes.app': 'notes-window'
 };
 
 function openApp(appName) {
@@ -1339,7 +1340,7 @@ function initCalendar() {
 }
 
 function renderCalendar() {
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   document.getElementById('calMonthYear').textContent = months[calMonth] + ' ' + calYear;
 
   const firstDay = new Date(calYear, calMonth, 1).getDay();
@@ -1928,8 +1929,8 @@ function updateLockClock() {
   const h12 = h % 12 || 12;
   const ampm = h >= 12 ? 'PM' : 'AM';
   document.getElementById('lockTime').textContent = `${h12}:${m}`;
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   document.getElementById('lockDate').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
 }
 
@@ -2054,7 +2055,7 @@ function startBootScreen() {
         osc.start(ctx.currentTime + i * 0.12);
         osc.stop(ctx.currentTime + i * 0.12 + 0.8);
       });
-    } catch(e) {}
+    } catch (e) { }
   }
   const interval = setInterval(() => {
     progress += Math.random() * 15 + 5;
@@ -2322,39 +2323,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const frame = document.getElementById('chromeFrame');
     if (frame.style.display !== 'none' && frame.src && frame.src !== 'about:blank') frame.src = frame.src;
   });
-  });
+});
 
-  document.getElementById('chromeReload').addEventListener('click', () => {
-    const frame = document.getElementById('chromeFrame');
-    if (frame.style.display !== 'none') frame.src = frame.src;
-  });
+document.getElementById('chromeReload').addEventListener('click', () => {
+  const frame = document.getElementById('chromeFrame');
+  if (frame.style.display !== 'none') frame.src = frame.src;
+});
 
-  // ---- YouTube ----
-  const youtubeVideos = [
-    { id: 'dQw4w9WgXcQ', title: 'Never Gonna Give You Up', channel: 'Rick Astley', views: '1.5B views', time: '3:33', cat: 'music', color: '#FF0000', letter: 'R' },
-    { id: 'jNQXAC9IVRw', title: 'Me at the zoo', channel: 'Jawed Karim', views: '320M views', time: '0:19', cat: 'all', color: '#4285F4', letter: 'J' },
-    { id: 'kJQP7kiw5Fk', title: 'Luis Fonsi - Despacito ft. Daddy Yankee', channel: 'Luis Fonsi', views: '8.1B views', time: '4:42', cat: 'music', color: '#E91E63', letter: 'L' },
-    { id: 'kJQP7kiw5Fk', title: 'Top 10 JavaScript Tips & Tricks', channel: 'Traversy Media', views: '2.4M views', time: '15:20', cat: 'tech', color: '#FF6D00', letter: 'T' },
-    { id: '9bZkp7q19f0', title: 'PSY - GANGNAM STYLE(강남스타일) MV', channel: 'officialpsy', views: '4.6B views', time: '4:13', cat: 'music', color: '#9C27B0', letter: 'P' },
-    { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', channel: 'Queen', views: '1.8B views', time: '5:55', cat: 'music', color: '#673AB7', letter: 'Q' },
-    { id: '9bZkp7q19f0', title: 'Build a macOS Clone in 1 Hour', channel: 'Fireship', views: '890K views', time: '12:08', cat: 'tech', color: '#FF5722', letter: 'F' },
-    { id: 'kXYiU_JCYtU', title: 'NCS: Infinity', channel: 'NoCopyrightSounds', views: '420M views', time: '5:08', cat: 'music', color: '#00BCD4', letter: 'N' },
-    { id: 'LXb3EKWsInQ', title: 'NASA Live - Earth From Space', channel: 'NASA', views: '24M views', time: 'LIVE', cat: 'live', color: '#1565C0', letter: 'N' },
-    { id: 'sXQk7LN5MVk', title: 'Minecraft but AI Controls My Mouse', channel: 'Mistah MegaManFan', views: '5.2M views', time: '18:42', cat: 'gaming', color: '#4CAF50', letter: 'M' },
-    { id: '60ItHLz5WEA', title: 'Alan Walker - Faded', channel: 'Alan Walker', views: '3.4B views', time: '3:33', cat: 'music', color: '#2196F3', letter: 'A' },
-    { id: 'OPf0YbXqDm0', title: 'Mark Ronson - Uptown Funk ft. Bruno Mars', channel: 'MarkRonson', views: '4.5B views', time: '4:30', cat: 'music', color: '#FF9800', letter: 'M' },
-    { id: 'JGwWNGJdvx8', title: 'Ed Sheeran - Shape of You', channel: 'Ed Sheeran', views: '5.9B views', time: '3:53', cat: 'music', color: '#E91E63', letter: 'E' },
-    { id: 'RgKAFK5djSk', title: 'Wiz Khalira - See You Again ft. Charlie Puth', channel: 'Wiz Khalifa', views: '3.8B views', time: '3:57', cat: 'music', color: '#795548', letter: 'W' },
-    { id: 'fJ9rUzIMcZQ', title: 'iPhone 16 Pro Review - The Best iPhone Yet?', channel: 'MKBHD', views: '12M views', time: '18:42', cat: 'tech', color: '#F44336', letter: 'M' },
-    { id: '5qap5aO4i9A', title: 'Taylor Swift - Anti-Hero', channel: 'Taylor Swift', views: '1.2B views', time: '3:20', cat: 'music', color: '#9C27B0', letter: 'T' },
-  ];
+// ---- YouTube ----
+const youtubeVideos = [
+  { id: 'dQw4w9WgXcQ', title: 'Never Gonna Give You Up', channel: 'Rick Astley', views: '1.5B views', time: '3:33', cat: 'music', color: '#FF0000', letter: 'R' },
+  { id: 'jNQXAC9IVRw', title: 'Me at the zoo', channel: 'Jawed Karim', views: '320M views', time: '0:19', cat: 'all', color: '#4285F4', letter: 'J' },
+  { id: 'kJQP7kiw5Fk', title: 'Luis Fonsi - Despacito ft. Daddy Yankee', channel: 'Luis Fonsi', views: '8.1B views', time: '4:42', cat: 'music', color: '#E91E63', letter: 'L' },
+  { id: 'kJQP7kiw5Fk', title: 'Top 10 JavaScript Tips & Tricks', channel: 'Traversy Media', views: '2.4M views', time: '15:20', cat: 'tech', color: '#FF6D00', letter: 'T' },
+  { id: '9bZkp7q19f0', title: 'PSY - GANGNAM STYLE(강남스타일) MV', channel: 'officialpsy', views: '4.6B views', time: '4:13', cat: 'music', color: '#9C27B0', letter: 'P' },
+  { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', channel: 'Queen', views: '1.8B views', time: '5:55', cat: 'music', color: '#673AB7', letter: 'Q' },
+  { id: '9bZkp7q19f0', title: 'Build a macOS Clone in 1 Hour', channel: 'Fireship', views: '890K views', time: '12:08', cat: 'tech', color: '#FF5722', letter: 'F' },
+  { id: 'kXYiU_JCYtU', title: 'NCS: Infinity', channel: 'NoCopyrightSounds', views: '420M views', time: '5:08', cat: 'music', color: '#00BCD4', letter: 'N' },
+  { id: 'LXb3EKWsInQ', title: 'NASA Live - Earth From Space', channel: 'NASA', views: '24M views', time: 'LIVE', cat: 'live', color: '#1565C0', letter: 'N' },
+  { id: 'sXQk7LN5MVk', title: 'Minecraft but AI Controls My Mouse', channel: 'Mistah MegaManFan', views: '5.2M views', time: '18:42', cat: 'gaming', color: '#4CAF50', letter: 'M' },
+  { id: '60ItHLz5WEA', title: 'Alan Walker - Faded', channel: 'Alan Walker', views: '3.4B views', time: '3:33', cat: 'music', color: '#2196F3', letter: 'A' },
+  { id: 'OPf0YbXqDm0', title: 'Mark Ronson - Uptown Funk ft. Bruno Mars', channel: 'MarkRonson', views: '4.5B views', time: '4:30', cat: 'music', color: '#FF9800', letter: 'M' },
+  { id: 'JGwWNGJdvx8', title: 'Ed Sheeran - Shape of You', channel: 'Ed Sheeran', views: '5.9B views', time: '3:53', cat: 'music', color: '#E91E63', letter: 'E' },
+  { id: 'RgKAFK5djSk', title: 'Wiz Khalira - See You Again ft. Charlie Puth', channel: 'Wiz Khalifa', views: '3.8B views', time: '3:57', cat: 'music', color: '#795548', letter: 'W' },
+  { id: 'fJ9rUzIMcZQ', title: 'iPhone 16 Pro Review - The Best iPhone Yet?', channel: 'MKBHD', views: '12M views', time: '18:42', cat: 'tech', color: '#F44336', letter: 'M' },
+  { id: '5qap5aO4i9A', title: 'Taylor Swift - Anti-Hero', channel: 'Taylor Swift', views: '1.2B views', time: '3:20', cat: 'music', color: '#9C27B0', letter: 'T' },
+];
 
-  function renderYoutubeGrid(filter = 'all', search = '') {
-    const grid = document.getElementById('youtubeGrid');
-    let vids = youtubeVideos;
-    if (filter !== 'all') vids = vids.filter(v => v.cat === filter);
-    if (search) { const s = search.toLowerCase(); vids = youtubeVideos.filter(v => v.title.toLowerCase().includes(s) || v.channel.toLowerCase().includes(s)); }
-    grid.innerHTML = vids.map((v, i) => `
+function renderYoutubeGrid(filter = 'all', search = '') {
+  const grid = document.getElementById('youtubeGrid');
+  let vids = youtubeVideos;
+  if (filter !== 'all') vids = vids.filter(v => v.cat === filter);
+  if (search) { const s = search.toLowerCase(); vids = youtubeVideos.filter(v => v.title.toLowerCase().includes(s) || v.channel.toLowerCase().includes(s)); }
+  grid.innerHTML = vids.map((v, i) => `
       <div class="youtube-card" onclick="playYoutubeVideo('${v.id}', '${v.title.replace(/'/g, "\\'")}', '${v.channel.replace(/'/g, "\\'")}')">
         <div class="youtube-card-thumb">
           <div class="youtube-card-thumb-placeholder" style="background:linear-gradient(135deg, ${v.color}40, ${v.color}20);">
@@ -2371,377 +2372,467 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
       </div>`).join('');
-  }
+}
 
-  function playYoutubeVideo(id, title, channel) {
-    document.getElementById('youtubeHomepage').style.display = 'none';
-    document.getElementById('youtubePlayer').style.display = 'flex';
-    document.getElementById('youtubeEmbed').src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
-    document.getElementById('youtubePlayerInfo').innerHTML = `
+function playYoutubeVideo(id, title, channel) {
+  document.getElementById('youtubeHomepage').style.display = 'none';
+  document.getElementById('youtubePlayer').style.display = 'flex';
+  document.getElementById('youtubeEmbed').src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+  document.getElementById('youtubePlayerInfo').innerHTML = `
       <div class="youtube-player-back" onclick="youtubeGoHome()"><i class="ri-arrow-left-s-line"></i> Back to Home</div>
       <div class="youtube-player-title">${title}</div>
       <div class="youtube-player-channel">${channel}</div>`;
-  }
+}
 
-  function youtubeGoHome() {
-    document.getElementById('youtubeHomepage').style.display = 'block';
-    document.getElementById('youtubePlayer').style.display = 'none';
-    document.getElementById('youtubeEmbed').src = '';
-  }
+function youtubeGoHome() {
+  document.getElementById('youtubeHomepage').style.display = 'block';
+  document.getElementById('youtubePlayer').style.display = 'none';
+  document.getElementById('youtubeEmbed').src = '';
+}
 
-  renderYoutubeGrid();
+renderYoutubeGrid();
 
-  document.querySelectorAll('.youtube-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.youtube-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      renderYoutubeGrid(chip.dataset.cat);
-    });
-  });
-
-  document.getElementById('youtubeSearchBtn').addEventListener('click', () => {
-    const val = document.getElementById('youtubeSearchInput').value.trim();
+document.querySelectorAll('.youtube-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
     document.querySelectorAll('.youtube-chip').forEach(c => c.classList.remove('active'));
-    document.querySelector('.youtube-chip[data-cat="all"]').classList.add('active');
-    renderYoutubeGrid('all', val);
+    chip.classList.add('active');
+    renderYoutubeGrid(chip.dataset.cat);
   });
+});
 
-  document.getElementById('youtubeSearchInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('youtubeSearchBtn').click();
+document.getElementById('youtubeSearchBtn').addEventListener('click', () => {
+  const val = document.getElementById('youtubeSearchInput').value.trim();
+  document.querySelectorAll('.youtube-chip').forEach(c => c.classList.remove('active'));
+  document.querySelector('.youtube-chip[data-cat="all"]').classList.add('active');
+  renderYoutubeGrid('all', val);
+});
+
+document.getElementById('youtubeSearchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('youtubeSearchBtn').click();
+});
+
+// ---- Notes App ----
+const notesState = { notes: [], activeId: null };
+
+function loadNotes() {
+  const saved = localStorage.getItem('threados_notes');
+  if (saved) { notesState.notes = JSON.parse(saved); }
+  if (!notesState.notes.length) {
+    notesState.notes = [
+      { id: Date.now(), title: 'Welcome to Notes', body: 'This is your first note.\n\nYou can create, edit, and delete notes here. Everything is saved automatically.', created: new Date().toISOString() },
+      { id: Date.now() + 1, title: 'Quick Tips', body: '- Click "New Note" to create a note\n- Use the search bar to find notes\n- Word count shown at bottom\n- Notes auto-save as you type', created: new Date().toISOString() }
+    ];
+    saveNotes();
+  }
+}
+
+function saveNotes() { localStorage.setItem('threados_notes', JSON.stringify(notesState.notes)); }
+
+function renderNotesList(filter = '') {
+  const list = document.getElementById('notesList');
+  let notes = notesState.notes;
+  if (filter) { const f = filter.toLowerCase(); notes = notes.filter(n => n.title.toLowerCase().includes(f) || n.body.toLowerCase().includes(f)); }
+  notes.sort((a, b) => new Date(b.created) - new Date(a.created));
+  list.innerHTML = notes.map(n => `
+    <div class="notes-list-item ${n.id === notesState.activeId ? 'active' : ''}" data-id="${n.id}">
+      <div class="notes-list-item-title">${n.title || 'Untitled'}</div>
+      <div class="notes-list-item-preview">${n.body.substring(0, 60) || 'No content'}</div>
+      <div class="notes-list-item-date">${new Date(n.created).toLocaleDateString()}</div>
+    </div>`).join('');
+  list.querySelectorAll('.notes-list-item').forEach(el => {
+    el.addEventListener('click', () => openNote(parseInt(el.dataset.id)));
   });
+}
 
-  // Dock clicks
-  document.querySelectorAll('.dock-item').forEach(el => {
-    el.addEventListener('click', () => {
-      const appName = el.dataset.app;
-      // Clear badge on click
-      const badge = el.querySelector('.dock-badge');
-      if (badge) badge.remove();
-      if (appName === 'trash') { showEmptyTrashDialog(); return; }
-      if (appName === 'launchpad') { toggleLaunchpad(); return; }
-      if (appName === 'Finder' || appName === 'finder') {
-        // Finder: toggle visibility
-        const finderWin = document.getElementById('finder-window');
-        if (finderWin.classList.contains('minimized')) { finderWin.classList.remove('minimized'); focusWindow('finder-window'); }
-        else if (finderWin.classList.contains('focused')) { finderWin.classList.add('minimized'); }
-        else focusWindow('finder-window');
-        return;
-      }
-      // Check if the app window is already open
-      const winId = appIdMap[appName];
-      if (winId) {
-        const win = document.getElementById(winId);
-        if (win && !win.classList.contains('minimized') && win.classList.contains('focused')) { minimizeWindow(winId); return; }
-        openApp(appName);
-      }
-    });
-  });
+function openNote(id) {
+  const note = notesState.notes.find(n => n.id === id);
+  if (!note) return;
+  notesState.activeId = id;
+  document.getElementById('notesTitleInput').value = note.title;
+  document.getElementById('notesTextarea').value = note.body;
+  document.getElementById('notesDate').textContent = new Date(note.created).toLocaleString();
+  updateNotesWordCount();
+  renderNotesList(document.getElementById('notesSearch').value);
+}
 
-  // Desktop right-click context menu
-  document.getElementById('desktop').addEventListener('contextmenu', e => showContextMenu(e, null));
-  document.addEventListener('click', e => { if (!e.target.closest('.context-menu')) hideContextMenu(); });
+function updateNotesWordCount() {
+  const text = document.getElementById('notesTextarea').value.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  document.getElementById('notesWordCount').textContent = words + ' word' + (words !== 1 ? 's' : '');
+}
 
-  // Wallpaper picker
-  document.getElementById('wallpaperPickerClose').addEventListener('click', closeWallpaperPicker);
-  document.getElementById('wallpaperPickerOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeWallpaperPicker(); });
-  document.querySelectorAll('.wallpaper-option').forEach(el => {
-    el.addEventListener('click', function() {
-      changeWallpaper(this.dataset.gradient);
-    });
-  });
+document.getElementById('notesNewBtn').addEventListener('click', () => {
+  const note = { id: Date.now(), title: 'New Note', body: '', created: new Date().toISOString() };
+  notesState.notes.push(note);
+  saveNotes();
+  openNote(note.id);
+  document.getElementById('notesTitleInput').select();
+});
 
-  // CC sliders -> OSD
-  document.getElementById('ccBrightness').addEventListener('input', function() { showOSD('brightness', this.value); });
-  document.getElementById('ccVolume').addEventListener('input', function() { showOSD('volume', this.value); });
+document.getElementById('notesDeleteBtn').addEventListener('click', () => {
+  if (!notesState.activeId) return;
+  notesState.notes = notesState.notes.filter(n => n.id !== notesState.activeId);
+  notesState.activeId = null;
+  saveNotes();
+  document.getElementById('notesTitleInput').value = '';
+  document.getElementById('notesTextarea').value = '';
+  document.getElementById('notesDate').textContent = '';
+  updateNotesWordCount();
+  renderNotesList(document.getElementById('notesSearch').value);
+});
 
-  // Force Quit dialog
-  document.getElementById('forcequitCancel').addEventListener('click', closeForceQuit);
-  document.getElementById('forcequitBtn').addEventListener('click', forceQuitApp);
-  document.getElementById('forcequitOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeForceQuit(); });
+document.getElementById('notesTitleInput').addEventListener('input', () => {
+  if (!notesState.activeId) return;
+  const note = notesState.notes.find(n => n.id === notesState.activeId);
+  if (note) { note.title = document.getElementById('notesTitleInput').value; saveNotes(); renderNotesList(document.getElementById('notesSearch').value); }
+});
 
-  // Lock screen
-  document.getElementById('lockSubmit').addEventListener('click', attemptUnlock);
-  document.getElementById('lockPassword').addEventListener('keydown', e => { if (e.key === 'Enter') attemptUnlock(); });
+document.getElementById('notesTextarea').addEventListener('input', () => {
+  if (!notesState.activeId) return;
+  const note = notesState.notes.find(n => n.id === notesState.activeId);
+  if (note) { note.body = document.getElementById('notesTextarea').value; saveNotes(); renderNotesList(document.getElementById('notesSearch').value); }
+  updateNotesWordCount();
+});
 
-  // Screensaver - wake on mouse/key
-  document.getElementById('screensaver').addEventListener('mousemove', stopScreensaver);
-  document.getElementById('screensaver').addEventListener('click', stopScreensaver);
-  document.addEventListener('keydown', e => { if (screensaverActive) stopScreensaver(); });
-  resetScreensaverTimer();
+document.getElementById('notesSearch').addEventListener('input', () => {
+  renderNotesList(document.getElementById('notesSearch').value);
+});
 
-  // Keyboard shortcuts overlay
-  document.getElementById('shortcutsClose').addEventListener('click', closeShortcuts);
-  document.getElementById('shortcutsOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeShortcuts(); });
+loadNotes();
+renderNotesList();
 
-  // About This Mac
-  document.getElementById('aboutmacClose').addEventListener('click', closeAboutMac);
-  document.getElementById('aboutmacOk').addEventListener('click', closeAboutMac);
-  document.getElementById('aboutmacOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeAboutMac(); });
-
-  // Unsaved changes dialog
-  document.getElementById('unsavedDontSave').addEventListener('click', () => { if (unsavedCallback) unsavedCallback(); hideUnsavedDialog(); });
-  document.getElementById('unsavedCancel').addEventListener('click', hideUnsavedDialog);
-  document.getElementById('unsavedSave').addEventListener('click', () => { teSaveFile(); teModified = false; hideUnsavedDialog(); });
-
-  // Empty trash dialog
-  document.getElementById('emptyTrashCancel').addEventListener('click', hideEmptyTrashDialog);
-  document.getElementById('emptyTrashConfirm').addEventListener('click', () => { hideEmptyTrashDialog(); });
-  document.getElementById('emptyTrashOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) hideEmptyTrashDialog(); });
-
-  // Spotlight search input
-  document.getElementById('spotlightInput').addEventListener('input', e => spotlightSearch(e.target.value));
-  document.getElementById('spotlightInput').addEventListener('keydown', e => {
-    if (e.key === 'ArrowDown') { e.preventDefault(); spotlightNavigate(1); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); spotlightNavigate(-1); }
-    else if (e.key === 'Enter') { e.preventDefault(); spotlightSelect(); }
-  });
-  document.getElementById('spotlightOverlay').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeSpotlight();
-  });
-
-  // Spotlight search icon in tray
-  document.querySelector('.ri-search-line').addEventListener('click', toggleSpotlight);
-
-  // Context menu item clicks
-  document.querySelectorAll('.context-menu-item[data-action]').forEach(el => {
-    el.addEventListener('click', () => handleContextAction(el.dataset.action));
-  });
-
-  // Info dialog close
-  document.getElementById('infoDialogClose').addEventListener('click', hideInfoDialog);
-  document.getElementById('infoDialogOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) hideInfoDialog(); });
-
-  // Finder row right-click
-  document.getElementById('finderList').addEventListener('contextmenu', e => {
-    const row = e.target.closest('.finder-row');
-    if (row) {
-      const idx = parseInt(row.dataset.index);
-      const children = getChildren(currentPath);
-      const sorted = sortItems(children);
-      e.stopPropagation();
-      showContextMenu(e, sorted[idx] || null);
+// Dock clicks
+document.querySelectorAll('.dock-item').forEach(el => {
+  el.addEventListener('click', () => {
+    const appName = el.dataset.app;
+    // Clear badge on click
+    const badge = el.querySelector('.dock-badge');
+    if (badge) badge.remove();
+    if (appName === 'trash') { showEmptyTrashDialog(); return; }
+    if (appName === 'launchpad') { toggleLaunchpad(); return; }
+    if (appName === 'Finder' || appName === 'finder') {
+      // Finder: toggle visibility
+      const finderWin = document.getElementById('finder-window');
+      if (finderWin.classList.contains('minimized')) { finderWin.classList.remove('minimized'); focusWindow('finder-window'); }
+      else if (finderWin.classList.contains('focused')) { finderWin.classList.add('minimized'); }
+      else focusWindow('finder-window');
+      return;
+    }
+    // Check if the app window is already open
+    const winId = appIdMap[appName];
+    if (winId) {
+      const win = document.getElementById(winId);
+      if (win && !win.classList.contains('minimized') && win.classList.contains('focused')) { minimizeWindow(winId); return; }
+      openApp(appName);
     }
   });
+});
 
-  // Finder grid item right-click
-  document.getElementById('finderGrid').addEventListener('contextmenu', e => {
-    const item = e.target.closest('.finder-grid-item');
-    if (item) {
-      const idx = parseInt(item.dataset.index);
-      const children = getChildren(currentPath);
-      const sorted = sortItems(children);
-      e.stopPropagation();
-      showContextMenu(e, sorted[idx] || null);
-    }
+// Desktop right-click context menu
+document.getElementById('desktop').addEventListener('contextmenu', e => showContextMenu(e, null));
+document.addEventListener('click', e => { if (!e.target.closest('.context-menu')) hideContextMenu(); });
+
+// Wallpaper picker
+document.getElementById('wallpaperPickerClose').addEventListener('click', closeWallpaperPicker);
+document.getElementById('wallpaperPickerOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeWallpaperPicker(); });
+document.querySelectorAll('.wallpaper-option').forEach(el => {
+  el.addEventListener('click', function () {
+    changeWallpaper(this.dataset.gradient);
   });
+});
 
-  // Desktop icon double-click
-  document.querySelectorAll('.desktop-icon').forEach(el => {
-    el.addEventListener('dblclick', () => {
+// CC sliders -> OSD
+document.getElementById('ccBrightness').addEventListener('input', function () { showOSD('brightness', this.value); });
+document.getElementById('ccVolume').addEventListener('input', function () { showOSD('volume', this.value); });
+
+// Force Quit dialog
+document.getElementById('forcequitCancel').addEventListener('click', closeForceQuit);
+document.getElementById('forcequitBtn').addEventListener('click', forceQuitApp);
+document.getElementById('forcequitOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeForceQuit(); });
+
+// Lock screen
+document.getElementById('lockSubmit').addEventListener('click', attemptUnlock);
+document.getElementById('lockPassword').addEventListener('keydown', e => { if (e.key === 'Enter') attemptUnlock(); });
+
+// Screensaver - wake on mouse/key
+document.getElementById('screensaver').addEventListener('mousemove', stopScreensaver);
+document.getElementById('screensaver').addEventListener('click', stopScreensaver);
+document.addEventListener('keydown', e => { if (screensaverActive) stopScreensaver(); });
+resetScreensaverTimer();
+
+// Keyboard shortcuts overlay
+document.getElementById('shortcutsClose').addEventListener('click', closeShortcuts);
+document.getElementById('shortcutsOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeShortcuts(); });
+
+// About This Mac
+document.getElementById('aboutmacClose').addEventListener('click', closeAboutMac);
+document.getElementById('aboutmacOk').addEventListener('click', closeAboutMac);
+document.getElementById('aboutmacOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeAboutMac(); });
+
+// Unsaved changes dialog
+document.getElementById('unsavedDontSave').addEventListener('click', () => { if (unsavedCallback) unsavedCallback(); hideUnsavedDialog(); });
+document.getElementById('unsavedCancel').addEventListener('click', hideUnsavedDialog);
+document.getElementById('unsavedSave').addEventListener('click', () => { teSaveFile(); teModified = false; hideUnsavedDialog(); });
+
+// Empty trash dialog
+document.getElementById('emptyTrashCancel').addEventListener('click', hideEmptyTrashDialog);
+document.getElementById('emptyTrashConfirm').addEventListener('click', () => { hideEmptyTrashDialog(); });
+document.getElementById('emptyTrashOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) hideEmptyTrashDialog(); });
+
+// Spotlight search input
+document.getElementById('spotlightInput').addEventListener('input', e => spotlightSearch(e.target.value));
+document.getElementById('spotlightInput').addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { e.preventDefault(); spotlightNavigate(1); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); spotlightNavigate(-1); }
+  else if (e.key === 'Enter') { e.preventDefault(); spotlightSelect(); }
+});
+document.getElementById('spotlightOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeSpotlight();
+});
+
+// Spotlight search icon in tray
+document.querySelector('.ri-search-line').addEventListener('click', toggleSpotlight);
+
+// Context menu item clicks
+document.querySelectorAll('.context-menu-item[data-action]').forEach(el => {
+  el.addEventListener('click', () => handleContextAction(el.dataset.action));
+});
+
+// Info dialog close
+document.getElementById('infoDialogClose').addEventListener('click', hideInfoDialog);
+document.getElementById('infoDialogOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) hideInfoDialog(); });
+
+// Finder row right-click
+document.getElementById('finderList').addEventListener('contextmenu', e => {
+  const row = e.target.closest('.finder-row');
+  if (row) {
+    const idx = parseInt(row.dataset.index);
+    const children = getChildren(currentPath);
+    const sorted = sortItems(children);
+    e.stopPropagation();
+    showContextMenu(e, sorted[idx] || null);
+  }
+});
+
+// Finder grid item right-click
+document.getElementById('finderGrid').addEventListener('contextmenu', e => {
+  const item = e.target.closest('.finder-grid-item');
+  if (item) {
+    const idx = parseInt(item.dataset.index);
+    const children = getChildren(currentPath);
+    const sorted = sortItems(children);
+    e.stopPropagation();
+    showContextMenu(e, sorted[idx] || null);
+  }
+});
+
+// Desktop icon double-click
+document.querySelectorAll('.desktop-icon').forEach(el => {
+  el.addEventListener('dblclick', () => {
+    const finderWin = document.getElementById('finder-window');
+    finderWin.classList.remove('minimized');
+    focusWindow('finder-window');
+  });
+});
+
+// Shutdown dialog - brand logo click
+document.getElementById('brandLogo').addEventListener('click', e => {
+  if (e.altKey || e.optionKey) { openAboutMac(); }
+  else { toggleShutdownDialog(); }
+});
+
+// Shutdown dialog - buttons
+document.getElementById('btnSleep').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
+document.getElementById('btnRestart').addEventListener('click', () => { closeShutdownDialog(); screenOff(); setTimeout(() => location.reload(), 2000); });
+document.getElementById('btnShutdown').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
+document.getElementById('btnLogout').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
+document.getElementById('btnShutdownCancel').addEventListener('click', closeShutdownDialog);
+document.getElementById('shutdownOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeShutdownDialog(); });
+
+// Activity monitor tabs
+document.querySelectorAll('.activity-tab').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.activity-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    activityTab = el.dataset.tab;
+    drawActivityGraphs();
+  });
+});
+
+// Global keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); }
+  // Cmd+F or Ctrl+F -> focus search
+  if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
+  // Cmd+Shift+3 -> full screenshot
+  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === '3') { e.preventDefault(); startScreenshot('full'); }
+  // Cmd+Shift+4 -> region screenshot
+  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === '4') { e.preventDefault(); startScreenshot('region'); }
+  // Cmd+Space -> Spotlight
+  if ((e.metaKey || e.ctrlKey) && e.key === ' ') { e.preventDefault(); toggleSpotlight(); }
+  // Cmd+Option+Esc -> Force Quit
+  if ((e.metaKey || e.ctrlKey) && e.altKey && e.key === 'Escape') { e.preventDefault(); openForceQuit(); }
+  // Cmd+L -> Lock Screen
+  if ((e.metaKey || e.ctrlKey) && e.key === 'l') { e.preventDefault(); lockScreen(); }
+  // Cmd+/ -> Keyboard Shortcuts
+  if ((e.metaKey || e.ctrlKey) && e.key === '/') { e.preventDefault(); toggleShortcuts(); }
+  // Cmd+Tab -> App Switcher
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Tab') {
+    e.preventDefault();
+    if (!appSwitcherVisible) { showAppSwitcher(); }
+    else { cycleAppSwitcher(e.shiftKey ? -1 : 1); }
+  }
+});
+
+document.addEventListener('keyup', e => {
+  if ((e.metaKey || e.ctrlKey) === false && appSwitcherVisible) {
+    selectAppSwitcher();
+  }
+});
+
+// Launchpad - click overlay background to close
+document.getElementById('launchpadOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget || e.target.classList.contains('launchpad-grid')) {
+    closeLaunchpad();
+  }
+});
+
+// Launchpad - click app item to launch and close
+document.querySelectorAll('.launchpad-item').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    const appName = el.dataset.app;
+    if (appName === 'Finder') {
       const finderWin = document.getElementById('finder-window');
       finderWin.classList.remove('minimized');
       focusWindow('finder-window');
-    });
-  });
-
-  // Shutdown dialog - brand logo click
-  document.getElementById('brandLogo').addEventListener('click', e => {
-    if (e.altKey || e.optionKey) { openAboutMac(); }
-    else { toggleShutdownDialog(); }
-  });
-
-  // Shutdown dialog - buttons
-  document.getElementById('btnSleep').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
-  document.getElementById('btnRestart').addEventListener('click', () => { closeShutdownDialog(); screenOff(); setTimeout(() => location.reload(), 2000); });
-  document.getElementById('btnShutdown').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
-  document.getElementById('btnLogout').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
-  document.getElementById('btnShutdownCancel').addEventListener('click', closeShutdownDialog);
-  document.getElementById('shutdownOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeShutdownDialog(); });
-
-  // Activity monitor tabs
-  document.querySelectorAll('.activity-tab').forEach(el => {
-    el.addEventListener('click', () => {
-      document.querySelectorAll('.activity-tab').forEach(t => t.classList.remove('active'));
-      el.classList.add('active');
-      activityTab = el.dataset.tab;
-      drawActivityGraphs();
-    });
-  });
-
-  // Global keyboard shortcuts
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); }
-    // Cmd+F or Ctrl+F -> focus search
-    if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
-    // Cmd+Shift+3 -> full screenshot
-    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === '3') { e.preventDefault(); startScreenshot('full'); }
-    // Cmd+Shift+4 -> region screenshot
-    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === '4') { e.preventDefault(); startScreenshot('region'); }
-    // Cmd+Space -> Spotlight
-    if ((e.metaKey || e.ctrlKey) && e.key === ' ') { e.preventDefault(); toggleSpotlight(); }
-    // Cmd+Option+Esc -> Force Quit
-    if ((e.metaKey || e.ctrlKey) && e.altKey && e.key === 'Escape') { e.preventDefault(); openForceQuit(); }
-    // Cmd+L -> Lock Screen
-    if ((e.metaKey || e.ctrlKey) && e.key === 'l') { e.preventDefault(); lockScreen(); }
-    // Cmd+/ -> Keyboard Shortcuts
-    if ((e.metaKey || e.ctrlKey) && e.key === '/') { e.preventDefault(); toggleShortcuts(); }
-    // Cmd+Tab -> App Switcher
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Tab') {
-      e.preventDefault();
-      if (!appSwitcherVisible) { showAppSwitcher(); }
-      else { cycleAppSwitcher(e.shiftKey ? -1 : 1); }
-    }
-  });
-
-  document.addEventListener('keyup', e => {
-    if ((e.metaKey || e.ctrlKey) === false && appSwitcherVisible) {
-      selectAppSwitcher();
-    }
-  });
-
-  // Launchpad - click overlay background to close
-  document.getElementById('launchpadOverlay').addEventListener('click', e => {
-    if (e.target === e.currentTarget || e.target.classList.contains('launchpad-grid')) {
-      closeLaunchpad();
-    }
-  });
-
-  // Launchpad - click app item to launch and close
-  document.querySelectorAll('.launchpad-item').forEach(el => {
-    el.addEventListener('click', e => {
-      e.stopPropagation();
-      const appName = el.dataset.app;
-      if (appName === 'Finder') {
-        const finderWin = document.getElementById('finder-window');
-        finderWin.classList.remove('minimized');
-        focusWindow('finder-window');
-      } else {
-        openApp(appName);
-      }
-      closeLaunchpad();
-    });
-  });
-
-  // Calendar - clock click toggles calendar
-  document.getElementById('menuClock').addEventListener('click', toggleCalendar);
-
-  // Window menu dropdown
-  document.getElementById('menuWindow').addEventListener('click', e => {
-    e.stopPropagation();
-    document.getElementById('windowDropdown').classList.toggle('visible');
-  });
-  document.querySelectorAll('#windowDropdown .menu-dropdown-item').forEach(el => {
-    el.addEventListener('click', () => {
-      const action = el.dataset.action;
-      if (action === 'cascade') cascadeWindows();
-      else if (action === 'tileLeft') tileWindow('left');
-      else if (action === 'tileRight') tileWindow('right');
-      else if (action === 'minimizeAll') getOpenWindows().forEach(w => minimizeWindow(w.id));
-      document.getElementById('windowDropdown').classList.remove('visible');
-    });
-  });
-  document.addEventListener('click', () => {
-    const dd = document.getElementById('windowDropdown');
-    if (dd) dd.classList.remove('visible');
-  });
-  document.getElementById('calPrev').addEventListener('click', e => { e.stopPropagation(); calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
-  document.getElementById('calNext').addEventListener('click', e => { e.stopPropagation(); calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
-  initCalendar();
-
-  // Battery popup
-  document.getElementById('batteryTrayBtn').addEventListener('click', toggleBatteryPopup);
-  document.getElementById('batteryLpm').addEventListener('click', function() { this.classList.toggle('active'); });
-
-  // Screenshot overlay - mouse events for region selection
-  const ssOverlay = document.getElementById('screenshotOverlay');
-  const ssSelection = document.getElementById('screenshotSelection');
-
-  ssOverlay.addEventListener('mousedown', e => {
-    if (ssMode !== 'region') return;
-    ssStartX = e.clientX; ssStartY = e.clientY;
-    ssSelection.style.left = ssStartX + 'px';
-    ssSelection.style.top = ssStartY + 'px';
-    ssSelection.style.width = '0';
-    ssSelection.style.height = '0';
-    ssSelection.classList.add('visible');
-  });
-
-  document.addEventListener('mousemove', e => {
-    if (ssMode !== 'region' || !ssStartX) return;
-    const x = Math.min(e.clientX, ssStartX);
-    const y = Math.min(e.clientY, ssStartY);
-    const w = Math.abs(e.clientX - ssStartX);
-    const h = Math.abs(e.clientY - ssStartY);
-    ssSelection.style.left = x + 'px';
-    ssSelection.style.top = y + 'px';
-    ssSelection.style.width = w + 'px';
-    ssSelection.style.height = h + 'px';
-  });
-
-  document.addEventListener('mouseup', e => {
-    if (ssMode !== 'region' || !ssStartX) return;
-    const w = Math.abs(e.clientX - ssStartX);
-    const h = Math.abs(e.clientY - ssStartY);
-    if (w > 10 && h > 10) {
-      captureScreenshot();
     } else {
-      ssSelection.classList.remove('visible');
+      openApp(appName);
     }
-    ssStartX = null;
-  });
-
-  // Notification Center - overlay click closes
-  document.getElementById('notifOverlay').addEventListener('click', closeNotifCenter);
-
-  // Notification Center - clear all button
-  document.getElementById('notifClearAll').addEventListener('click', clearAllNotifications);
-
-  // Notification Center - click card to dismiss
-  document.getElementById('notifList').addEventListener('click', e => {
-    const card = e.target.closest('.notif-card');
-    if (card) dismissNotification(card);
-  });
-
-  // Notification bell icon
-  document.getElementById('notifTrayBtn').addEventListener('click', toggleNotifCenter);
-
-  // DND tray icon
-  document.getElementById('dndTrayBtn').addEventListener('click', toggleDND);
-
-  // WiFi tray icon
-  document.getElementById('wifiTrayBtn').addEventListener('click', toggleWifiDropdown);
-
-  // Control Center - tray icon click
-  document.querySelector('.ri-equalizer-line').addEventListener('click', toggleControlCenter);
-
-  // Control Center - overlay click closes
-  document.getElementById('ccOverlay').addEventListener('click', closeControlCenter);
-
-  // Control Center - tile toggles
-  document.querySelectorAll('.cc-tile').forEach(el => {
-    el.addEventListener('click', () => {
-      const isActive = el.dataset.active === 'true';
-      el.dataset.active = isActive ? 'false' : 'true';
-      const desc = el.querySelector('.cc-tile-desc');
-      if (desc) {
-        if (el.id === 'ccWifi') desc.textContent = isActive ? 'Off' : 'ThreadOS-5G';
-        else if (el.id === 'ccBluetooth') desc.textContent = isActive ? 'Off' : 'On';
-        else if (el.id === 'ccAirdrop') desc.textContent = isActive ? 'Off' : 'Everyone';
-        else if (el.id === 'ccFocus') desc.textContent = isActive ? 'Off' : 'On';
-      }
-    });
-  });
-
-  // Control Center - dark mode toggle
-  document.getElementById('ccDarkMode').addEventListener('click', function() {
-    this.classList.toggle('active');
-  });
-
-  // Control Center - bottom button toggles
-  ['ccDoNotDisturb', 'ccScreenMirror', 'ccStageManager'].forEach(id => {
-    document.getElementById(id).addEventListener('click', function() {
-      if (id === 'ccDoNotDisturb') { toggleDND(); return; }
-      this.classList.toggle('active');
-    });
+    closeLaunchpad();
   });
 });
+
+// Calendar - clock click toggles calendar
+document.getElementById('menuClock').addEventListener('click', toggleCalendar);
+
+// Window menu dropdown
+document.getElementById('menuWindow').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('windowDropdown').classList.toggle('visible');
+});
+document.querySelectorAll('#windowDropdown .menu-dropdown-item').forEach(el => {
+  el.addEventListener('click', () => {
+    const action = el.dataset.action;
+    if (action === 'cascade') cascadeWindows();
+    else if (action === 'tileLeft') tileWindow('left');
+    else if (action === 'tileRight') tileWindow('right');
+    else if (action === 'minimizeAll') getOpenWindows().forEach(w => minimizeWindow(w.id));
+    document.getElementById('windowDropdown').classList.remove('visible');
+  });
+});
+document.addEventListener('click', () => {
+  const dd = document.getElementById('windowDropdown');
+  if (dd) dd.classList.remove('visible');
+});
+document.getElementById('calPrev').addEventListener('click', e => { e.stopPropagation(); calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
+document.getElementById('calNext').addEventListener('click', e => { e.stopPropagation(); calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
+initCalendar();
+
+// Battery popup
+document.getElementById('batteryTrayBtn').addEventListener('click', toggleBatteryPopup);
+document.getElementById('batteryLpm').addEventListener('click', function () { this.classList.toggle('active'); });
+
+// Screenshot overlay - mouse events for region selection
+const ssOverlay = document.getElementById('screenshotOverlay');
+const ssSelection = document.getElementById('screenshotSelection');
+
+ssOverlay.addEventListener('mousedown', e => {
+  if (ssMode !== 'region') return;
+  ssStartX = e.clientX; ssStartY = e.clientY;
+  ssSelection.style.left = ssStartX + 'px';
+  ssSelection.style.top = ssStartY + 'px';
+  ssSelection.style.width = '0';
+  ssSelection.style.height = '0';
+  ssSelection.classList.add('visible');
+});
+
+document.addEventListener('mousemove', e => {
+  if (ssMode !== 'region' || !ssStartX) return;
+  const x = Math.min(e.clientX, ssStartX);
+  const y = Math.min(e.clientY, ssStartY);
+  const w = Math.abs(e.clientX - ssStartX);
+  const h = Math.abs(e.clientY - ssStartY);
+  ssSelection.style.left = x + 'px';
+  ssSelection.style.top = y + 'px';
+  ssSelection.style.width = w + 'px';
+  ssSelection.style.height = h + 'px';
+});
+
+document.addEventListener('mouseup', e => {
+  if (ssMode !== 'region' || !ssStartX) return;
+  const w = Math.abs(e.clientX - ssStartX);
+  const h = Math.abs(e.clientY - ssStartY);
+  if (w > 10 && h > 10) {
+    captureScreenshot();
+  } else {
+    ssSelection.classList.remove('visible');
+  }
+  ssStartX = null;
+});
+
+// Notification Center - overlay click closes
+document.getElementById('notifOverlay').addEventListener('click', closeNotifCenter);
+
+// Notification Center - clear all button
+document.getElementById('notifClearAll').addEventListener('click', clearAllNotifications);
+
+// Notification Center - click card to dismiss
+document.getElementById('notifList').addEventListener('click', e => {
+  const card = e.target.closest('.notif-card');
+  if (card) dismissNotification(card);
+});
+
+// Notification bell icon
+document.getElementById('notifTrayBtn').addEventListener('click', toggleNotifCenter);
+
+// DND tray icon
+document.getElementById('dndTrayBtn').addEventListener('click', toggleDND);
+
+// WiFi tray icon
+document.getElementById('wifiTrayBtn').addEventListener('click', toggleWifiDropdown);
+
+// Control Center - tray icon click
+document.querySelector('.ri-equalizer-line').addEventListener('click', toggleControlCenter);
+
+// Control Center - overlay click closes
+document.getElementById('ccOverlay').addEventListener('click', closeControlCenter);
+
+// Control Center - tile toggles
+document.querySelectorAll('.cc-tile').forEach(el => {
+  el.addEventListener('click', () => {
+    const isActive = el.dataset.active === 'true';
+    el.dataset.active = isActive ? 'false' : 'true';
+    const desc = el.querySelector('.cc-tile-desc');
+    if (desc) {
+      if (el.id === 'ccWifi') desc.textContent = isActive ? 'Off' : 'ThreadOS-5G';
+      else if (el.id === 'ccBluetooth') desc.textContent = isActive ? 'Off' : 'On';
+      else if (el.id === 'ccAirdrop') desc.textContent = isActive ? 'Off' : 'Everyone';
+      else if (el.id === 'ccFocus') desc.textContent = isActive ? 'Off' : 'On';
+    }
+  });
+});
+
+// Control Center - dark mode toggle
+document.getElementById('ccDarkMode').addEventListener('click', function () {
+  this.classList.toggle('active');
+});
+
+// Control Center - bottom button toggles
+['ccDoNotDisturb', 'ccScreenMirror', 'ccStageManager'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function () {
+    if (id === 'ccDoNotDisturb') { toggleDND(); return; }
+    this.classList.toggle('active');
+  });
+});
+

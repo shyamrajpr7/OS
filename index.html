@@ -579,9 +579,40 @@
         </div>
       </div>
 
-    </div>
+      <!-- ========== NOTES ========== -->
+      <div class="mac-window app-window" id="notes-window" style="width:720px;height:480px;top:60px;left:220px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Notes</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body notes-body">
+          <div class="notes-sidebar">
+            <div class="notes-sidebar-header">
+              <input type="text" class="notes-search" id="notesSearch" placeholder="Search notes...">
+            </div>
+            <div class="notes-list" id="notesList"></div>
+            <button class="notes-new-btn" id="notesNewBtn"><i class="ri-add-line"></i> New Note</button>
+          </div>
+          <div class="notes-editor">
+            <div class="notes-editor-toolbar">
+              <input type="text" class="notes-title-input" id="notesTitleInput" placeholder="Title">
+              <button class="notes-delete-btn" id="notesDeleteBtn" title="Delete"><i class="ri-delete-bin-line"></i></button>
+            </div>
+            <textarea class="notes-textarea" id="notesTextarea" placeholder="Start writing..." spellcheck="false"></textarea>
+            <div class="notes-statusbar">
+              <span id="notesWordCount">0 words</span>
+              <span id="notesDate"></span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- ========== LAUNCHPAD (Apps) ========== -->
+    </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
       <div class="launchpad-grid" id="launchpadGrid">
@@ -645,6 +676,12 @@
           </div>
           <span class="launchpad-label">YouTube</span>
         </div>
+        <div class="launchpad-item" data-app="Notes.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FFCC02"/><rect x="8" y="6" width="32" height="36" rx="3" fill="#fff"/><g stroke="#e0d8b0" stroke-width="1.2"><line x1="12" y1="14" x2="36" y2="14"/><line x1="12" y1="20" x2="36" y2="20"/><line x1="12" y1="26" x2="36" y2="26"/><line x1="12" y1="32" x2="30" y2="32"/></g></svg>
+          </div>
+          <span class="launchpad-label">Notes</span>
+        </div>
       </div>
     </div>
 
@@ -668,6 +705,10 @@
       </div>
       <div class="dock-item" data-app="YouTube.app" data-tooltip="YouTube">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#FF0000"/><polygon points="19,14 19,34 35,24" fill="white"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Notes.app" data-tooltip="Notes">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FFCC02"/><rect x="8" y="6" width="32" height="36" rx="3" fill="#fff"/><g stroke="#e0d8b0" stroke-width="1.2"><line x1="12" y1="14" x2="36" y2="14"/><line x1="12" y1="20" x2="36" y2="20"/><line x1="12" y1="26" x2="36" y2="26"/><line x1="12" y1="32" x2="30" y2="32"/></g></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-item" data-app="Calculator.app" data-tooltip="Calculator">
