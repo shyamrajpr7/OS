@@ -737,6 +737,32 @@ body, html { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .preview-video-vol-slider { width: 100%; height: 4px; -webkit-appearance: none; appearance: none; background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; }
 .preview-video-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: white; cursor: pointer; }
 .preview-video-btn-fullscreen { font-size: 14px; }
+.preview-pdf-container { display: flex; flex-direction: column; height: 100%; background: #2a2a35; }
+.preview-pdf-toolbar { display: flex; align-items: center; gap: 2px; padding: 4px 8px; background: rgba(40, 40, 55, 0.95); border-bottom: 1px solid var(--mac-border); min-height: 32px; flex-shrink: 0; }
+.preview-pdf-btn { width: 28px; height: 24px; border: none; background: transparent; color: var(--mac-text-secondary); border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: background 0.15s, color 0.15s; }
+.preview-pdf-btn:hover { background: rgba(255,255,255,0.1); color: var(--mac-text); }
+.preview-pdf-page, .preview-pdf-zoom { font-size: 11px; color: var(--mac-text-secondary); min-width: 40px; text-align: center; font-variant-numeric: tabular-nums; }
+.preview-pdf-sep { width: 1px; height: 16px; background: var(--mac-border); margin: 0 4px; }
+.preview-pdf-canvas { flex: 1; display: flex; align-items: center; justify-content: center; overflow: auto; background: #3a3a45; }
+.preview-pdf-page-content { transform-origin: center center; transition: transform 0.2s ease; display: flex; }
+.preview-pdf-sheet { display: flex; flex-direction: column; width: 380px; min-height: 500px; background: #fff; border-radius: 3px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); overflow: hidden; }
+.preview-pdf-sheet-header { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 30px 24px 16px; border-bottom: 2px solid #FF5F57; }
+.preview-pdf-logo { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #FF5F57, #FF2D55); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; }
+.preview-pdf-sheet-title { font-size: 16px; font-weight: 600; color: #1a1a1a; text-align: center; }
+.preview-pdf-sheet-meta { font-size: 11px; color: #888; }
+.preview-pdf-sheet-body { flex: 1; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+.preview-pdf-text-block { display: flex; flex-direction: column; gap: 6px; }
+.preview-pdf-text-line { height: 8px; background: #e8e8e8; border-radius: 4px; }
+.preview-pdf-text-line.w100 { width: 100%; }
+.preview-pdf-text-line.w95 { width: 95%; }
+.preview-pdf-text-line.w92 { width: 92%; }
+.preview-pdf-text-line.w90 { width: 90%; }
+.preview-pdf-text-line.w85 { width: 85%; }
+.preview-pdf-text-line.w80 { width: 80%; }
+.preview-pdf-text-line.w70 { width: 70%; }
+.preview-pdf-img-placeholder { width: 100%; height: 100px; background: linear-gradient(135deg, #e0e7ff, #f0e6ff); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 28px; }
+.preview-pdf-sheet-footer { padding: 10px 24px; border-top: 1px solid #eee; font-size: 10px; color: #bbb; text-align: center; }
+.preview-pdf-statusbar { display: flex; align-items: center; justify-content: space-between; padding: 2px 12px; background: rgba(40, 40, 55, 0.95); border-top: 1px solid var(--mac-border); font-size: 11px; color: var(--mac-text-muted); min-height: 22px; flex-shrink: 0; }
 
 /* ===================== SAFARI ===================== */
 .safari-body { flex-direction: column; }

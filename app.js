@@ -334,14 +334,61 @@ function openPreview(item, type) {
       <pre style="margin:0;font-family:'SF Mono',monospace;font-size:13px;color:#e0e0e0;white-space:pre-wrap;word-wrap:break-word;">${escapeHtml(fileContent)}</pre>
     </div>`;
   } else if (type === 'pdf') {
-    html = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#1e1e1e;border-radius:8px;">
-      <div style="text-align:center;color:#888;">
-        <i class="ri-file-pdf-2-line" style="font-size:64px;display:block;margin-bottom:8px;color:#FF5F57;"></i>
-        <div style="font-size:13px;">${item.name}</div>
-        <div style="font-size:11px;color:#666;margin-top:4px;">${item.size || 'Unknown size'}</div>
-        <div style="font-size:11px;color:#555;margin-top:8px;">PDF Preview</div>
+    const pdfPages = [
+      { title: item.name, subtitle: item.size || 'Unknown size' },
+      { title: 'Page 2', subtitle: 'Document content preview' }
+    ];
+    html = `<div class="preview-pdf-container">
+      <div class="preview-pdf-toolbar">
+        <button class="preview-pdf-btn" onclick="pdfNavPrev()" title="Previous Page"><i class="ri-arrow-left-s-line"></i></button>
+        <span class="preview-pdf-page" id="previewPdfPage">1 / ${pdfPages.length}</span>
+        <button class="preview-pdf-btn" onclick="pdfNavNext()" title="Next Page"><i class="ri-arrow-right-s-line"></i></button>
+        <div class="preview-pdf-sep"></div>
+        <button class="preview-pdf-btn" onclick="pdfZoom(-1)" title="Zoom Out"><i class="ri-subtract-line"></i></button>
+        <span class="preview-pdf-zoom" id="previewPdfZoom">100%</span>
+        <button class="preview-pdf-btn" onclick="pdfZoom(1)" title="Zoom In"><i class="ri-add-line"></i></button>
+        <div class="preview-pdf-sep"></div>
+        <button class="preview-pdf-btn" onclick="pdfFitWidth()" title="Fit Width"><i class="ri-drag-move-2-line"></i></button>
+        <button class="preview-pdf-btn" onclick="pdfFitPage()" title="Fit Page"><i class="ri-fullscreen-exit-line"></i></button>
+      </div>
+      <div class="preview-pdf-canvas" id="previewPdfCanvas">
+        <div class="preview-pdf-page-content" id="previewPdfPageContent">
+          <div class="preview-pdf-sheet">
+            <div class="preview-pdf-sheet-header">
+              <div class="preview-pdf-logo"><i class="ri-file-pdf-2-line"></i></div>
+              <div class="preview-pdf-sheet-title">${item.name}</div>
+              <div class="preview-pdf-sheet-meta">${item.kind || 'PDF Document'} &middot; ${item.size || 'Unknown'}</div>
+            </div>
+            <div class="preview-pdf-sheet-body">
+              <div class="preview-pdf-text-block">
+                <div class="preview-pdf-text-line w100"></div>
+                <div class="preview-pdf-text-line w90"></div>
+                <div class="preview-pdf-text-line w95"></div>
+                <div class="preview-pdf-text-line w80"></div>
+              </div>
+              <div class="preview-pdf-img-placeholder">
+                <i class="ri-image-line"></i>
+              </div>
+              <div class="preview-pdf-text-block">
+                <div class="preview-pdf-text-line w100"></div>
+                <div class="preview-pdf-text-line w85"></div>
+                <div class="preview-pdf-text-line w92"></div>
+                <div class="preview-pdf-text-line w70"></div>
+                <div class="preview-pdf-text-line w95"></div>
+              </div>
+            </div>
+            <div class="preview-pdf-sheet-footer">
+              <span>Page 1 of ${pdfPages.length}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-pdf-statusbar">
+        <span>${item.name}</span>
+        <span>${item.size || 'Unknown size'}</span>
       </div>
     </div>`;
+    setTimeout(() => initPdfPreview(pdfPages.length), 0);
   } else if (type === 'audio') {
     html = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#1e1e1e;border-radius:8px;">
       <div style="text-align:center;color:#888;">
@@ -512,6 +559,51 @@ function updateVideoUI() {
   if (fill) fill.style.width = pct + '%';
   if (thumb) thumb.style.left = pct + '%';
   if (time) time.textContent = formatVideoTime(videoProgress) + ' / ' + formatVideoTime(videoDuration);
+}
+
+// ---- PDF Preview Controls ----
+let pdfCurrentPage = 1;
+let pdfTotalPages = 1;
+let pdfZoomLevel = 100;
+
+function initPdfPreview(totalPages) {
+  pdfCurrentPage = 1;
+  pdfTotalPages = totalPages;
+  pdfZoomLevel = 100;
+  updatePdfUI();
+}
+
+function pdfNavPrev() {
+  if (pdfCurrentPage > 1) { pdfCurrentPage--; updatePdfUI(); }
+}
+
+function pdfNavNext() {
+  if (pdfCurrentPage < pdfTotalPages) { pdfCurrentPage++; updatePdfUI(); }
+}
+
+function pdfZoom(dir) {
+  pdfZoomLevel = Math.max(50, Math.min(300, pdfZoomLevel + dir * 25));
+  applyPdfZoom();
+}
+
+function pdfFitWidth() { pdfZoomLevel = 100; applyPdfZoom(); }
+function pdfFitPage() { pdfZoomLevel = 100; applyPdfZoom(); }
+
+function applyPdfZoom() {
+  const content = document.getElementById('previewPdfPageContent');
+  const zoomLabel = document.getElementById('previewPdfZoom');
+  if (content) content.style.transform = `scale(${pdfZoomLevel / 100})`;
+  if (zoomLabel) zoomLabel.textContent = pdfZoomLevel + '%';
+}
+
+function updatePdfUI() {
+  const pageLabel = document.getElementById('previewPdfPage');
+  if (pageLabel) pageLabel.textContent = pdfCurrentPage + ' / ' + pdfTotalPages;
+  const content = document.getElementById('previewPdfPageContent');
+  if (content) {
+    const sheets = content.querySelectorAll('.preview-pdf-sheet');
+    sheets.forEach((s, i) => s.style.display = i === pdfCurrentPage - 1 ? 'flex' : 'none');
+  }
 }
 
 // ---- File Drag & Drop in Finder ----
