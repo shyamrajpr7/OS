@@ -2630,6 +2630,42 @@ document.querySelectorAll('.music-sidebar-item').forEach(item => {
 
 renderMusicList();
 
+// ---- Weather Widget ----
+const weatherDays = [
+  { name: 'Today', icon: 'ri-sun-line', hi: 78, lo: 61 },
+  { name: 'Mon', icon: 'ri-sun-cloudy-line', hi: 75, lo: 60 },
+  { name: 'Tue', icon: 'ri-cloudy-line', hi: 70, lo: 58 },
+  { name: 'Wed', icon: 'ri-drizzle-line', hi: 65, lo: 55 },
+  { name: 'Thu', icon: 'ri-sun-cloudy-line', hi: 72, lo: 59 },
+  { name: 'Fri', icon: 'ri-sun-line', hi: 76, lo: 62 },
+  { name: 'Sat', icon: 'ri-sun-line', hi: 79, lo: 63 }
+];
+
+function renderWeatherForecast() {
+  document.getElementById('weatherForecast').innerHTML = weatherDays.map(d =>
+    `<div class="weather-forecast-day">
+      <div class="weather-forecast-day-name">${d.name}</div>
+      <div class="weather-forecast-day-icon"><i class="${d.icon}"></i></div>
+      <div class="weather-forecast-day-temp">${d.hi}°</div>
+      <div class="weather-forecast-day-lo">${d.lo}°</div>
+    </div>`).join('');
+}
+
+document.getElementById('weatherTrayBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const dd = document.getElementById('weatherDropdown');
+  dd.classList.toggle('open');
+});
+
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('weatherDropdown');
+  if (dd.classList.contains('open') && !dd.contains(e.target) && !document.getElementById('weatherTrayBtn').contains(e.target)) {
+    dd.classList.remove('open');
+  }
+});
+
+renderWeatherForecast();
+
 // Dock clicks
 document.querySelectorAll('.dock-item').forEach(el => {
   el.addEventListener('click', () => {

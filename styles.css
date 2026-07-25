@@ -2378,6 +2378,34 @@ kbd {
   color: var(--mac-text-muted); border-top: 1px solid var(--mac-border); background: rgba(30,30,30,0.3);
 }
 
+/* ===================== WEATHER WIDGET ===================== */
+.weather-tray { display: flex; align-items: center; gap: 3px; cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: background 0.12s; position: relative; }
+.weather-tray:hover { background: rgba(255,255,255,0.1); }
+.weather-temp { font-size: 12px; font-weight: 600; color: var(--mac-text); font-variant-numeric: tabular-nums; }
+.weather-dropdown {
+  display: none; position: absolute; top: 28px; right: -10px; width: 300px; border-radius: 12px;
+  background: rgba(30,30,30,0.92); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 99999; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.weather-dropdown.open { display: block; }
+.weather-current { text-align: center; padding: 20px 16px 14px; background: linear-gradient(180deg, rgba(0,122,255,0.2) 0%, transparent 100%); }
+.weather-location { font-size: 12px; color: var(--mac-text-muted); font-weight: 500; }
+.weather-temp-big { font-size: 52px; font-weight: 200; color: var(--mac-text); line-height: 1.1; margin: 4px 0; }
+.weather-desc { font-size: 14px; color: var(--mac-text); font-weight: 500; }
+.weather-hi-lo { font-size: 12px; color: var(--mac-text-muted); margin-top: 2px; }
+.weather-details { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--mac-border); }
+.weather-detail { background: rgba(30,30,30,0.92); padding: 10px 14px; display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.weather-detail i { color: var(--mac-text-muted); font-size: 14px; width: 18px; text-align: center; }
+.weather-detail span:first-of-type { color: var(--mac-text-muted); flex: 1; }
+.weather-detail span:last-child { color: var(--mac-text); font-weight: 600; }
+.weather-forecast { display: flex; padding: 12px 8px; gap: 0; border-top: 1px solid var(--mac-border); }
+.weather-forecast-day { flex: 1; text-align: center; padding: 4px 0; }
+.weather-forecast-day-name { font-size: 10px; color: var(--mac-text-muted); font-weight: 600; }
+.weather-forecast-day-icon { font-size: 16px; margin: 4px 0; }
+.weather-forecast-day-temp { font-size: 11px; color: var(--mac-text); }
+.weather-forecast-day-lo { font-size: 11px; color: var(--mac-text-muted); }
+
 /* ===================== MUSIC APP ===================== */
 .music-body { display: flex; flex-direction: column; height: 100%; overflow: hidden; background: var(--mac-bg); }
 .music-main-area { display: flex; flex: 1; overflow: hidden; }
