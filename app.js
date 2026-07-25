@@ -1569,6 +1569,8 @@ function showContextMenu(e, target) {
   // Desktop right-click: show desktop-specific menu
   if (!target) {
     menu.innerHTML = `
+      <div class="context-menu-item" data-action="useStacks"><i class="ri-stack-line"></i>${stacksEnabled ? 'Disable' : 'Use'} Stacks</div>
+      <div class="context-menu-separator"></div>
       <div class="context-menu-item" data-action="changeWallpaper"><i class="ri-image-line"></i>Change Wallpaper...</div>
       <div class="context-menu-separator"></div>
       <div class="context-menu-item" data-action="newFolder"><i class="ri-folder-add-line"></i>New Folder</div>
@@ -1620,6 +1622,9 @@ function handleContextAction(action) {
   const sorted = sortItems(children);
 
   switch (action) {
+    case 'useStacks':
+      toggleDesktopStacks();
+      break;
     case 'open':
       if (contextTarget) {
         if (contextTarget.type === 'folder') navigateTo(contextTarget.path);
@@ -2941,6 +2946,72 @@ document.querySelectorAll('.reminders-cat').forEach(cat => {
 
 loadReminders();
 renderReminders();
+
+// ---- Desktop Stacks ----
+let stacksEnabled = false;
+
+function toggleDesktopStacks() {
+  stacksEnabled = !stacksEnabled;
+  const container = document.getElementById('desktopIcons');
+  if (stacksEnabled) {
+    container.classList.add('stacks');
+    renderStacks();
+  } else {
+    container.classList.remove('stacks');
+    container.innerHTML = '';
+    const icons = [
+      { type: 'app', name: 'Finder', html: '<svg width="48" height="48" viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="34" rx="4" fill="#47A3FF"/><rect x="4" y="8" width="40" height="10" rx="4" fill="#1E6FD9"/><circle cx="14" cy="13" r="2" fill="#FF5F57"/><circle cx="20" cy="13" r="2" fill="#FEBC2E"/><circle cx="26" cy="13" r="2" fill="#28C840"/></svg>', app: 'Finder' },
+      { type: 'image', name: 'vacation-photo.jpg', html: '<svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#34C759"/><rect x="6" y="6" width="36" height="36" rx="4" fill="#248A3D"/><circle cx="16" cy="18" r="4" fill="#FFD60A"/><path d="M6,34 L16,24 L24,30 L34,18 L42,28 L42,40 C42,42.2 40.2,44 38,44 L10,44 C7.8,44 6,42.2 6,40Z" fill="#30D158" opacity="0.6"/></svg>' },
+      { type: 'document', name: 'report.docx', html: '<svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#007AFF"/><rect x="10" y="6" width="28" height="36" rx="3" fill="white"/><g stroke="#ccc" stroke-width="1.5"><line x1="14" y1="14" x2="34" y2="14"/><line x1="14" y1="20" x2="34" y2="20"/><line x1="14" y1="26" x2="34" y2="26"/><line x1="14" y1="32" x2="26" y2="32"/></g></svg>' },
+      { type: 'image', name: 'screenshot.png', html: '<svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#5856D6"/><rect x="6" y="6" width="36" height="36" rx="4" fill="#4240A0"/><circle cx="16" cy="18" r="4" fill="#FFD60A"/><path d="M6,34 L16,24 L24,30 L34,18 L42,28 L42,40 C42,42.2 40.2,44 38,44 L10,44 C7.8,44 6,42.2 6,40Z" fill="#5E5CE6" opacity="0.6"/></svg>' },
+      { type: 'folder', name: 'Projects', html: '<svg width="48" height="48" viewBox="0 0 48 48"><rect x="4" y="10" width="40" height="30" rx="4" fill="#47A3FF"/><rect x="4" y="6" width="20" height="8" rx="3" fill="#1E6FD9"/><rect x="8" y="16" width="32" height="20" rx="2" fill="#5AC8FA" opacity="0.4"/></svg>' },
+      { type: 'document', name: 'notes.txt', html: '<svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#FF9500"/><rect x="10" y="6" width="28" height="36" rx="3" fill="white"/><g stroke="#ccc" stroke-width="1.5"><line x1="14" y1="14" x2="34" y2="14"/><line x1="14" y1="20" x2="34" y2="20"/><line x1="14" y1="26" x2="30" y2="26"/></g></svg>' },
+    ];
+    icons.forEach(icon => {
+      const el = document.createElement('div');
+      el.className = 'desktop-icon';
+      if (icon.app) el.dataset.app = icon.app;
+      el.innerHTML = `<div class="desktop-icon-img">${icon.html}</div><span>${icon.name}</span>`;
+      el.addEventListener('dblclick', () => { if (icon.app) openApp(icon.app); });
+      container.appendChild(el);
+    });
+  }
+}
+
+function renderStacks() {
+  const container = document.getElementById('desktopIcons');
+  const fileIcons = document.querySelectorAll('.desktop-file-icon');
+  const groups = {};
+  fileIcons.forEach(icon => {
+    const type = icon.dataset.type || 'other';
+    if (!groups[type]) groups[type] = [];
+    groups[type].push(icon);
+  });
+  container.innerHTML = '';
+  // Finder stays outside stacks
+  const finderIcon = document.createElement('div');
+  finderIcon.className = 'desktop-icon';
+  finderIcon.dataset.app = 'Finder';
+  finderIcon.innerHTML = '<div class="desktop-icon-img"><svg width="48" height="48" viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="34" rx="4" fill="#47A3FF"/><rect x="4" y="8" width="40" height="10" rx="4" fill="#1E6FD9"/><circle cx="14" cy="13" r="2" fill="#FF5F57"/><circle cx="20" cy="13" r="2" fill="#FEBC2E"/><circle cx="26" cy="13" r="2" fill="#28C840"/></svg></div><span>Finder</span>';
+  finderIcon.addEventListener('dblclick', () => openApp('Finder'));
+  container.appendChild(finderIcon);
+  const typeIcons = { image: '🖼', document: '📄', folder: '📁', other: '📎' };
+  const typeLabels = { image: 'Images', document: 'Documents', folder: 'Folders', other: 'Other' };
+  Object.keys(groups).sort().forEach(type => {
+    const stack = document.createElement('div');
+    stack.className = 'desktop-stack';
+    stack.innerHTML = `<div class="desktop-stack-header"><div class="desktop-stack-count">${groups[type].length}</div>${groups[type][0].outerHTML}</div><div class="desktop-stack-label">${typeLabels[type] || type}</div><div class="desktop-stack-items" style="display:none;"></div>`;
+    const items = stack.querySelector('.desktop-stack-items');
+    groups[type].forEach(icon => { items.appendChild(icon.cloneNode(true)); });
+    stack.addEventListener('click', () => {
+      const itemsDiv = stack.querySelector('.desktop-stack-items');
+      const expanded = itemsDiv.style.display !== 'none';
+      itemsDiv.style.display = expanded ? 'none' : 'flex';
+      stack.classList.toggle('expanded', !expanded);
+    });
+    container.appendChild(stack);
+  });
+}
 
 // Dock clicks
 document.querySelectorAll('.dock-item').forEach(el => {
