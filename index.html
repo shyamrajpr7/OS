@@ -1235,13 +1235,29 @@
   <div class="lock-screen" id="lockScreen">
     <div class="lock-time" id="lockTime"></div>
     <div class="lock-date" id="lockDate"></div>
-    <div class="lock-avatar"><i class="ri-user-line"></i></div>
-    <div class="lock-username">shyamraj</div>
+    <div class="lock-users" id="lockUsers">
+      <div class="lock-user-item active" data-user="shyamraj">
+        <div class="lock-avatar"><i class="ri-user-line"></i></div>
+        <div class="lock-username">shyamraj</div>
+      </div>
+      <div class="lock-user-item" data-user="guest">
+        <div class="lock-avatar"><i class="ri-user-smile-line"></i></div>
+        <div class="lock-username">Guest</div>
+      </div>
+      <div class="lock-user-item" data-user="admin">
+        <div class="lock-avatar"><i class="ri-admin-line"></i></div>
+        <div class="lock-username">Admin</div>
+      </div>
+    </div>
     <div class="lock-input-wrap">
       <input type="password" class="lock-password" id="lockPassword" placeholder="Enter Password" autocomplete="off">
       <button class="lock-submit" id="lockSubmit"><i class="ri-arrow-right-line"></i></button>
     </div>
-    <div class="lock-hint">Hint: press Enter to unlock</div>
+    <div class="lock-hint" id="lockHint">Hint: press Enter to unlock</div>
+    <div class="lock-switch-user" id="lockSwitchUser">
+      <i class="ri-user-switch-line"></i>
+      <span>Switch User</span>
+    </div>
   </div>
 
   <!-- SHUTDOWN / LOGOUT DIALOG -->
@@ -1256,6 +1272,7 @@
         <button class="shutdown-btn" id="btnRestart"><i class="ri-refresh-line"></i><span>Restart</span></button>
         <button class="shutdown-btn shutdown-btn-danger" id="btnShutdown"><i class="ri-shut-down-line"></i><span>Shut Down</span></button>
         <button class="shutdown-btn" id="btnLogout"><i class="ri-logout-box-line"></i><span>Log Out</span></button>
+        <button class="shutdown-btn" id="btnSwitchUser"><i class="ri-user-switch-line"></i><span>Switch User</span></button>
       </div>
       <button class="shutdown-cancel" id="btnShutdownCancel">Cancel</button>
     </div>

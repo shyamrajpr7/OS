@@ -2157,24 +2157,81 @@ function updateLockClock() {
   document.getElementById('lockDate').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
 }
 
+// ---- Multi-User Login ----
+const users = {
+  shyamraj: { name: 'shyamraj', password: '', avatar: 'ri-user-line', color: '#007AFF' },
+  guest: { name: 'Guest', password: 'guest', avatar: 'ri-user-smile-line', color: '#28C840' },
+  admin: { name: 'Admin', password: 'admin', avatar: 'ri-admin-line', color: '#FF9500' }
+};
+let currentUser = 'shyamraj';
+
+function selectLockUser(username) {
+  currentUser = username;
+  document.querySelectorAll('.lock-user-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.user === username);
+  });
+  const hint = document.getElementById('lockHint');
+  const pw = users[username].password;
+  hint.textContent = pw ? `Hint: password is "${pw}"` : 'Hint: press Enter to unlock (no password)';
+  document.getElementById('lockPassword').value = '';
+  document.getElementById('lockPassword').focus();
+}
+
+function updateLockUsers() {
+  // Set up click handlers for user items
+  document.querySelectorAll('.lock-user-item').forEach(el => {
+    el.addEventListener('click', () => selectLockUser(el.dataset.user));
+  });
+}
+
 function lockScreen() {
   isLocked = true;
   const ls = document.getElementById('lockScreen');
   ls.classList.add('visible');
   updateLockClock();
   document.getElementById('lockPassword').value = '';
+  selectLockUser(currentUser);
   setTimeout(() => document.getElementById('lockPassword').focus(), 100);
 }
 
 function unlockScreen() {
   isLocked = false;
   document.getElementById('lockScreen').classList.remove('visible');
+  // Update UI for current user
+  updateUserUI();
 }
 
 function attemptUnlock() {
   const pw = document.getElementById('lockPassword').value;
-  // Accept any password or empty for demo
-  unlockScreen();
+  const expectedPw = users[currentUser].password;
+  if (!expectedPw || pw === expectedPw) {
+    unlockScreen();
+  } else {
+    // Shake animation
+    const input = document.getElementById('lockPassword');
+    input.style.animation = 'none';
+    void input.offsetWidth;
+    input.style.animation = 'shake 0.4s ease';
+    input.value = '';
+    input.focus();
+  }
+}
+
+function updateUserUI() {
+  // Update username in shutdown dialog
+  const shutdownName = document.querySelector('.shutdown-username');
+  if (shutdownName) shutdownName.textContent = users[currentUser].name;
+  // Update lock screen username
+  const lockUsername = document.querySelector('.lock-screen .lock-username.active + .lock-username') ||
+                      document.querySelector('.lock-user-item.active .lock-username');
+  // Update menu bar or any user references
+  document.querySelectorAll('.lock-user-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.user === currentUser);
+  });
+}
+
+function switchUser() {
+  lockScreen();
 }
 
 // ---- Force Quit Dialog ----
@@ -2301,6 +2358,8 @@ function startBootScreen() {
 
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
+  // Init multi-user login
+  updateLockUsers();
   // Boot screen
   startBootScreen();
   // Init all app windows as minimized
@@ -3449,6 +3508,7 @@ document.getElementById('btnSleep').addEventListener('click', () => { closeShutd
 document.getElementById('btnRestart').addEventListener('click', () => { closeShutdownDialog(); screenOff(); setTimeout(() => location.reload(), 2000); });
 document.getElementById('btnShutdown').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
 document.getElementById('btnLogout').addEventListener('click', () => { closeShutdownDialog(); screenOff(); });
+document.getElementById('btnSwitchUser').addEventListener('click', () => { closeShutdownDialog(); lockScreen(); });
 document.getElementById('btnShutdownCancel').addEventListener('click', closeShutdownDialog);
 document.getElementById('shutdownOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeShutdownDialog(); });
 

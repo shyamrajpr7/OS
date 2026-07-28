@@ -2875,6 +2875,43 @@ kbd {
 .setting-row.clickable:hover { background: rgba(255,255,255,0.04); }
 .setting-arrow { color: var(--mac-text-muted); font-size: 14px; }
 
+/* ===== MULTI-USER LOGIN ===== */
+.lock-users {
+  display: flex; gap: 24px; margin-bottom: 20px; justify-content: center;
+}
+.lock-user-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; transition: all 0.2s ease; opacity: 0.5;
+}
+.lock-user-item:hover { opacity: 0.8; }
+.lock-user-item.active { opacity: 1; transform: scale(1.05); }
+.lock-user-item .lock-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: #fff; border: 2px solid transparent; transition: all 0.2s ease;
+}
+.lock-user-item.active .lock-avatar { border-color: #fff; background: rgba(255,255,255,0.25); }
+.lock-user-item[data-user="guest"] .lock-avatar { background: rgba(40,200,64,0.2); }
+.lock-user-item[data-user="guest"].active .lock-avatar { border-color: #28C840; }
+.lock-user-item[data-user="admin"] .lock-avatar { background: rgba(255,149,0,0.2); }
+.lock-user-item[data-user="admin"].active .lock-avatar { border-color: #FF9500; }
+.lock-user-item .lock-username {
+  font-size: 13px; color: #fff; font-weight: 500;
+}
+.lock-switch-user {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.5);
+  font-size: 12px; cursor: pointer; transition: color 0.2s ease;
+}
+.lock-switch-user:hover { color: rgba(255,255,255,0.8); }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
 /* ===== COMPRESSION / EXTRACTION OVERLAY ===== */
 .compress-overlay {
   position: fixed; inset: 0; z-index: 5000;
