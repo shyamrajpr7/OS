@@ -1100,26 +1100,42 @@ function terminalExec(cmd) {
   output.scrollTop = output.scrollHeight;
 }
 
-// ---- Activity Monitor ----
+// ---- Activity Monitor (Enhanced) ----
 let activityInterval = null;
 let cpuHistory = [];
 let memHistory = [];
 let diskHistory = [];
 let netHistory = [];
 let activityTab = 'cpu';
+let activitySort = { col: 'cpu', dir: 'desc' };
+let activitySelectedPid = null;
+let activityFilter = '';
 
 const processList = [
-  { name: 'WindowServer', pid: 142, baseCpu: 12.3, baseMem: 312 },
-  { name: 'Safari', pid: 584, baseCpu: 8.7, baseMem: 1200 },
-  { name: 'kernel_task', pid: 0, baseCpu: 5.1, baseMem: 256 },
-  { name: 'Finder', pid: 312, baseCpu: 2.4, baseMem: 84 },
-  { name: 'launchd', pid: 1, baseCpu: 0.8, baseMem: 12 },
-  { name: 'Spotlight', pid: 401, baseCpu: 1.2, baseMem: 148 },
-  { name: 'mds_stores', pid: 205, baseCpu: 3.5, baseMem: 220 },
-  { name: 'SystemUIServer', pid: 278, baseCpu: 1.8, baseMem: 96 },
-  { name: 'Dock', pid: 290, baseCpu: 0.9, baseMem: 64 },
-  { name: 'WindowManager', pid: 305, baseCpu: 2.1, baseMem: 180 }
+  { name: 'WindowServer', pid: 142, baseCpu: 12.3, baseMem: 312, priority: 'high', user: 'root' },
+  { name: 'Safari', pid: 584, baseCpu: 8.7, baseMem: 1200, priority: 'normal', user: 'shyamraj' },
+  { name: 'kernel_task', pid: 0, baseCpu: 5.1, baseMem: 256, priority: 'high', user: 'root' },
+  { name: 'Finder', pid: 312, baseCpu: 2.4, baseMem: 84, priority: 'normal', user: 'shyamraj' },
+  { name: 'launchd', pid: 1, baseCpu: 0.8, baseMem: 12, priority: 'high', user: 'root' },
+  { name: 'Spotlight', pid: 401, baseCpu: 1.2, baseMem: 148, priority: 'normal', user: 'shyamraj' },
+  { name: 'mds_stores', pid: 205, baseCpu: 3.5, baseMem: 220, priority: 'normal', user: 'root' },
+  { name: 'SystemUIServer', pid: 278, baseCpu: 1.8, baseMem: 96, priority: 'normal', user: 'shyamraj' },
+  { name: 'Dock', pid: 290, baseCpu: 0.9, baseMem: 64, priority: 'normal', user: 'shyamraj' },
+  { name: 'WindowManager', pid: 305, baseCpu: 2.1, baseMem: 180, priority: 'normal', user: 'shyamraj' },
+  { name: 'AirPlayUIAgent', pid: 415, baseCpu: 0.4, baseMem: 32, priority: 'low', user: 'shyamraj' },
+  { name: 'ControlCenter', pid: 295, baseCpu: 1.1, baseMem: 78, priority: 'normal', user: 'shyamraj' },
+  { name: 'coreaudiod', pid: 180, baseCpu: 0.6, baseMem: 24, priority: 'normal', user: 'root' },
+  { name: 'dasd', pid: 195, baseCpu: 0.3, baseMem: 16, priority: 'low', user: 'root' },
+  { name: 'discoveryd', pid: 210, baseCpu: 0.5, baseMem: 40, priority: 'normal', user: 'root' },
+  { name: 'hidd', pid: 130, baseCpu: 0.2, baseMem: 8, priority: 'high', user: 'root' },
+  { name: 'logd', pid: 220, baseCpu: 0.7, baseMem: 48, priority: 'low', user: 'root' },
+  { name: 'nsurlsessiond', pid: 350, baseCpu: 0.4, baseMem: 20, priority: 'low', user: 'shyamraj' },
+  { name: 'PhotoAnalysis', pid: 510, baseCpu: 4.2, baseMem: 340, priority: 'low', user: 'shyamraj' },
+  { name: 'Suggestions', pid: 420, baseCpu: 1.5, baseMem: 92, priority: 'low', user: 'shyamraj' }
 ];
+
+let processCpu = {};
+let processMem = {};
 
 function initActivityMonitor() {
   if (activityInterval) return;
@@ -1127,13 +1143,55 @@ function initActivityMonitor() {
   memHistory = Array(60).fill(0).map(() => Math.random() * 20 + 40);
   diskHistory = Array(60).fill(0).map(() => Math.random() * 15 + 2);
   netHistory = Array(60).fill(0).map(() => Math.random() * 25 + 5);
+  // Init per-process values
+  processList.forEach(p => {
+    processCpu[p.pid] = p.baseCpu;
+    processMem[p.pid] = p.baseMem;
+  });
   activityInterval = setInterval(updateActivityMonitor, 1000);
   drawActivityGraphs();
   updateProcessList();
+  setupActivityEvents();
 }
 
 function stopActivityMonitor() {
   if (activityInterval) { clearInterval(activityInterval); activityInterval = null; }
+}
+
+function setupActivityEvents() {
+  // Search filter
+  const search = document.getElementById('activitySearch');
+  if (search && !search._bound) {
+    search._bound = true;
+    search.addEventListener('input', () => {
+      activityFilter = search.value.toLowerCase();
+      updateProcessList();
+    });
+  }
+  // Kill button
+  const killBtn = document.getElementById('activityKillBtn');
+  if (killBtn && !killBtn._bound) {
+    killBtn._bound = true;
+    killBtn.addEventListener('click', () => {
+      if (activitySelectedPid !== null) killProcess(activitySelectedPid);
+    });
+  }
+}
+
+function killProcess(pid) {
+  const idx = processList.findIndex(p => p.pid === pid);
+  if (idx === -1) return;
+  // Animate removal
+  const row = document.querySelector(`.proc-row[data-pid="${pid}"]`);
+  if (row) row.classList.add('killed');
+  setTimeout(() => {
+    processList.splice(idx, 1);
+    delete processCpu[pid];
+    delete processMem[pid];
+    activitySelectedPid = null;
+    document.getElementById('activityKillBtn').disabled = true;
+    updateProcessList();
+  }, 300);
 }
 
 function updateActivityMonitor() {
@@ -1149,6 +1207,11 @@ function updateActivityMonitor() {
   document.getElementById('memValue').textContent = memHistory[memHistory.length - 1].toFixed(1) + '%';
   document.getElementById('diskValue').textContent = diskHistory[diskHistory.length - 1].toFixed(1) + '%';
   document.getElementById('netValue').textContent = netHistory[netHistory.length - 1].toFixed(1) + ' MB/s';
+  // Update per-process values
+  processList.forEach(p => {
+    processCpu[p.pid] = Math.max(0.1, Math.min(99, processCpu[p.pid] + (Math.random() - 0.5) * 3));
+    processMem[p.pid] = Math.max(4, processMem[p.pid] + (Math.random() - 0.5) * 10);
+  });
   drawActivityGraphs();
   updateProcessList();
 }
@@ -1168,7 +1231,6 @@ function drawGraph(canvasId, data, color) {
   ctx.clearRect(0, 0, w, h);
   if (data.length < 2) return;
   const step = w / (data.length - 1);
-
   ctx.beginPath();
   ctx.moveTo(0, h);
   data.forEach((v, i) => ctx.lineTo(i * step, h - (v / 100) * h));
@@ -1177,7 +1239,6 @@ function drawGraph(canvasId, data, color) {
   const grad = ctx.createLinearGradient(0, 0, 0, h);
   grad.addColorStop(0, color + '40'); grad.addColorStop(1, color + '05');
   ctx.fillStyle = grad; ctx.fill();
-
   ctx.beginPath();
   data.forEach((v, i) => { const x = i * step, y = h - (v / 100) * h; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
   ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
@@ -1186,16 +1247,81 @@ function drawGraph(canvasId, data, color) {
 function updateProcessList() {
   const list = document.getElementById('activityProcessList');
   if (!list) return;
-  let html = '<div class="proc-header"><span class="proc-name">Process Name</span><span class="proc-pid">PID</span><span class="proc-cpu">CPU</span><span class="proc-mem">Memory</span></div>';
-  processList.forEach(p => {
-    const cpu = (p.baseCpu + (Math.random() - 0.5) * 2).toFixed(1);
-    const mem = Math.round(p.baseMem + (Math.random() - 0.5) * 20);
-    const memStr = mem > 1024 ? (mem / 1024).toFixed(1) + ' GB' : mem + ' MB';
-    html += `<div class="proc-row"><span class="proc-name">${p.name}</span><span class="proc-pid">${p.pid}</span><span class="proc-cpu">${cpu}%</span><span class="proc-mem">${memStr}</span></div>`;
+
+  // Filter
+  let filtered = processList.filter(p => !activityFilter || p.name.toLowerCase().includes(activityFilter));
+
+  // Sort
+  filtered.sort((a, b) => {
+    let va, vb;
+    if (activitySort.col === 'name') { va = a.name; vb = b.name; return activitySort.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va); }
+    if (activitySort.col === 'pid') { va = a.pid; vb = b.pid; }
+    else if (activitySort.col === 'cpu') { va = processCpu[a.pid] || 0; vb = processCpu[b.pid] || 0; }
+    else if (activitySort.col === 'mem') { va = processMem[a.pid] || 0; vb = processMem[b.pid] || 0; }
+    else if (activitySort.col === 'priority') {
+      const order = { high: 0, normal: 1, low: 2 };
+      va = order[a.priority] || 1; vb = order[b.priority] || 1;
+    }
+    return activitySort.dir === 'asc' ? va - vb : vb - va;
   });
+
+  // Header
+  const sortCol = activitySort.col;
+  const sortDir = activitySort.dir;
+  let html = `<div class="proc-header">
+    <span data-sort="name" class="${sortCol==='name'?'sorted-'+sortDir:''}">Process Name</span>
+    <span data-sort="pid" class="${sortCol==='pid'?'sorted-'+sortDir:''}">PID</span>
+    <span data-sort="cpu" class="${sortCol==='cpu'?'sorted-'+sortDir:''}">CPU</span>
+    <span data-sort="mem" class="${sortCol==='mem'?'sorted-'+sortDir:''}">Memory</span>
+    <span data-sort="priority" class="${sortCol==='priority'?'sorted-'+sortDir:''}">Pri</span>
+    <span></span>
+  </div>`;
+
+  filtered.forEach(p => {
+    const cpu = (processCpu[p.pid] || 0).toFixed(1);
+    const mem = Math.round(processMem[p.pid] || 0);
+    const memStr = mem > 1024 ? (mem / 1024).toFixed(1) + ' G' : mem + ' M';
+    const selected = activitySelectedPid === p.pid ? ' selected' : '';
+    html += `<div class="proc-row${selected}" data-pid="${p.pid}">
+      <span class="proc-name">${p.name}</span>
+      <span class="proc-pid">${p.pid}</span>
+      <span class="proc-cpu">${cpu}%</span>
+      <span class="proc-mem">${memStr}</span>
+      <span class="proc-priority ${p.priority}">${p.priority}</span>
+      <span><button class="proc-kill-btn" title="Quit"><i class="ri-close-line"></i></button></span>
+    </div>`;
+  });
+
   list.innerHTML = html;
-  const countEl = document.querySelector('#activity-window .stat-value:nth-child(3)');
-  if (countEl) countEl.textContent = processList.length;
+  document.getElementById('procCount').textContent = filtered.length;
+
+  // Bind header sort clicks
+  list.querySelectorAll('.proc-header span[data-sort]').forEach(span => {
+    span.addEventListener('click', () => {
+      const col = span.dataset.sort;
+      if (activitySort.col === col) {
+        activitySort.dir = activitySort.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        activitySort.col = col;
+        activitySort.dir = col === 'name' ? 'asc' : 'desc';
+      }
+      updateProcessList();
+    });
+  });
+
+  // Bind row clicks
+  list.querySelectorAll('.proc-row').forEach(row => {
+    row.addEventListener('click', e => {
+      if (e.target.closest('.proc-kill-btn')) {
+        killProcess(parseInt(row.dataset.pid));
+        return;
+      }
+      activitySelectedPid = parseInt(row.dataset.pid);
+      document.getElementById('activityKillBtn').disabled = false;
+      list.querySelectorAll('.proc-row').forEach(r => r.classList.remove('selected'));
+      row.classList.add('selected');
+    });
+  });
 }
 
 // ---- System Settings ----

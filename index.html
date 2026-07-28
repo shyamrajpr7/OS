@@ -337,7 +337,7 @@
       </div>
 
       <!-- ========== ACTIVITY MONITOR ========== -->
-      <div class="mac-window app-window" id="activity-window" style="width:600px;height:420px;top:60px;left:300px;display:none;">
+      <div class="mac-window app-window" id="activity-window" style="width:640px;height:480px;top:60px;left:300px;display:none;">
         <div class="window-titlebar">
           <div class="traffic-lights">
             <button class="tl-btn tl-close" data-action="close"></button>
@@ -362,7 +362,11 @@
             <div class="stat"><span class="stat-label">Memory</span><span class="stat-value" id="memValue">0%</span></div>
             <div class="stat"><span class="stat-label">Disk</span><span class="stat-value" id="diskValue">0%</span></div>
             <div class="stat"><span class="stat-label">Network</span><span class="stat-value" id="netValue">0 MB/s</span></div>
-            <div class="stat"><span class="stat-label">Processes</span><span class="stat-value">10</span></div>
+            <div class="stat"><span class="stat-label">Processes</span><span class="stat-value" id="procCount">10</span></div>
+          </div>
+          <div class="activity-toolbar">
+            <input type="text" class="activity-search" id="activitySearch" placeholder="Filter processes..." spellcheck="false">
+            <button class="activity-kill-btn" id="activityKillBtn" disabled title="Force Quit Selected"><i class="ri-stop-circle-line"></i> Quit</button>
           </div>
           <div class="activity-process-list" id="activityProcessList"></div>
         </div>
