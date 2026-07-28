@@ -721,7 +721,8 @@ const appIdMap = {
   'Clock.app': 'clock-window',
   'Reminders.app': 'reminders-window',
   'Console.app': 'logs-window',
-  'Downloads.app': 'downloads-window'
+  'Downloads.app': 'downloads-window',
+  'Time Machine.app': 'backup-window'
 };
 
 function openApp(appName) {
@@ -753,6 +754,7 @@ function openApp(appName) {
   if (winId === 'activity-window') initActivityMonitor();
   if (winId === 'logs-window') { initLogsViewer(); setupLogsEvents(); }
   if (winId === 'downloads-window') initDownloadManager();
+  if (winId === 'backup-window') initBackupApp();
 }
 
 function closeWindow(winId) {
@@ -1103,6 +1105,160 @@ function terminalExec(cmd) {
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
   output.scrollTop = output.scrollHeight;
+}
+
+// ---- Backup & Restore (Time Machine) ----
+const backupState = {
+  backups: [],
+  backingUp: false,
+  selectedBackup: null
+};
+
+function initBackupApp() {
+  document.getElementById('backupStartBtn').addEventListener('click', startBackup);
+  document.getElementById('backupRestoreBtn').addEventListener('click', restoreBackup);
+  renderBackupApp();
+}
+
+function startBackup() {
+  if (backupState.backingUp) return;
+  backupState.backingUp = true;
+  const btn = document.getElementById('backupStartBtn');
+  const container = document.getElementById('backupProgressContainer');
+  const fill = document.getElementById('backupProgressFill');
+  const text = document.getElementById('backupProgressText');
+  const status = document.getElementById('backupStatus');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ri-loader-4-line"></i> Backing Up...';
+  container.style.display = '';
+  status.classList.add('backing-up');
+  document.getElementById('backupStatusDesc').textContent = 'Backup in progress...';
+
+  let progress = 0;
+  const stages = ['Preparing...', 'Scanning files...', 'Copying data...', 'Verifying...', 'Finalizing...'];
+  const interval = setInterval(() => {
+    progress += Math.random() * 4 + 1;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      fill.style.width = '100%';
+      text.textContent = 'Backup complete!';
+      // Add backup entry
+      const now = new Date();
+      const size = (Math.random() * 20 + 5).toFixed(1);
+      backupState.backups.unshift({
+        date: now.toLocaleString(),
+        dateShort: now.toLocaleDateString(),
+        time: now.toLocaleTimeString(),
+        size: parseFloat(size),
+        files: Math.floor(Math.random() * 50000 + 10000),
+        status: 'complete'
+      });
+      setTimeout(() => {
+        backupState.backingUp = false;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-play-line"></i> Back Up Now';
+        container.style.display = 'none';
+        fill.style.width = '0%';
+        status.classList.remove('backing-up');
+        document.getElementById('backupStatusDesc').textContent = 'Last backup: ' + backupState.backups[0].date;
+        document.getElementById('backupRestoreBtn').disabled = false;
+        renderBackupApp();
+      }, 800);
+      return;
+    }
+    fill.style.width = progress + '%';
+    const stage = stages[Math.min(Math.floor(progress / 25), stages.length - 1)];
+    text.textContent = `${stage} ${Math.round(progress)}%`;
+  }, 200);
+}
+
+function restoreBackup() {
+  if (!backupState.selectedBackup && backupState.backups.length > 0) {
+    backupState.selectedBackup = 0;
+  }
+  if (backupState.selectedBackup === null) return;
+  const backup = backupState.backups[backupState.selectedBackup];
+  if (!backup) return;
+  if (!confirm(`Restore from backup dated ${backup.date}?\nThis will simulate restoring ${backup.files.toLocaleString()} files.`)) return;
+
+  const btn = document.getElementById('backupRestoreBtn');
+  const container = document.getElementById('backupProgressContainer');
+  const fill = document.getElementById('backupProgressFill');
+  const text = document.getElementById('backupProgressText');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ri-loader-4-line"></i> Restoring...';
+  container.style.display = '';
+  backup.status = 'restoring';
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 5 + 2;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      fill.style.width = '100%';
+      text.textContent = 'Restore complete!';
+      backup.status = 'complete';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-history-line"></i> Restore';
+        container.style.display = 'none';
+        fill.style.width = '0%';
+        renderBackupApp();
+        alert('Restore completed successfully! System has been restored to the backup state.');
+      }, 800);
+      return;
+    }
+    fill.style.width = progress + '%';
+    text.textContent = `Restoring... ${Math.round(progress)}%`;
+  }, 150);
+}
+
+function renderBackupApp() {
+  // Info grid
+  if (backupState.backups.length > 0) {
+    document.getElementById('backupLatest').textContent = backupState.backups[0].date;
+    document.getElementById('backupOldest').textContent = backupState.backups[backupState.backups.length - 1].date;
+  }
+  document.getElementById('backupCount').textContent = backupState.backups.length;
+  const totalSize = backupState.backups.reduce((a, b) => a + b.size, 0);
+  document.getElementById('backupSize').textContent = totalSize.toFixed(1) + ' GB';
+
+  // Timeline
+  const track = document.getElementById('backupTimelineTrack');
+  if (backupState.backups.length === 0) {
+    track.innerHTML = '<div class="backup-timeline-empty">No backups yet. Click "Back Up Now" to start.</div>';
+  } else {
+    track.innerHTML = backupState.backups.slice(0, 10).map((b, i) => `
+      <div class="backup-timeline-item${backupState.selectedBackup === i ? ' selected' : ''}" data-index="${i}">
+        <div class="backup-timeline-dot"></div>
+        <div class="backup-timeline-date">${b.dateShort}</div>
+      </div>
+    `).join('');
+    track.querySelectorAll('.backup-timeline-item').forEach(el => {
+      el.addEventListener('click', () => {
+        backupState.selectedBackup = parseInt(el.dataset.index);
+        renderBackupApp();
+      });
+    });
+  }
+
+  // History
+  const historyList = document.getElementById('backupHistoryList');
+  if (backupState.backups.length === 0) {
+    historyList.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--mac-text-muted);text-align:center;">No backup history</div>';
+  } else {
+    historyList.innerHTML = backupState.backups.map((b, i) => `
+      <div class="backup-history-item">
+        <div class="backup-history-item-info">
+          <div class="backup-history-item-date">${b.date}</div>
+          <div class="backup-history-item-size">${b.size.toFixed(1)} GB • ${b.files.toLocaleString()} files</div>
+        </div>
+        <span class="backup-history-item-status ${b.status === 'restoring' ? 'restoring' : ''}">${b.status === 'restoring' ? 'Restoring' : 'Complete'}</span>
+      </div>
+    `).join('');
+  }
 }
 
 // ---- Download Manager ----

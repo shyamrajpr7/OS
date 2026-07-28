@@ -2947,6 +2947,81 @@ kbd {
   80% { transform: translateX(5px); }
 }
 
+/* ===== BACKUP & RESTORE (TIME MACHINE) ===== */
+.backup-body { display: flex; flex-direction: column; padding: 16px; gap: 14px; background: var(--mac-bg); overflow-y: auto; height: 100%; }
+.backup-status {
+  display: flex; align-items: center; gap: 14px; padding: 14px;
+  background: rgba(0,122,255,0.06); border-radius: 10px; border: 1px solid rgba(0,122,255,0.12);
+}
+.backup-status.backing-up { background: rgba(0,122,255,0.1); border-color: rgba(0,122,255,0.2); }
+.backup-status-icon { font-size: 32px; color: #007AFF; }
+.backup-status-title { font-size: 15px; font-weight: 600; color: var(--mac-text); }
+.backup-status-desc { font-size: 12px; color: var(--mac-text-muted); margin-top: 2px; }
+.backup-progress-container { margin-top: -6px; }
+.backup-progress-bar {
+  height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden;
+}
+.backup-progress-fill {
+  height: 100%; width: 0%; background: linear-gradient(90deg, #007AFF, #5AC8FA);
+  border-radius: 3px; transition: width 0.3s ease;
+}
+.backup-progress-text { font-size: 11px; color: var(--mac-text-muted); margin-top: 4px; text-align: center; }
+.backup-actions { display: flex; gap: 8px; }
+.backup-btn {
+  padding: 7px 16px; border-radius: 8px; border: 1px solid var(--mac-border);
+  background: rgba(255,255,255,0.06); color: var(--mac-text); font-size: 12px;
+  cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s ease;
+}
+.backup-btn:hover:not(:disabled) { background: rgba(255,255,255,0.12); }
+.backup-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.backup-btn.primary { background: rgba(0,122,255,0.15); border-color: rgba(0,122,255,0.2); color: #007AFF; }
+.backup-btn.primary:hover:not(:disabled) { background: rgba(0,122,255,0.25); }
+.backup-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.backup-info-item {
+  padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.backup-info-label { font-size: 10px; color: var(--mac-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.backup-info-value { font-size: 13px; font-weight: 600; color: var(--mac-text); margin-top: 2px; }
+.backup-timeline-label, .backup-history-label {
+  font-size: 11px; font-weight: 600; color: var(--mac-text-muted); text-transform: uppercase;
+  letter-spacing: 0.5px; margin-bottom: 6px;
+}
+.backup-timeline-track {
+  display: flex; gap: 6px; padding: 10px; border-radius: 8px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04);
+  overflow-x: auto; min-height: 50px; align-items: center;
+}
+.backup-timeline-empty { font-size: 12px; color: var(--mac-text-muted); text-align: center; width: 100%; }
+.backup-timeline-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  min-width: 60px; cursor: pointer; padding: 6px; border-radius: 6px;
+  transition: background 0.15s ease;
+}
+.backup-timeline-item:hover { background: rgba(255,255,255,0.06); }
+.backup-timeline-item.selected { background: rgba(0,122,255,0.15); }
+.backup-timeline-dot {
+  width: 12px; height: 12px; border-radius: 50%; background: #007AFF;
+  border: 2px solid rgba(0,122,255,0.3); transition: all 0.2s ease;
+}
+.backup-timeline-item:hover .backup-timeline-dot { transform: scale(1.2); }
+.backup-timeline-date { font-size: 9px; color: var(--mac-text-muted); white-space: nowrap; }
+.backup-history-list { max-height: 120px; overflow-y: auto; }
+.backup-history-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-size: 11px;
+}
+.backup-history-item:hover { background: rgba(255,255,255,0.03); }
+.backup-history-item-info { display: flex; flex-direction: column; gap: 1px; }
+.backup-history-item-date { color: var(--mac-text); font-weight: 500; }
+.backup-history-item-size { color: var(--mac-text-muted); font-size: 10px; }
+.backup-history-item-status {
+  font-size: 10px; padding: 2px 6px; border-radius: 4px;
+  background: rgba(40,200,64,0.1); color: #28C840;
+}
+.backup-history-item-status.restoring { background: rgba(0,122,255,0.1); color: #007AFF; }
+
 /* ===== DOWNLOAD MANAGER ===== */
 .dl-body { display: flex; flex-direction: column; height: 100%; padding: 0 !important; }
 .dl-toolbar {

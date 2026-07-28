@@ -372,6 +372,64 @@
         </div>
       </div>
 
+      <!-- ========== BACKUP & RESTORE ========== -->
+      <div class="mac-window app-window" id="backup-window" style="width:560px;height:440px;top:75px;left:300px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Time Machine</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body backup-body">
+          <div class="backup-status" id="backupStatus">
+            <div class="backup-status-icon"><i class="ri-time-line"></i></div>
+            <div class="backup-status-info">
+              <div class="backup-status-title">Time Machine</div>
+              <div class="backup-status-desc" id="backupStatusDesc">Ready to back up</div>
+            </div>
+          </div>
+          <div class="backup-progress-container" id="backupProgressContainer" style="display:none;">
+            <div class="backup-progress-bar"><div class="backup-progress-fill" id="backupProgressFill"></div></div>
+            <div class="backup-progress-text" id="backupProgressText">Preparing backup...</div>
+          </div>
+          <div class="backup-actions">
+            <button class="backup-btn primary" id="backupStartBtn"><i class="ri-play-line"></i> Back Up Now</button>
+            <button class="backup-btn" id="backupRestoreBtn" disabled><i class="ri-history-line"></i> Restore</button>
+          </div>
+          <div class="backup-info-grid">
+            <div class="backup-info-item">
+              <div class="backup-info-label">Latest Backup</div>
+              <div class="backup-info-value" id="backupLatest">Never</div>
+            </div>
+            <div class="backup-info-item">
+              <div class="backup-info-label">Oldest Backup</div>
+              <div class="backup-info-value" id="backupOldest">--</div>
+            </div>
+            <div class="backup-info-item">
+              <div class="backup-info-label">Total Backups</div>
+              <div class="backup-info-value" id="backupCount">0</div>
+            </div>
+            <div class="backup-info-item">
+              <div class="backup-info-label">Backup Size</div>
+              <div class="backup-info-value" id="backupSize">0 GB</div>
+            </div>
+          </div>
+          <div class="backup-timeline" id="backupTimeline">
+            <div class="backup-timeline-label">Backup Timeline</div>
+            <div class="backup-timeline-track" id="backupTimelineTrack">
+              <div class="backup-timeline-empty">No backups yet. Click "Back Up Now" to start.</div>
+            </div>
+          </div>
+          <div class="backup-history" id="backupHistory">
+            <div class="backup-history-label">Backup History</div>
+            <div class="backup-history-list" id="backupHistoryList"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ========== DOWNLOAD MANAGER ========== -->
       <div class="mac-window app-window" id="downloads-window" style="width:520px;height:400px;top:80px;left:320px;display:none;">
         <div class="window-titlebar">
@@ -1113,6 +1171,11 @@
 
       <div class="dock-item" data-app="Downloads.app" data-tooltip="Downloads">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#0A84FF"/><path d="M24 8v20m0 0l-8-8m8 8l8-8" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 36h28" stroke="white" stroke-width="3" stroke-linecap="round"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+
+      <div class="dock-item" data-app="Time Machine.app" data-tooltip="Time Machine">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="14" fill="none" stroke="#007AFF" stroke-width="2.5"/><path d="M24 14v12l8 5" stroke="#007AFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 24 A10 10 0 0 1 24 14" stroke="#5AC8FA" stroke-width="2" stroke-linecap="round" fill="none"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-item" data-app="System Settings.app" data-tooltip="System Settings">
