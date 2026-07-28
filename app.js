@@ -3378,31 +3378,117 @@ document.addEventListener('click', (e) => {
 
 renderWeatherForecast();
 
-// ---- Disk Utility ----
-const diskUsage = [
-  { label: 'Applications', size: 48.2, color: '#FF6B6B' },
-  { label: 'System Data', size: 32.5, color: '#4ECDC4' },
-  { label: 'Photos', size: 22.1, color: '#45B7D1' },
-  { label: 'Music', size: 18.4, color: '#96CEB4' },
-  { label: 'Documents', size: 15.8, color: '#FFEAA7' },
-  { label: 'Movies', size: 12.3, color: '#DDA0DD' },
-  { label: 'Other', size: 8.7, color: '#95A5A6' },
+// ---- Disk Utility (Enhanced) ----
+const diskTotal = 512;
+let partitions = [
+  { id: 1, name: 'Macintosh HD', size: 320, format: 'APFS', color: '#007AFF', mountable: true },
+  { id: 2, name: 'Data', size: 120, format: 'APFS', color: '#28C840', mountable: true },
+  { id: 3, name: 'Recovery', size: 8, format: 'HFS+', color: '#FF9500', mountable: false }
 ];
-const diskTotal = 256;
-const diskUsed = diskUsage.reduce((a, b) => a + b.size, 0);
+let nextPartId = 4;
+const partColors = ['#007AFF', '#28C840', '#FF9500', '#FF3B30', '#AF52DE', '#5AC8FA', '#FF2D55', '#FFCC00'];
 
 function renderDiskUtil() {
-  const chart = document.getElementById('diskutilChart');
+  const bar = document.getElementById('diskutilPartitionBar');
+  const list = document.getElementById('diskutilPartitionList');
   const legend = document.getElementById('diskutilLegend');
-  chart.innerHTML = diskUsage.map(d =>
-    `<div class="diskutil-chart-seg" style="flex:${d.size};background:${d.color};" title="${d.label}: ${d.size} GB"></div>`
-  ).join('') + `<div class="diskutil-chart-seg" style="flex:${diskTotal - diskUsed};background:rgba(255,255,255,0.05);" title="Available: ${(diskTotal - diskUsed).toFixed(1)} GB"></div>`;
-  legend.innerHTML = diskUsage.map(d =>
-    `<div class="diskutil-legend-item"><span class="diskutil-legend-dot" style="background:${d.color};"></span><span class="diskutil-legend-label">${d.label}</span><span class="diskutil-legend-value">${d.size} GB</span></div>`
-  ).join('') + `<div class="diskutil-legend-item"><span class="diskutil-legend-dot" style="background:rgba(255,255,255,0.1);"></span><span class="diskutil-legend-label">Available</span><span class="diskutil-legend-value">${(diskTotal - diskUsed).toFixed(1)} GB</span></div>`;
+  if (!bar || !list) return;
+  const used = partitions.reduce((a, p) => a + p.size, 0);
+  const free = diskTotal - used;
+
+  // Partition bar
+  bar.innerHTML = partitions.map(p =>
+    `<div class="diskutil-partition-seg" style="flex:${p.size};background:${p.color};" title="${p.name}: ${p.size} GB">${p.size >= 30 ? p.name : ''}</div>`
+  ).join('') + (free > 0 ? `<div class="diskutil-partition-seg" style="flex:${free};background:rgba(255,255,255,0.08);" title="Available: ${free} GB"></div>` : '');
+
+  // Partition list
+  list.innerHTML = partitions.map(p => `
+    <div class="diskutil-partition-item" data-id="${p.id}">
+      <div class="diskutil-partition-dot" style="background:${p.color};"></div>
+      <div class="diskutil-partition-name">${p.name}</div>
+      <div class="diskutil-partition-size">${p.size} GB</div>
+      <div class="diskutil-partition-format">${p.format}</div>
+      <div class="diskutil-partition-actions">
+        <button class="diskutil-part-btn" data-action="rename" title="Rename"><i class="ri-edit-line"></i></button>
+        <button class="diskutil-part-btn" data-action="resize" title="Resize"><i class="ri-drag-move-line"></i></button>
+        ${p.mountable ? `<button class="diskutil-part-btn" data-action="mount" title="${p.mounted !== false ? 'Unmount' : 'Mount'}"><i class="ri-${p.mounted !== false ? 'eject' : 'hard-drive'}-2-line"></i></button>` : ''}
+        <button class="diskutil-part-btn danger" data-action="delete" title="Delete"><i class="ri-delete-bin-line"></i></button>
+      </div>
+    </div>
+  `).join('');
+
+  // Legend
+  legend.innerHTML = partitions.map(p =>
+    `<div class="diskutil-legend-item"><span class="diskutil-legend-dot" style="background:${p.color};"></span><span class="diskutil-legend-label">${p.name}</span><span class="diskutil-legend-value">${p.size} GB</span></div>`
+  ).join('') + `<div class="diskutil-legend-item"><span class="diskutil-legend-dot" style="background:rgba(255,255,255,0.1);"></span><span class="diskutil-legend-label">Available</span><span class="diskutil-legend-value">${free} GB</span></div>`;
+
+  // Bind events
+  list.querySelectorAll('.diskutil-part-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = parseInt(btn.closest('.diskutil-partition-item').dataset.id);
+      const action = btn.dataset.action;
+      handlePartitionAction(id, action);
+    });
+  });
 }
 
-renderDiskUtil();
+function handlePartitionAction(id, action) {
+  const part = partitions.find(p => p.id === id);
+  if (!part) return;
+  switch (action) {
+    case 'rename': {
+      const newName = prompt('Rename partition:', part.name);
+      if (newName && newName !== part.name) { part.name = newName; renderDiskUtil(); }
+      break;
+    }
+    case 'resize': {
+      const maxSize = diskTotal - partitions.filter(p => p.id !== id).reduce((a, p) => a + p.size, 0);
+      const newSize = parseInt(prompt(`Resize "${part.name}" (1-${maxSize} GB):`, part.size));
+      if (newSize && newSize >= 1 && newSize <= maxSize) { part.size = newSize; renderDiskUtil(); }
+      break;
+    }
+    case 'mount':
+      part.mounted = part.mounted === false ? true : false;
+      renderDiskUtil();
+      break;
+    case 'delete':
+      if (partitions.length <= 1) { alert('Cannot delete the last partition.'); return; }
+      if (confirm(`Delete partition "${part.name}"? This cannot be undone.`)) {
+        partitions = partitions.filter(p => p.id !== id);
+        renderDiskUtil();
+      }
+      break;
+  }
+}
+
+function addPartition() {
+  const used = partitions.reduce((a, p) => a + p.size, 0);
+  const free = diskTotal - used;
+  if (free < 10) { alert('Not enough space to create a new partition. Minimum 10 GB required.'); return; }
+  const name = prompt('New partition name:', 'Untitled');
+  if (!name) return;
+  const sizeStr = prompt(`Size in GB (1-${free}):`, Math.min(50, free));
+  const size = parseInt(sizeStr);
+  if (!size || size < 1 || size > free) return;
+  const format = confirm('Use APFS format? (Cancel for HFS+)') ? 'APFS' : 'HFS+';
+  partitions.push({
+    id: nextPartId++,
+    name,
+    size,
+    format,
+    color: partColors[(partitions.length) % partColors.length],
+    mountable: true
+  });
+  renderDiskUtil();
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+  renderDiskUtil();
+  const addBtn = document.getElementById('diskutilAddPart');
+  if (addBtn) addBtn.addEventListener('click', addPartition);
+});
 
 // ---- Clipboard Manager ----
 const clipboardHistory = [];

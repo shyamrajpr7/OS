@@ -837,7 +837,7 @@
       </div>
 
       <!-- ========== DISK UTILITY ========== -->
-      <div class="mac-window app-window" id="diskutil-window" style="width:620px;height:460px;top:80px;left:260px;display:none;">
+      <div class="mac-window app-window" id="diskutil-window" style="width:640px;height:500px;top:80px;left:260px;display:none;">
         <div class="window-titlebar">
           <div class="traffic-lights">
             <button class="tl-btn tl-close" data-action="close"></button>
@@ -853,11 +853,15 @@
               <div class="diskutil-drive-icon"><i class="ri-hard-drive-2-line"></i></div>
               <div class="diskutil-drive-info">
                 <div class="diskutil-drive-name">Macintosh HD</div>
-                <div class="diskutil-drive-size">256 GB Flash Storage</div>
+                <div class="diskutil-drive-size">512 GB Flash Storage</div>
               </div>
             </div>
+            <div class="diskutil-actions">
+              <button class="diskutil-action-btn" id="diskutilAddPart" title="Add Partition"><i class="ri-add-line"></i> Add</button>
+            </div>
           </div>
-          <div class="diskutil-chart" id="diskutilChart"></div>
+          <div class="diskutil-partition-bar" id="diskutilPartitionBar"></div>
+          <div class="diskutil-partition-list" id="diskutilPartitionList"></div>
           <div class="diskutil-legend" id="diskutilLegend"></div>
         </div>
       </div>

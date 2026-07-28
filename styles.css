@@ -2433,23 +2433,58 @@ kbd {
 .weather-forecast-day-lo { font-size: 11px; color: var(--mac-text-muted); }
 
 /* ===================== DISK UTILITY ===================== */
-.diskutil-body { display: flex; flex-direction: column; padding: 20px; gap: 16px; background: var(--mac-bg); overflow-y: auto; }
-.diskutil-header { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--mac-border); }
+.diskutil-body { display: flex; flex-direction: column; padding: 20px; gap: 14px; background: var(--mac-bg); overflow-y: auto; }
+.diskutil-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--mac-border); }
 .diskutil-drive { display: flex; align-items: center; gap: 12px; }
 .diskutil-drive-icon { font-size: 36px; color: var(--mac-accent); }
 .diskutil-drive-name { font-size: 16px; font-weight: 600; color: var(--mac-text); }
 .diskutil-drive-size { font-size: 12px; color: var(--mac-text-muted); }
-.diskutil-chart {
-  display: flex; height: 28px; border-radius: 6px; overflow: hidden; gap: 2px;
-  background: rgba(255,255,255,0.05); margin-top: 8px;
+.diskutil-actions { display: flex; gap: 6px; }
+.diskutil-action-btn {
+  padding: 5px 12px; border-radius: 6px; border: 1px solid var(--mac-border);
+  background: rgba(255,255,255,0.06); color: var(--mac-text); font-size: 11px;
+  cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s ease;
 }
-.diskutil-chart-seg { transition: flex 0.5s cubic-bezier(0.4,0,0.2,1); position: relative; cursor: pointer; }
-.diskutil-chart-seg:hover { filter: brightness(1.2); }
-.diskutil-chart-seg:first-child { border-radius: 6px 0 0 6px; }
-.diskutil-chart-seg:last-child { border-radius: 0 6px 6px 0; }
-.diskutil-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
-.diskutil-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-.diskutil-legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.diskutil-action-btn:hover { background: rgba(255,255,255,0.12); }
+.diskutil-action-btn.danger { color: #FF3B30; border-color: rgba(255,59,48,0.2); }
+.diskutil-action-btn.danger:hover { background: rgba(255,59,48,0.1); }
+.diskutil-partition-bar {
+  display: flex; height: 32px; border-radius: 6px; overflow: hidden; gap: 2px;
+  background: rgba(255,255,255,0.05);
+}
+.diskutil-partition-seg {
+  transition: flex 0.5s cubic-bezier(0.4,0,0.2,1); position: relative; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.8);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 6px;
+}
+.diskutil-partition-seg:hover { filter: brightness(1.2); }
+.diskutil-partition-seg:first-child { border-radius: 6px 0 0 6px; }
+.diskutil-partition-seg:last-child { border-radius: 0 6px 6px 0; }
+.diskutil-partition-list { display: flex; flex-direction: column; gap: 6px; }
+.diskutil-partition-item {
+  display: grid; grid-template-columns: 10px 1fr 80px 80px 90px;
+  align-items: center; gap: 10px; padding: 8px 10px;
+  border-radius: 8px; background: rgba(255,255,255,0.03);
+  border: 1px solid transparent; transition: all 0.15s ease;
+}
+.diskutil-partition-item:hover { background: rgba(255,255,255,0.06); border-color: var(--mac-border); }
+.diskutil-partition-dot { width: 10px; height: 10px; border-radius: 3px; }
+.diskutil-partition-name { font-size: 13px; font-weight: 500; color: var(--mac-text); }
+.diskutil-partition-size { font-size: 12px; color: var(--mac-text); text-align: right; font-variant-numeric: tabular-nums; }
+.diskutil-partition-format { font-size: 11px; color: var(--mac-text-muted); text-align: center; }
+.diskutil-partition-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.diskutil-part-btn {
+  width: 24px; height: 24px; border-radius: 5px; border: none;
+  background: rgba(255,255,255,0.06); color: var(--mac-text-muted);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  font-size: 11px; transition: all 0.15s ease;
+}
+.diskutil-part-btn:hover { background: rgba(255,255,255,0.12); color: var(--mac-text); }
+.diskutil-part-btn.danger:hover { background: rgba(255,59,48,0.15); color: #FF3B30; }
+.diskutil-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px; }
+.diskutil-legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+.diskutil-legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 .diskutil-legend-label { color: var(--mac-text-muted); flex: 1; }
 .diskutil-legend-value { color: var(--mac-text); font-weight: 600; font-variant-numeric: tabular-nums; }
 
