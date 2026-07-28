@@ -1208,6 +1208,119 @@ function switchSettingsPanel(panel) {
   if (target) target.style.display = '';
 }
 
+// ---- Software Update ----
+const suState = {
+  currentVersion: '1.0.0',
+  build: '24A123',
+  lastChecked: null,
+  hasUpdate: false,
+  installing: false,
+  history: [
+    { version: '1.0.0', date: 'May 15, 2026', note: 'Initial release' },
+    { version: '0.9.0-beta', date: 'Apr 20, 2026', note: 'Public beta' }
+  ],
+  availableUpdate: {
+    version: '1.0.1',
+    build: '24B456',
+    desc: 'Performance improvements, security patches, and bug fixes.',
+    size: '2.4 GB'
+  }
+};
+
+function checkForUpdates() {
+  const btn = document.getElementById('suCheckBtn');
+  const spinner = document.getElementById('suSpinner');
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+  spinner.style.display = 'block';
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Check for Updates';
+    spinner.style.display = 'none';
+    suState.lastChecked = new Date().toLocaleString();
+    document.getElementById('suLastChecked').textContent = suState.lastChecked;
+
+    // Simulate finding an update
+    if (!suState.hasUpdate) {
+      suState.hasUpdate = true;
+      document.getElementById('suStatus').classList.add('has-update');
+      document.querySelector('.su-status-icon').innerHTML = '<i class="ri-information-line"></i>';
+      document.querySelector('.su-status-title').textContent = 'An update is available';
+      document.querySelector('.su-status-version').textContent = suState.availableUpdate.version + ' (Build ' + suState.availableUpdate.build + ')';
+      document.getElementById('suUpdateAvail').textContent = suState.availableUpdate.version;
+      document.getElementById('suUpdateAvailable').style.display = '';
+      document.getElementById('suUpdateName').textContent = 'Thread OS ' + suState.availableUpdate.version;
+      document.getElementById('suUpdateDesc').textContent = suState.availableUpdate.desc;
+      document.getElementById('suUpdateSize').textContent = 'Size: ' + suState.availableUpdate.size;
+      document.getElementById('generalUpdateStatus').textContent = 'Update available';
+    } else {
+      document.querySelector('.su-status-title').textContent = 'Thread OS is up to date';
+    }
+
+    // Show history
+    renderUpdateHistory();
+  }, 1800 + Math.random() * 1200);
+}
+
+function renderUpdateHistory() {
+  const section = document.getElementById('suHistorySection');
+  const list = document.getElementById('suHistoryList');
+  if (suState.history.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = '';
+  list.innerHTML = suState.history.map(h =>
+    `<div class="su-history-item"><span>${h.version} — ${h.note}</span><span>${h.date}</span></div>`
+  ).join('');
+}
+
+function installUpdate() {
+  if (suState.installing) return;
+  suState.installing = true;
+  const btn = document.getElementById('suInstallBtn');
+  const container = document.getElementById('suProgressContainer');
+  const fill = document.getElementById('suProgressFill');
+  const text = document.getElementById('suProgressText');
+  btn.disabled = true;
+  btn.textContent = 'Installing...';
+  container.style.display = '';
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 6 + 2;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      fill.style.width = '100%';
+      text.textContent = 'Installation complete!';
+      btn.textContent = 'Restart Now';
+      btn.disabled = false;
+      btn.onclick = () => {
+        suState.installing = false;
+        suState.hasUpdate = false;
+        suState.currentVersion = suState.availableUpdate.version;
+        suState.build = suState.availableUpdate.build;
+        suState.history.unshift({ version: suState.availableUpdate.version, date: new Date().toLocaleDateString(), note: 'Latest release' });
+
+        // Reset UI
+        document.getElementById('suStatus').classList.remove('has-update');
+        document.querySelector('.su-status-icon').innerHTML = '<i class="ri-check-double-line"></i>';
+        document.querySelector('.su-status-title').textContent = 'Thread OS is up to date';
+        document.querySelector('.su-status-version').textContent = 'Version ' + suState.currentVersion + ' (Build ' + suState.build + ')';
+        document.getElementById('suUpdateAvail').textContent = 'None';
+        document.getElementById('suUpdateAvailable').style.display = 'none';
+        container.style.display = 'none';
+        document.getElementById('generalUpdateStatus').textContent = 'Up to date';
+        btn.textContent = 'Install Now';
+        btn.onclick = installUpdate;
+        renderUpdateHistory();
+      };
+      return;
+    }
+    fill.style.width = progress + '%';
+    text.textContent = `Downloading... ${Math.round(progress)}%`;
+  }, 300);
+}
+
 // ---- TextEdit ----
 function teNewFile() {
   teCurrentFile = null;

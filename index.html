@@ -388,15 +388,59 @@
             <div class="settings-nav-item" data-panel="network"><i class="ri-wifi-line"></i><span>Network</span></div>
             <div class="settings-nav-item" data-panel="battery"><i class="ri-battery-2-charge-line"></i><span>Battery</span></div>
             <div class="settings-nav-item" data-panel="privacy"><i class="ri-shield-check-line"></i><span>Privacy & Security</span></div>
+            <div class="settings-nav-item" data-panel="software-update"><i class="ri-download-cloud-line"></i><span>Software Update</span></div>
           </aside>
           <div class="settings-content" id="settingsContent">
             <!-- General -->
             <div class="settings-panel" id="settings-general">
               <h2>General</h2>
               <div class="setting-row"><span>About This Mac</span><span class="setting-desc">Thread OS 1.0.0</span></div>
-              <div class="setting-row"><span>Software Update</span><span class="setting-desc">Up to date</span></div>
+              <div class="setting-row clickable" onclick="switchSettingsPanel('software-update')"><span>Software Update</span><span class="setting-desc" id="generalUpdateStatus">Up to date</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>
               <div class="setting-row"><span>Storage</span><span class="setting-desc">234 GB available of 512 GB</span></div>
               <div class="setting-row"><span>Login Items</span><span class="setting-desc">2 items</span></div>
+            </div>
+            <!-- Software Update -->
+            <div class="settings-panel" id="settings-software-update" style="display:none;">
+              <h2>Software Update</h2>
+              <div class="su-status" id="suStatus">
+                <div class="su-status-icon"><i class="ri-check-double-line"></i></div>
+                <div class="su-status-text">
+                  <div class="su-status-title">Thread OS is up to date</div>
+                  <div class="su-status-version">Version 1.0.0 (Build 24A123)</div>
+                </div>
+              </div>
+              <div class="su-check-row">
+                <button class="su-check-btn" id="suCheckBtn" onclick="checkForUpdates()">Check for Updates</button>
+                <div class="su-spinner" id="suSpinner" style="display:none;"></div>
+              </div>
+              <div class="su-auto-row">
+                <span>Automatically keep my Mac up to date</span>
+                <div class="toggle-switch on" onclick="toggleSetting(this)" id="suAutoUpdate"></div>
+              </div>
+              <div class="su-details" id="suDetails">
+                <div class="su-detail-row"><span>Current Version</span><span>Thread OS 1.0.0</span></div>
+                <div class="su-detail-row"><span>Last Checked</span><span id="suLastChecked">Never</span></div>
+                <div class="su-detail-row"><span>Update Available</span><span id="suUpdateAvail">None</span></div>
+              </div>
+              <div class="su-history-section" id="suHistorySection" style="display:none;">
+                <h3>Update History</h3>
+                <div class="su-history-list" id="suHistoryList"></div>
+              </div>
+              <div class="su-update-available" id="suUpdateAvailable" style="display:none;">
+                <div class="su-update-card">
+                  <div class="su-update-icon"><i class="ri-download-cloud-2-line"></i></div>
+                  <div class="su-update-info">
+                    <div class="su-update-name" id="suUpdateName">Thread OS 1.0.1</div>
+                    <div class="su-update-desc" id="suUpdateDesc">Performance improvements and bug fixes.</div>
+                    <div class="su-update-size" id="suUpdateSize">Size: 2.4 GB</div>
+                  </div>
+                  <button class="su-install-btn" id="suInstallBtn" onclick="installUpdate()">Install Now</button>
+                </div>
+                <div class="su-progress-container" id="suProgressContainer" style="display:none;">
+                  <div class="su-progress-bar"><div class="su-progress-fill" id="suProgressFill"></div></div>
+                  <div class="su-progress-text" id="suProgressText">Downloading... 0%</div>
+                </div>
+              </div>
             </div>
             <!-- Appearance -->
             <div class="settings-panel" id="settings-appearance" style="display:none;">
