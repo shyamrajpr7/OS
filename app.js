@@ -13,7 +13,8 @@ const fileSystem = {
       { name: 'Activity Monitor.app', type: 'app', icon: 'activity', size: '15.3 MB', kind: 'Application', date: 'Jan 20, 2026' },
       { name: 'System Settings.app', type: 'app', icon: 'settings', size: '9.7 MB', kind: 'Application', date: 'Apr 5, 2026' },
       { name: 'Preview.app', type: 'app', icon: 'preview', size: '7.8 MB', kind: 'Application', date: 'Feb 28, 2026' },
-      { name: 'Safari.app', type: 'app', icon: 'safari', size: '22.1 MB', kind: 'Application', date: 'May 1, 2026' }
+      { name: 'Safari.app', type: 'app', icon: 'safari', size: '22.1 MB', kind: 'Application', date: 'May 1, 2026' },
+      { name: 'Console.app', type: 'app', icon: 'terminal', size: '4.2 MB', kind: 'Application', date: 'Mar 15, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -718,7 +719,8 @@ const appIdMap = {
   'Music.app': 'music-window',
   'Disk Utility.app': 'diskutil-window',
   'Clock.app': 'clock-window',
-  'Reminders.app': 'reminders-window'
+  'Reminders.app': 'reminders-window',
+  'Console.app': 'logs-window'
 };
 
 function openApp(appName) {
@@ -748,6 +750,7 @@ function openApp(appName) {
 
   if (winId === 'terminal-window') initTerminal();
   if (winId === 'activity-window') initActivityMonitor();
+  if (winId === 'logs-window') { initLogsViewer(); setupLogsEvents(); }
 }
 
 function closeWindow(winId) {
@@ -1098,6 +1101,140 @@ function terminalExec(cmd) {
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
   output.scrollTop = output.scrollHeight;
+}
+
+// ---- System Logs Viewer ----
+const logState = {
+  entries: [],
+  paused: false,
+  filter: 'all',
+  search: '',
+  interval: null,
+  maxEntries: 500
+};
+
+const logSources = ['kernel', 'WindowServer', 'launchd', 'Safari', 'Finder', 'mds_stores', 'Spotlight', 'Dock', 'coreaudiod', 'securityd', 'Wi-Fi', 'bluetoothd', 'AirPlay', 'PhotoAnalysis', ' Suggestions'];
+const logMessages = {
+  error: [
+    'Failed to allocate memory at 0x7fff5fbff000',
+    'Connection refused: network unreachable',
+    'Disk I/O error on /dev/disk1s2',
+    'Authentication failed for user session',
+    'Crash detected in process WindowServer',
+    'Unable to mount volume: Resource busy',
+    'Timeout waiting for response from daemon',
+    'Permission denied: /System/Library/Extensions'
+  ],
+  warning: [
+    'High memory usage detected: 87%',
+    'Battery level critical: 5%',
+    'Wi-Fi signal strength low',
+    'Disk space running low: 12 GB remaining',
+    'Process using excessive CPU: 98%',
+    'Certificate expiring in 7 days',
+    'Rate limit exceeded for API calls',
+    'Cache corrupted, rebuilding索引'
+  ],
+  info: [
+    'System boot completed successfully',
+    'Wi-Fi connected to ThreadOS-5G',
+    'Display brightness adjusted to 80%',
+    'User login: shyamraj',
+    'Time Machine backup started',
+    'Software update check completed',
+    'Indexing completed for /Users/shyamraj',
+    'AirPlay connected to Living Room'
+  ],
+  debug: [
+    'GC pause: 12ms',
+    'Render frame time: 16.2ms',
+    'Network request completed in 234ms',
+    'Cache hit ratio: 94.2%',
+    'Buffer pool: 256MB allocated',
+    'DNS resolution: 3ms',
+    'TLS handshake completed',
+    'Memory pressure: normal'
+  ]
+};
+
+function generateLogEntry() {
+  const levels = ['error', 'warning', 'info', 'info', 'info', 'info', 'debug', 'debug'];
+  const level = levels[Math.floor(Math.random() * levels.length)];
+  const messages = logMessages[level];
+  const msg = messages[Math.floor(Math.random() * messages.length)];
+  const source = logSources[Math.floor(Math.random() * logSources.length)];
+  const now = new Date();
+  const time = now.toTimeString().slice(0, 8) + '.' + String(now.getMilliseconds()).padStart(3, '0');
+  return { time, level, source, message: msg };
+}
+
+function initLogsViewer() {
+  if (logState.interval) return;
+  // Generate initial log entries
+  for (let i = 0; i < 30; i++) {
+    const entry = generateLogEntry();
+    entry.time = new Date(Date.now() - (30 - i) * 2000).toTimeString().slice(0, 8) + '.000';
+    logState.entries.push(entry);
+  }
+  renderLogs();
+  logState.interval = setInterval(() => {
+    if (logState.paused) return;
+    logState.entries.push(generateLogEntry());
+    if (logState.entries.length > logState.maxEntries) logState.entries.shift();
+    renderLogs();
+  }, 1500);
+}
+
+function stopLogsViewer() {
+  if (logState.interval) { clearInterval(logState.interval); logState.interval = null; }
+}
+
+function renderLogs() {
+  const list = document.getElementById('logsList');
+  if (!list) return;
+  let filtered = logState.entries;
+  if (logState.filter !== 'all') {
+    filtered = filtered.filter(e => e.level === logState.filter.slice(0, -1)); // 'errors' -> 'error'
+  }
+  if (logState.search) {
+    const q = logState.search.toLowerCase();
+    filtered = filtered.filter(e => e.message.toLowerCase().includes(q) || e.source.toLowerCase().includes(q));
+  }
+  list.innerHTML = filtered.map(e =>
+    `<div class="log-entry log-${e.level}">
+      <span class="log-time">${e.time}</span>
+      <span class="log-level ${e.level}">${e.level}</span>
+      <span class="log-source">${e.source}</span>
+      <span class="log-message">${e.message}</span>
+    </div>`
+  ).join('');
+  document.getElementById('logsCount').textContent = logState.entries.length + ' entries';
+  document.getElementById('logsFilterInfo').textContent = `Showing ${filtered.length} of ${logState.entries.length}`;
+  if (document.getElementById('logsAutoScroll').checked) {
+    list.scrollTop = list.scrollHeight;
+  }
+}
+
+function setupLogsEvents() {
+  // Filter buttons
+  document.querySelectorAll('.logs-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.logs-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      logState.filter = btn.dataset.filter;
+      renderLogs();
+    });
+  });
+  // Search
+  const search = document.getElementById('logsSearch');
+  if (search) search.addEventListener('input', () => { logState.search = search.value; renderLogs(); });
+  // Clear
+  document.getElementById('logsClearBtn').addEventListener('click', () => { logState.entries = []; renderLogs(); });
+  // Pause
+  document.getElementById('logsPauseBtn').addEventListener('click', () => {
+    logState.paused = !logState.paused;
+    document.getElementById('logsPauseBtn').innerHTML = logState.paused ? '<i class="ri-play-line"></i>' : '<i class="ri-pause-line"></i>';
+  });
 }
 
 // ---- Activity Monitor (Enhanced) ----
@@ -1719,6 +1856,7 @@ function spotlightSearch(query) {
     { name: 'Terminal', app: 'Terminal.app', icon: 'ri-terminal-box-line', kind: 'Application' },
     { name: 'TextEdit', app: 'TextEdit.app', icon: 'ri-file-text-line', kind: 'Application' },
     { name: 'Activity Monitor', app: 'Activity Monitor.app', icon: 'ri-pulse-line', kind: 'Application' },
+    { name: 'Console', app: 'Console.app', icon: 'ri-terminal-box-line', kind: 'Application' },
     { name: 'System Settings', app: 'System Settings.app', icon: 'ri-settings-3-line', kind: 'Application' },
     { name: 'Preview', app: 'Preview.app', icon: 'ri-image-line', kind: 'Application' }
   ];
@@ -2376,6 +2514,7 @@ function openForceQuit() {
     { name: 'Terminal', app: 'Terminal.app', icon: 'ri-terminal-box-line', status: 'Running' },
     { name: 'TextEdit', app: 'TextEdit.app', icon: 'ri-file-text-line', status: 'Running' },
     { name: 'Activity Monitor', app: 'Activity Monitor.app', icon: 'ri-pulse-line', status: 'Running' },
+    { name: 'Console', app: 'Console.app', icon: 'ri-terminal-box-line', status: 'Running' },
     { name: 'System Settings', app: 'System Settings.app', icon: 'ri-settings-3-line', status: 'Running' }
   ];
 

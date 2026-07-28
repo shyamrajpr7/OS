@@ -372,6 +372,39 @@
         </div>
       </div>
 
+      <!-- ========== SYSTEM LOGS ========== -->
+      <div class="mac-window app-window" id="logs-window" style="width:680px;height:450px;top:70px;left:280px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Console</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body logs-body">
+          <div class="logs-toolbar">
+            <div class="logs-filter-group">
+              <button class="logs-filter active" data-filter="all">All</button>
+              <button class="logs-filter" data-filter="system">System</button>
+              <button class="logs-filter" data-filter="app">App</button>
+              <button class="logs-filter" data-filter="error">Errors</button>
+              <button class="logs-filter" data-filter="warning">Warnings</button>
+            </div>
+            <input type="text" class="logs-search" id="logsSearch" placeholder="Search logs..." spellcheck="false">
+            <button class="logs-action-btn" id="logsClearBtn" title="Clear Logs"><i class="ri-delete-bin-line"></i></button>
+            <button class="logs-action-btn" id="logsPauseBtn" title="Pause/Resume"><i class="ri-pause-line"></i></button>
+            <label class="logs-autoscroll-label"><input type="checkbox" id="logsAutoScroll" checked> Auto-scroll</label>
+          </div>
+          <div class="logs-list" id="logsList"></div>
+          <div class="logs-footer">
+            <span id="logsCount">0 entries</span>
+            <span id="logsFilterInfo">Showing all</span>
+          </div>
+        </div>
+      </div>
+
       <!-- ========== SYSTEM SETTINGS ========== -->
       <div class="mac-window app-window" id="settings-window" style="width:680px;height:460px;top:80px;left:250px;display:none;">
         <div class="window-titlebar">
@@ -1040,6 +1073,11 @@
       </div>
       <div class="dock-item" data-app="Activity Monitor.app" data-tooltip="Activity Monitor">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1A1A2E"/><polyline points="6,30 14,18 22,26 30,12 38,20 42,14" stroke="#28C840" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+
+      <div class="dock-item" data-app="Console.app" data-tooltip="Console">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="8" width="36" height="32" rx="4" fill="#0D1117"/><text x="12" y="22" font-family="monospace" font-size="10" fill="#28C840">&gt;_</text><line x1="12" y1="28" x2="36" y2="28" stroke="#FF453A" stroke-width="1.5" opacity="0.5"/><line x1="12" y1="32" x2="30" y2="32" stroke="#FF9500" stroke-width="1.5" opacity="0.4"/><line x1="12" y1="36" x2="34" y2="36" stroke="#5AC8FA" stroke-width="1.5" opacity="0.3"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-item" data-app="System Settings.app" data-tooltip="System Settings">
