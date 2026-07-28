@@ -3425,3 +3425,257 @@ document.getElementById('ccDarkMode').addEventListener('click', function () {
   });
 });
 
+// ============================================================
+// VIRTUAL DESKTOPS (SPACES)
+// ============================================================
+const spaces = {
+  current: 0,
+  maxSpaces: 4,
+  windows: {},  // windowId -> spaceIndex
+  initialized: false,
+
+  init() {
+    if (this.initialized) return;
+    this.initialized = true;
+    this.bindEvents();
+    this.showIndicatorBriefly();
+  },
+
+  bindEvents() {
+    const indicator = document.getElementById('spacesIndicator');
+    const overview = document.getElementById('spacesOverview');
+    const overviewGrid = document.getElementById('spacesOverviewGrid');
+    const overviewClose = document.getElementById('spacesOverviewClose');
+    const addBtn = document.getElementById('spacesAddBtn');
+
+    // Show indicator on mouse near bottom
+    let indicatorTimeout;
+    document.addEventListener('mousemove', e => {
+      if (overview.classList.contains('visible')) return;
+      if (window.innerHeight - e.clientY < 120) {
+        indicator.classList.add('visible');
+        clearTimeout(indicatorTimeout);
+      } else if (!indicator.matches(':hover')) {
+        indicatorTimeout = setTimeout(() => indicator.classList.remove('visible'), 600);
+      }
+    });
+    indicator.addEventListener('mouseenter', () => {
+      clearTimeout(indicatorTimeout);
+      indicator.classList.add('visible');
+    });
+    indicator.addEventListener('mouseleave', () => {
+      indicatorTimeout = setTimeout(() => indicator.classList.remove('visible'), 600);
+    });
+
+    // Dot clicks
+    indicator.querySelectorAll('.spaces-dot').forEach(dot => {
+      dot.addEventListener('click', () => this.switchTo(parseInt(dot.dataset.space)));
+    });
+
+    // Add desktop button
+    addBtn.addEventListener('click', () => this.addSpace());
+
+    // Overview close
+    overviewClose.addEventListener('click', () => this.closeOverview());
+    overview.addEventListener('click', e => {
+      if (e.target === overview) this.closeOverview();
+    });
+
+    // Overview grid clicks
+    overviewGrid.addEventListener('click', e => {
+      const card = e.target.closest('.spaces-overview-card');
+      if (!card) return;
+      if (e.target.closest('.spaces-overview-card-close')) {
+        this.removeSpace(parseInt(card.dataset.space));
+        return;
+      }
+      this.switchTo(parseInt(card.dataset.space));
+      this.closeOverview();
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+      if (this.isInputFocused()) return;
+      // Ctrl + 1-4: switch to space
+      if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        this.switchTo(parseInt(e.key) - 1);
+      }
+      // Ctrl + Left/Right arrows: switch space
+      if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowLeft') {
+        e.preventDefault();
+        this.switchTo(Math.max(0, this.current - 1));
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowRight') {
+        e.preventDefault();
+        this.switchTo(Math.min(this.maxSpaces - 1, this.current + 1));
+      }
+      // F3 or Ctrl+Up: show overview
+      if (e.key === 'F3' || ((e.ctrlKey || e.metaKey) && e.key === 'ArrowUp')) {
+        e.preventDefault();
+        this.toggleOverview();
+      }
+      // Escape closes overview
+      if (e.key === 'Escape' && overview.classList.contains('visible')) {
+        this.closeOverview();
+      }
+    });
+
+    // Initialize all windows to space 0
+    document.querySelectorAll('.mac-window').forEach(win => {
+      this.windows[win.id] = 0;
+    });
+
+    // Watch for new windows being opened
+    const origOpen = window.openApp;
+    if (typeof origOpen === 'function') {
+      window.openApp = function(appName) {
+        origOpen(appName);
+        setTimeout(() => {
+          const win = document.querySelector('.mac-window[style*="display: block"], .mac-window:not([style*="display: none"])');
+          if (win && spaces.windows[win.id] === undefined) {
+            spaces.windows[win.id] = spaces.current;
+          }
+        }, 50);
+      };
+    }
+  },
+
+  isInputFocused() {
+    const el = document.activeElement;
+    return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.contentEditable === 'true');
+  },
+
+  switchTo(index) {
+    if (index < 0 || index >= this.maxSpaces || index === this.current) return;
+    const direction = index > this.current ? 'left' : 'right';
+    const prev = this.current;
+    this.current = index;
+
+    // Update dots
+    document.querySelectorAll('.spaces-dot').forEach(d => d.classList.remove('active'));
+    const activeDot = document.querySelector(`.spaces-dot[data-space="${index}"]`);
+    if (activeDot) activeDot.classList.add('active');
+
+    // Animate and show/hide windows
+    const container = document.getElementById('windowsContainer');
+    container.classList.remove('space-transition-left', 'space-transition-right');
+    void container.offsetWidth; // reflow
+    container.classList.add(direction === 'left' ? 'space-transition-left' : 'space-transition-right');
+
+    document.querySelectorAll('.mac-window').forEach(win => {
+      const winSpace = this.windows[win.id] !== undefined ? this.windows[win.id] : 0;
+      if (winSpace === index) {
+        win.style.display = '';
+        win.style.visibility = '';
+      } else {
+        win.style.visibility = 'hidden';
+        // keep display so layout isn't broken
+      }
+    });
+
+    // Update desktop icons visibility (all spaces share desktop icons)
+    setTimeout(() => container.classList.remove('space-transition-left', 'space-transition-right'), 400);
+  },
+
+  assignCurrentSpace(windowId) {
+    this.windows[windowId] = this.current;
+  },
+
+  addSpace() {
+    if (this.maxSpaces >= 8) return;
+    this.maxSpaces++;
+    const indicator = document.getElementById('spacesIndicator');
+    const addBtn = document.getElementById('spacesAddBtn');
+    const dot = document.createElement('div');
+    dot.className = 'spaces-dot';
+    dot.dataset.space = this.maxSpaces - 1;
+    dot.title = `Desktop ${this.maxSpaces}`;
+    dot.addEventListener('click', () => this.switchTo(parseInt(dot.dataset.space)));
+    indicator.insertBefore(dot, addBtn);
+  },
+
+  removeSpace(index) {
+    if (this.maxSpaces <= 1 || index === 0) return;
+    // Move windows from removed space to space 0
+    Object.keys(this.windows).forEach(wid => {
+      if (this.windows[wid] === index) this.windows[wid] = 0;
+    });
+    // Re-index spaces > index
+    Object.keys(this.windows).forEach(wid => {
+      if (this.windows[wid] > index) this.windows[wid]--;
+    });
+    this.maxSpaces--;
+    if (this.current >= this.maxSpaces) this.current = this.maxSpaces - 1;
+    this.rebuildIndicator();
+    this.switchTo(this.current);
+    this.renderOverview();
+  },
+
+  rebuildIndicator() {
+    const indicator = document.getElementById('spacesIndicator');
+    const addBtn = document.getElementById('spacesAddBtn');
+    indicator.querySelectorAll('.spaces-dot').forEach(d => d.remove());
+    for (let i = 0; i < this.maxSpaces; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'spaces-dot' + (i === this.current ? ' active' : '');
+      dot.dataset.space = i;
+      dot.title = `Desktop ${i + 1}`;
+      dot.addEventListener('click', () => this.switchTo(parseInt(dot.dataset.space)));
+      indicator.insertBefore(dot, addBtn);
+    }
+  },
+
+  toggleOverview() {
+    const overview = document.getElementById('spacesOverview');
+    if (overview.classList.contains('visible')) {
+      this.closeOverview();
+    } else {
+      this.openOverview();
+    }
+  },
+
+  openOverview() {
+    this.renderOverview();
+    document.getElementById('spacesOverview').classList.add('visible');
+  },
+
+  closeOverview() {
+    document.getElementById('spacesOverview').classList.remove('visible');
+  },
+
+  renderOverview() {
+    const grid = document.getElementById('spacesOverviewGrid');
+    grid.innerHTML = '';
+    for (let i = 0; i < this.maxSpaces; i++) {
+      const card = document.createElement('div');
+      card.className = 'spaces-overview-card' + (i === this.current ? ' active-space' : '');
+      card.dataset.space = i;
+
+      // Count windows in this space
+      const winCount = Object.values(this.windows).filter(s => s === i).length;
+
+      card.innerHTML = `
+        <div class="spaces-overview-card-icon"><i class="ri-computer-line"></i></div>
+        <div class="spaces-overview-card-windows">
+          ${Array(Math.min(winCount, 12)).fill(0).map(() => '<div class="spaces-overview-win"></div>').join('')}
+        </div>
+        <div class="spaces-overview-card-label">Desktop ${i + 1}${winCount ? ' • ' + winCount + ' window' + (winCount > 1 ? 's' : '') : ''}</div>
+        ${i > 0 ? '<button class="spaces-overview-card-close" title="Remove"><i class="ri-close-line"></i></button>' : ''}
+      `;
+      grid.appendChild(card);
+    }
+  },
+
+  showIndicatorBriefly() {
+    const indicator = document.getElementById('spacesIndicator');
+    indicator.classList.add('visible');
+    setTimeout(() => indicator.classList.remove('visible'), 2500);
+  }
+};
+
+// Initialize spaces on load
+document.addEventListener('DOMContentLoaded', () => spaces.init());
+// Fallback if DOMContentLoaded already fired
+if (document.readyState !== 'loading') spaces.init();
+

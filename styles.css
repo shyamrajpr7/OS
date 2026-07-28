@@ -2680,3 +2680,129 @@ kbd {
   .mac-window { width: 95vw !important; left: 2.5vw !important; height: 70vh !important; top: 15vh !important; }
   .finder-sidebar { width: 140px; }
 }
+
+/* ===== VIRTUAL DESKTOPS (SPACES) ===== */
+.spaces-indicator {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(30,30,30,0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  z-index: 900;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.spaces-indicator.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.spaces-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.spaces-dot:hover { background: rgba(255,255,255,0.5); transform: scale(1.3); }
+.spaces-dot.active { background: #fff; transform: scale(1.2); box-shadow: 0 0 6px rgba(255,255,255,0.4); }
+.spaces-add-btn {
+  width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.3);
+  background: transparent; color: rgba(255,255,255,0.5); font-size: 11px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: all 0.2s ease; margin-left: 2px;
+}
+.spaces-add-btn:hover { border-color: rgba(255,255,255,0.6); color: #fff; background: rgba(255,255,255,0.1); }
+.spaces-add-btn i { font-size: 10px; margin-top: -1px; }
+
+/* Spaces Overview */
+.spaces-overview {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.spaces-overview.visible { opacity: 1; pointer-events: auto; }
+.spaces-overview-header {
+  position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
+  color: #fff; font-size: 18px; font-weight: 600; letter-spacing: 0.3px;
+  display: flex; align-items: center; gap: 16px;
+}
+.spaces-overview-close {
+  width: 28px; height: 28px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.15); color: #fff; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background 0.2s ease;
+}
+.spaces-overview-close:hover { background: rgba(255,255,255,0.3); }
+.spaces-overview-grid {
+  display: flex; gap: 20px; align-items: center; justify-content: center;
+  flex-wrap: wrap; padding: 20px; max-width: 90vw;
+}
+.spaces-overview-card {
+  width: 220px; height: 140px; border-radius: 12px; overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.15); cursor: pointer;
+  position: relative; transition: all 0.25s ease; flex-shrink: 0;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+.spaces-overview-card:hover { border-color: rgba(0,122,255,0.8); transform: scale(1.05); }
+.spaces-overview-card.active-space { border-color: #007AFF; box-shadow: 0 0 20px rgba(0,122,255,0.3); }
+.spaces-overview-card-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 6px 10px; background: rgba(0,0,0,0.5);
+  color: #fff; font-size: 11px; font-weight: 500; text-align: center;
+}
+.spaces-overview-card-close {
+  position: absolute; top: 4px; right: 4px;
+  width: 20px; height: 20px; border-radius: 50%; border: none;
+  background: rgba(0,0,0,0.5); color: #fff; font-size: 10px;
+  display: none; align-items: center; justify-content: center; cursor: pointer;
+}
+.spaces-overview-card:hover .spaces-overview-card-close { display: flex; }
+.spaces-overview-card-close:hover { background: rgba(255,59,48,0.8); }
+.spaces-overview-card-icon {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 28px; color: rgba(255,255,255,0.25);
+}
+.spaces-overview-card-windows {
+  position: absolute; top: 8px; left: 8px; right: 8px; bottom: 28px;
+  display: flex; flex-wrap: wrap; gap: 3px; align-content: flex-start;
+}
+.spaces-overview-win {
+  width: 30px; height: 20px; border-radius: 3px;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.1);
+}
+.spaces-overview-hint {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  color: rgba(255,255,255,0.4); font-size: 12px; white-space: nowrap;
+}
+
+/* Space transition animation */
+.space-transition-left .mac-window { animation: spaceSlideLeft 0.35s ease; }
+.space-transition-right .mac-window { animation: spaceSlideRight 0.35s ease; }
+@keyframes spaceSlideLeft {
+  0% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes spaceSlideRight {
+  0% { transform: translateX(-100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* Space indicator tooltip */
+.spaces-indicator[data-tooltip]:hover::after {
+  content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%); padding: 4px 8px; background: rgba(0,0,0,0.8);
+  color: #fff; font-size: 11px; border-radius: 4px; white-space: nowrap;
+  margin-bottom: 6px;
+}

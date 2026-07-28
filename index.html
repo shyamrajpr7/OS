@@ -1009,6 +1009,25 @@
     </div>
   </footer>
 
+  <!-- SPACES INDICATOR -->
+  <div class="spaces-indicator" id="spacesIndicator">
+    <div class="spaces-dot active" data-space="0" title="Desktop 1"></div>
+    <div class="spaces-dot" data-space="1" title="Desktop 2"></div>
+    <div class="spaces-dot" data-space="2" title="Desktop 3"></div>
+    <div class="spaces-dot" data-space="3" title="Desktop 4"></div>
+    <button class="spaces-add-btn" id="spacesAddBtn" title="Add Desktop"><i class="ri-add-line"></i></button>
+  </div>
+
+  <!-- SPACES OVERVIEW -->
+  <div class="spaces-overview" id="spacesOverview">
+    <div class="spaces-overview-header">
+      <span>Spaces</span>
+      <button class="spaces-overview-close" id="spacesOverviewClose"><i class="ri-close-line"></i></button>
+    </div>
+    <div class="spaces-overview-grid" id="spacesOverviewGrid"></div>
+    <div class="spaces-overview-hint">Click a space to switch • Swipe left/right to navigate • Esc to close</div>
+  </div>
+
   <!-- NOTIFICATION CENTER -->
   <div class="notif-center-overlay" id="notifOverlay"></div>
   <div class="notification-center" id="notifCenter">
@@ -1252,6 +1271,12 @@
           <div class="shortcut-row"><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>Option</kbd><kbd>Esc</kbd></span><span class="shortcut-desc">Force Quit</span></div>
           <div class="shortcut-row"><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>/</kbd></span><span class="shortcut-desc">Keyboard Shortcuts</span></div>
           <div class="shortcut-row"><span class="shortcut-keys"><kbd>Esc</kbd></span><span class="shortcut-desc">Close Overlay / Dialog</span></div>
+        </div>
+        <div class="shortcuts-group">
+          <div class="shortcuts-group-title">Virtual Desktops</div>
+          <div class="shortcut-row"><span class="shortcut-keys"><kbd>Ctrl</kbd><kbd>1-4</kbd></span><span class="shortcut-desc">Switch to Desktop 1-4</span></div>
+          <div class="shortcut-row"><span class="shortcut-keys"><kbd>Ctrl</kbd><kbd>←</kbd><kbd>→</kbd></span><span class="shortcut-desc">Switch Space Left/Right</span></div>
+          <div class="shortcut-row"><span class="shortcut-keys"><kbd>F3</kbd></span><span class="shortcut-desc">Spaces Overview</span></div>
         </div>
         <div class="shortcuts-group">
           <div class="shortcuts-group-title">Screenshots</div>
