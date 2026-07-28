@@ -510,6 +510,7 @@
             <div class="settings-nav-item" data-panel="battery"><i class="ri-battery-2-charge-line"></i><span>Battery</span></div>
             <div class="settings-nav-item" data-panel="privacy"><i class="ri-shield-check-line"></i><span>Privacy & Security</span></div>
             <div class="settings-nav-item" data-panel="software-update"><i class="ri-download-cloud-line"></i><span>Software Update</span></div>
+            <div class="settings-nav-item" data-panel="accessibility"><i class="ri-universal-access-line"></i><span>Accessibility</span></div>
           </aside>
           <div class="settings-content" id="settingsContent">
             <!-- General -->
@@ -611,6 +612,73 @@
               <div class="setting-row"><span>Calendar</span><span class="setting-desc">None</span></div>
               <div class="setting-row"><span>Camera</span><span class="setting-desc">Zoom, FaceTime</span></div>
               <div class="setting-row"><span>Microphone</span><span class="setting-desc">Zoom, FaceTime</span></div>
+            </div>
+            <!-- Accessibility -->
+            <div class="settings-panel" id="settings-accessibility" style="display:none;">
+              <h2>Accessibility</h2>
+              <div class="a11y-section">
+                <h3>Vision</h3>
+                <div class="setting-row"><span>Display</span><span class="setting-desc">Zoom, filters, contrast</span></div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Screen Magnifier</label>
+                  <div class="toggle-switch" id="a11yMagnifier" onclick="toggleA11yMagnifier(this)"></div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Magnification Level</label>
+                  <div class="a11y-slider-row">
+                    <span class="a11y-slider-val" id="a11yMagVal">1.5x</span>
+                    <input type="range" class="a11y-slider" id="a11yMagLevel" min="1.2" max="3" step="0.1" value="1.5" oninput="updateA11yMagLevel(this.value)">
+                  </div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Color Filters</label>
+                  <select class="a11y-select" id="a11yColorFilter" onchange="applyA11yColorFilter(this.value)">
+                    <option value="none">None</option>
+                    <option value="grayscale">Grayscale</option>
+                    <option value="inverted">Inverted Colors</option>
+                    <option value="protanopia">Red-Green (Protanopia)</option>
+                    <option value="deuteranopia">Red-Green (Deuteranopia)</option>
+                    <option value="tritanopia">Blue-Yellow (Tritanopia)</option>
+                    <option value="sepia">Sepia</option>
+                  </select>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Text Size</label>
+                  <div class="a11y-slider-row">
+                    <span class="a11y-slider-val" id="a11yTextVal">Default</span>
+                    <input type="range" class="a11y-slider" id="a11yTextSize" min="80" max="150" step="5" value="100" oninput="updateA11yTextSize(this.value)">
+                  </div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Cursor Size</label>
+                  <div class="a11y-slider-row">
+                    <span class="a11y-slider-val" id="a11yCursorVal">Default</span>
+                    <input type="range" class="a11y-slider" id="a11yCursorSize" min="1" max="3" step="0.25" value="1" oninput="updateA11yCursorSize(this.value)">
+                  </div>
+                </div>
+              </div>
+              <div class="a11y-section">
+                <h3>Motion</h3>
+                <div class="a11y-control">
+                  <label class="a11y-label">Reduce Motion</label>
+                  <div class="toggle-switch" id="a11yReduceMotion" onclick="toggleA11yReduceMotion(this)"></div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Reduce Transparency</label>
+                  <div class="toggle-switch" id="a11yReduceTransparency" onclick="toggleA11yReduceTransparency(this)"></div>
+                </div>
+              </div>
+              <div class="a11y-section">
+                <h3>Contrast</h3>
+                <div class="a11y-control">
+                  <label class="a11y-label">Increase Contrast</label>
+                  <div class="toggle-switch" id="a11yIncreaseContrast" onclick="toggleA11yIncreaseContrast(this)"></div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Differentiate Without Color</label>
+                  <div class="toggle-switch" id="a11yDiffWithoutColor" onclick="toggleA11yDiffWithoutColor(this)"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1574,6 +1642,11 @@
       <div class="compress-filename" id="compressFilename"></div>
       <div class="compress-status" id="compressStatus">Preparing...</div>
     </div>
+  </div>
+
+  <!-- ACCESSIBILITY MAGNIFIER -->
+  <div class="a11y-magnifier" id="a11yMagnifierLens" style="display:none;">
+    <div class="a11y-magnifier-content" id="a11yMagnifierContent"></div>
   </div>
 
   <script src="app.js"></script>

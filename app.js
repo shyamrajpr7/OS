@@ -1107,6 +1107,92 @@ function terminalExec(cmd) {
   output.scrollTop = output.scrollHeight;
 }
 
+// ---- Accessibility Panel ----
+let a11yMagnifierActive = false;
+let a11yMagLevel = 1.5;
+let a11yMagInterval = null;
+
+function toggleA11yMagnifier(el) {
+  el.classList.toggle('on');
+  a11yMagnifierActive = el.classList.contains('on');
+  const lens = document.getElementById('a11yMagnifierLens');
+  if (a11yMagnifierActive) {
+    lens.style.display = '';
+    // Follow mouse
+    document.addEventListener('mousemove', a11yMagnifierMove);
+  } else {
+    lens.style.display = 'none';
+    document.removeEventListener('mousemove', a11yMagnifierMove);
+  }
+}
+
+function a11yMagnifierMove(e) {
+  if (!a11yMagnifierActive) return;
+  const lens = document.getElementById('a11yMagnifierLens');
+  const content = document.getElementById('a11yMagnifierContent');
+  const size = 180;
+  lens.style.left = (e.clientX - size / 2) + 'px';
+  lens.style.top = (e.clientY - size / 2) + 'px';
+  // Simple magnification effect using CSS transform
+  content.style.transform = `scale(${a11yMagLevel})`;
+  content.style.transformOrigin = `${(e.clientX / window.innerWidth) * 100}% ${(e.clientY / window.innerHeight) * 100}%`;
+}
+
+function updateA11yMagLevel(val) {
+  a11yMagLevel = parseFloat(val);
+  document.getElementById('a11yMagVal').textContent = val + 'x';
+}
+
+function applyA11yColorFilter(filter) {
+  document.body.classList.remove('a11y-grayscale', 'a11y-inverted', 'a11y-protanopia', 'a11y-deuteranopia', 'a11y-tritanopia', 'a11y-sepia');
+  if (filter !== 'none') document.body.classList.add('a11y-' + filter);
+}
+
+function updateA11yTextSize(val) {
+  const pct = parseInt(val);
+  document.documentElement.style.fontSize = pct + '%';
+  document.getElementById('a11yTextVal').textContent = pct === 100 ? 'Default' : pct + '%';
+}
+
+function updateA11yCursorSize(val) {
+  const scale = parseFloat(val);
+  document.body.style.cursor = scale > 1 ? `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="${24*scale}" height="${24*scale}" viewBox="0 0 24 24"><path d="M4 4l16 8-8 2-2 8z" fill="white" stroke="black" stroke-width="1.5"/></svg>') 0 0, auto` : '';
+  document.getElementById('a11yCursorVal').textContent = scale === 1 ? 'Default' : scale + 'x';
+}
+
+function toggleA11yReduceMotion(el) {
+  el.classList.toggle('on');
+  document.body.classList.toggle('a11y-reduce-motion', el.classList.contains('on'));
+}
+
+function toggleA11yReduceTransparency(el) {
+  el.classList.toggle('on');
+  document.body.classList.toggle('a11y-reduce-transparency', el.classList.contains('on'));
+}
+
+function toggleA11yIncreaseContrast(el) {
+  el.classList.toggle('on');
+  document.body.classList.toggle('a11y-increase-contrast', el.classList.contains('on'));
+}
+
+function toggleA11yDiffWithoutColor(el) {
+  el.classList.toggle('on');
+  // Add visual indicators for differentiating elements without color
+  if (el.classList.contains('on')) {
+    document.querySelectorAll('.toggle-switch').forEach(t => {
+      if (!t.querySelector('.a11y-indicator')) {
+        const ind = document.createElement('span');
+        ind.className = 'a11y-indicator';
+        ind.style.cssText = 'font-size:10px;margin-left:4px;';
+        ind.textContent = t.classList.contains('on') ? '✓' : '—';
+        t.appendChild(ind);
+      }
+    });
+  } else {
+    document.querySelectorAll('.a11y-indicator').forEach(el => el.remove());
+  }
+}
+
 // ---- Backup & Restore (Time Machine) ----
 const backupState = {
   backups: [],
