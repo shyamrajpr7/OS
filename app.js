@@ -720,7 +720,8 @@ const appIdMap = {
   'Disk Utility.app': 'diskutil-window',
   'Clock.app': 'clock-window',
   'Reminders.app': 'reminders-window',
-  'Console.app': 'logs-window'
+  'Console.app': 'logs-window',
+  'Downloads.app': 'downloads-window'
 };
 
 function openApp(appName) {
@@ -751,6 +752,7 @@ function openApp(appName) {
   if (winId === 'terminal-window') initTerminal();
   if (winId === 'activity-window') initActivityMonitor();
   if (winId === 'logs-window') { initLogsViewer(); setupLogsEvents(); }
+  if (winId === 'downloads-window') initDownloadManager();
 }
 
 function closeWindow(winId) {
@@ -1101,6 +1103,168 @@ function terminalExec(cmd) {
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
   output.scrollTop = output.scrollHeight;
+}
+
+// ---- Download Manager ----
+const dlState = {
+  downloads: [],
+  nextId: 1
+};
+
+const dlSamples = [
+  { name: 'thread-os-update.dmg', size: 245000000, icon: 'ri-install-line' },
+  { name: 'design-mockup.sketch', size: 18500000, icon: 'ri-pen-nib-line' },
+  { name: 'presentation.key', size: 52000000, icon: 'ri-presentation-line' },
+  { name: 'database-backup.sql', size: 89000000, icon: 'ri-database-2-line' },
+  { name: 'video-tutorial.mp4', size: 420000000, icon: 'ri-video-line' },
+  { name: 'wallpaper-4k.png', size: 8200000, icon: 'ri-image-line' },
+  { name: 'font-pack.zip', size: 15000000, icon: 'ri-file-zip-line' },
+  { name: 'app-source.zip', size: 34000000, icon: 'ri-code-s-slash-line' },
+  { name: 'podcast-episode.mp3', size: 67000000, icon: 'ri-music-2-line' },
+  { name: 'ebook-collection.pdf', size: 24000000, icon: 'ri-book-open-line' }
+];
+
+function initDownloadManager() {
+  document.getElementById('dlAddBtn').addEventListener('click', addDownload);
+  document.getElementById('dlClearBtn').addEventListener('click', clearCompleted);
+}
+
+function addDownload() {
+  const sample = dlSamples[Math.floor(Math.random() * dlSamples.length)];
+  const dl = {
+    id: dlState.nextId++,
+    name: sample.name,
+    size: sample.size,
+    icon: sample.icon,
+    progress: 0,
+    speed: 0,
+    status: 'downloading', // downloading, paused, complete, error
+    startTime: Date.now()
+  };
+  dlState.downloads.push(dl);
+  renderDownloads();
+  simulateDownload(dl);
+}
+
+function simulateDownload(dl) {
+  const baseSpeed = (Math.random() * 5 + 2) * 1000000; // 2-7 MB/s in bytes
+  const interval = setInterval(() => {
+    if (dl.status === 'paused') return;
+    if (dl.status === 'error') { clearInterval(interval); return; }
+    dl.speed = baseSpeed * (0.7 + Math.random() * 0.6);
+    dl.progress = Math.min(100, dl.progress + (dl.speed / dl.size) * 100 * 0.5);
+    if (dl.progress >= 100) {
+      dl.progress = 100;
+      dl.status = 'complete';
+      dl.speed = 0;
+      clearInterval(interval);
+      // Add to file system
+      const node = getNode('/Users/shyamraj/Downloads');
+      if (node && node.type === 'folder') {
+        const ext = dl.name.split('.').pop();
+        const kindMap = { dmg: 'Disk Image', sketch: 'Sketch File', key: 'Keynote', sql: 'SQL Database', mp4: 'MP4 Video', png: 'PNG Image', zip: 'ZIP Archive', mp3: 'MP3 Audio', pdf: 'PDF Document' };
+        node.children.push({ name: dl.name, type: 'file', icon: ext, size: formatBytes(dl.size), kind: kindMap[ext] || 'File', date: 'Just now' });
+      }
+    }
+    renderDownloads();
+  }, 500);
+  dl._interval = interval;
+}
+
+function formatBytes(bytes) {
+  if (bytes >= 1000000000) return (bytes / 1000000000).toFixed(1) + ' GB';
+  if (bytes >= 1000000) return (bytes / 1000000).toFixed(1) + ' MB';
+  if (bytes >= 1000) return (bytes / 1000).toFixed(1) + ' KB';
+  return bytes + ' B';
+}
+
+function formatSpeed(bytesPerSec) {
+  if (bytesPerSec >= 1000000) return (bytesPerSec / 1000000).toFixed(1) + ' MB/s';
+  if (bytesPerSec >= 1000) return (bytesPerSec / 1000).toFixed(1) + ' KB/s';
+  return '0 B/s';
+}
+
+function togglePauseDownload(id) {
+  const dl = dlState.downloads.find(d => d.id === id);
+  if (!dl || dl.status === 'complete') return;
+  dl.status = dl.status === 'paused' ? 'downloading' : 'paused';
+  renderDownloads();
+}
+
+function cancelDownload(id) {
+  const idx = dlState.downloads.findIndex(d => d.id === id);
+  if (idx === -1) return;
+  const dl = dlState.downloads[idx];
+  if (dl._interval) clearInterval(dl._interval);
+  dlState.downloads.splice(idx, 1);
+  renderDownloads();
+}
+
+function openDownload(dl) {
+  // Navigate Finder to Downloads
+  openApp('Finder.app');
+  navigateTo('/Users/shyamraj/Downloads');
+}
+
+function clearCompleted() {
+  dlState.downloads = dlState.downloads.filter(d => d.status !== 'complete');
+  renderDownloads();
+}
+
+function renderDownloads() {
+  const list = document.getElementById('dlList');
+  if (!list) return;
+  const empty = document.getElementById('dlEmpty');
+  if (dlState.downloads.length === 0) {
+    list.innerHTML = '';
+    list.appendChild(empty || createEmptyState());
+    return;
+  }
+  list.innerHTML = dlState.downloads.map(dl => {
+    const downloaded = Math.round(dl.size * dl.progress / 100);
+    const remaining = dl.size - downloaded;
+    const elapsed = (Date.now() - dl.startTime) / 1000;
+    const eta = dl.speed > 0 ? Math.ceil(remaining / dl.speed) : 0;
+    const etaStr = eta > 3600 ? Math.floor(eta/3600) + 'h ' + Math.floor((eta%3600)/60) + 'm' : eta > 60 ? Math.floor(eta/60) + 'm ' + (eta%60) + 's' : eta + 's';
+    const progressClass = dl.status === 'complete' ? 'complete' : dl.status === 'error' ? 'error' : '';
+    const statusText = dl.status === 'complete' ? 'Complete' : dl.status === 'paused' ? 'Paused' : dl.status === 'error' ? 'Error' : `${formatSpeed(dl.speed)} • ${etaStr} remaining`;
+    return `<div class="dl-item" data-id="${dl.id}">
+      <div class="dl-item-icon"><i class="${dl.icon}"></i></div>
+      <div class="dl-item-info">
+        <div class="dl-item-name">${dl.name}</div>
+        <div class="dl-item-meta">${formatBytes(downloaded)} of ${formatBytes(dl.size)} • ${statusText}</div>
+        <div class="dl-item-progress"><div class="dl-item-progress-fill ${progressClass}" style="width:${dl.progress}%"></div></div>
+      </div>
+      <div class="dl-item-actions">
+        ${dl.status === 'complete' ? `<button class="dl-item-btn dl-open-btn" title="Open" data-action="open"><i class="ri-folder-open-line"></i></button>` :
+          `<button class="dl-item-btn" title="${dl.status === 'paused' ? 'Resume' : 'Pause'}" data-action="pause"><i class="ri-${dl.status === 'paused' ? 'play' : 'pause'}-line"></i></button>`}
+        <button class="dl-item-btn" title="Cancel" data-action="cancel"><i class="ri-close-line"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Bind action buttons
+  list.querySelectorAll('.dl-item-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = parseInt(btn.closest('.dl-item').dataset.id);
+      const action = btn.dataset.action;
+      if (action === 'pause') togglePauseDownload(id);
+      else if (action === 'cancel') cancelDownload(id);
+      else if (action === 'open') {
+        const dl = dlState.downloads.find(d => d.id === id);
+        if (dl) openDownload(dl);
+      }
+    });
+  });
+}
+
+function createEmptyState() {
+  const div = document.createElement('div');
+  div.className = 'dl-empty';
+  div.id = 'dlEmpty';
+  div.innerHTML = '<i class="ri-download-line" style="font-size:36px;color:var(--mac-text-muted);margin-bottom:8px;"></i><div style="font-size:13px;color:var(--mac-text-muted);">No downloads</div><div style="font-size:11px;color:var(--mac-text-muted);margin-top:4px;">Click "New Download" to start</div>';
+  return div;
 }
 
 // ---- System Logs Viewer ----

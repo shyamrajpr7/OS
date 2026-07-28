@@ -2912,6 +2912,62 @@ kbd {
   80% { transform: translateX(5px); }
 }
 
+/* ===== DOWNLOAD MANAGER ===== */
+.dl-body { display: flex; flex-direction: column; height: 100%; padding: 0 !important; }
+.dl-toolbar {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  border-bottom: 1px solid var(--mac-border);
+}
+.dl-add-btn, .dl-clear-btn {
+  padding: 5px 12px; border-radius: 6px; border: 1px solid var(--mac-border);
+  background: rgba(255,255,255,0.06); color: var(--mac-text); font-size: 11px;
+  cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s ease;
+}
+.dl-add-btn { background: rgba(0,122,255,0.15); border-color: rgba(0,122,255,0.2); color: #007AFF; }
+.dl-add-btn:hover { background: rgba(0,122,255,0.25); }
+.dl-clear-btn:hover { background: rgba(255,255,255,0.12); }
+.dl-list { flex: 1; overflow-y: auto; padding: 4px 0; }
+.dl-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; text-align: center;
+}
+.dl-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.1s ease;
+}
+.dl-item:hover { background: rgba(255,255,255,0.03); }
+.dl-item-icon {
+  width: 32px; height: 32px; border-radius: 6px;
+  background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--mac-text-muted); flex-shrink: 0;
+}
+.dl-item-info { flex: 1; min-width: 0; }
+.dl-item-name {
+  font-size: 12px; font-weight: 500; color: var(--mac-text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dl-item-meta { font-size: 10px; color: var(--mac-text-muted); margin-top: 2px; }
+.dl-item-progress {
+  height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px;
+  margin-top: 4px; overflow: hidden;
+}
+.dl-item-progress-fill {
+  height: 100%; background: linear-gradient(90deg, #007AFF, #5AC8FA);
+  border-radius: 2px; transition: width 0.3s ease;
+}
+.dl-item-progress-fill.complete { background: #28C840; }
+.dl-item-progress-fill.error { background: #FF3B30; }
+.dl-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.dl-item-btn {
+  width: 26px; height: 26px; border-radius: 5px; border: none;
+  background: rgba(255,255,255,0.06); color: var(--mac-text-muted);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  font-size: 12px; transition: all 0.15s ease;
+}
+.dl-item-btn:hover { background: rgba(255,255,255,0.12); color: var(--mac-text); }
+.dl-item-btn.dl-open-btn { background: rgba(0,122,255,0.15); color: #007AFF; }
+.dl-item-btn.dl-open-btn:hover { background: rgba(0,122,255,0.25); }
+
 /* ===== SYSTEM LOGS VIEWER ===== */
 .logs-body { display: flex; flex-direction: column; height: 100%; padding: 0 !important; }
 .logs-toolbar {
