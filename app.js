@@ -1672,6 +1672,102 @@ function spotlightSelect() {
 let contextTarget = null; // the right-clicked file/folder item
 let clipboardItem = null;
 
+// ---- Compress / Extract ----
+function showCompressOverlay(title, filename) {
+  const overlay = document.getElementById('compressOverlay');
+  document.getElementById('compressTitle').textContent = title;
+  document.getElementById('compressFilename').textContent = filename;
+  document.getElementById('compressProgressFill').style.width = '0%';
+  document.getElementById('compressStatus').textContent = 'Preparing...';
+  overlay.classList.add('visible');
+}
+
+function hideCompressOverlay() {
+  document.getElementById('compressOverlay').classList.remove('visible');
+}
+
+function simulateCompress(target) {
+  const isZip = target.name && target.name.endsWith('.zip');
+  const baseName = isZip ? target.name.replace('.zip', '') : target.name;
+
+  if (isZip) {
+    // Extract
+    showCompressOverlay('Extracting...', target.name);
+    document.getElementById('compressIcon').innerHTML = '<i class="ri-file-zip-2-line"></i>';
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 15 + 5;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        document.getElementById('compressProgressFill').style.width = '100%';
+        document.getElementById('compressStatus').textContent = 'Extract complete';
+        setTimeout(() => {
+          hideCompressOverlay();
+          // Create extracted folder
+          const node = getNode(currentPath);
+          if (node && node.type === 'folder') {
+            const newPath = currentPath + '/' + baseName;
+            if (!fileSystem[newPath]) {
+              fileSystem[newPath] = { type: 'folder', children: [] };
+              // Add some sample files inside
+              const innerFiles = [
+                { name: 'README.txt', type: 'file', icon: 'doc', size: '1.2 KB', kind: 'Plain Text', date: 'Just now' },
+                { name: 'config.json', type: 'file', icon: 'doc', size: '0.8 KB', kind: 'JSON', date: 'Just now' }
+              ];
+              fileSystem[newPath].children = innerFiles;
+            }
+            // Remove the zip file
+            node.children = node.children.filter(c => (typeof c === 'string' ? c : c.name) !== target.name);
+            // Add the folder
+            node.children.push({ name: baseName, type: 'folder', size: '--', kind: 'Folder', date: 'Just now' });
+            updateFinder();
+          }
+        }, 600);
+        return;
+      }
+      document.getElementById('compressProgressFill').style.width = progress + '%';
+      document.getElementById('compressStatus').textContent = `Extracting... ${Math.round(progress)}%`;
+    }, 200);
+  } else {
+    // Compress
+    showCompressOverlay('Compressing...', target.name);
+    document.getElementById('compressIcon').innerHTML = '<i class="ri-file-zip-line"></i>';
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 12 + 4;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        document.getElementById('compressProgressFill').style.width = '100%';
+        document.getElementById('compressStatus').textContent = 'Compression complete';
+        setTimeout(() => {
+          hideCompressOverlay();
+          const node = getNode(currentPath);
+          if (node && node.type === 'folder') {
+            // Calculate fake compressed size
+            const origSize = target.size || '1 MB';
+            let compSize = origSize;
+            if (origSize.includes('MB')) {
+              compSize = (parseFloat(origSize) * 0.3).toFixed(1) + ' MB';
+            } else if (origSize.includes('KB')) {
+              compSize = (parseFloat(origSize) * 0.4).toFixed(1) + ' KB';
+            }
+            node.children.push({
+              name: baseName + '.zip', type: 'file', icon: 'zip',
+              size: compSize, kind: 'ZIP Archive', date: 'Just now'
+            });
+            updateFinder();
+          }
+        }, 500);
+        return;
+      }
+      document.getElementById('compressProgressFill').style.width = progress + '%';
+      document.getElementById('compressStatus').textContent = `Compressing... ${Math.round(progress)}%`;
+    }, 250);
+  }
+}
+
 function showContextMenu(e, target) {
   e.preventDefault();
   contextTarget = target || null;
@@ -1703,6 +1799,8 @@ function showContextMenu(e, target) {
       <div class="context-menu-item" data-action="copy"><i class="ri-file-copy-line"></i>Copy</div>
       <div class="context-menu-item" data-action="paste"><i class="ri-clipboard-line"></i>Paste</div>
       <div class="context-menu-item" data-action="duplicate"><i class="ri-file-copy-2-line"></i>Duplicate</div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item" data-action="compress"><i class="ri-file-zip-line"></i>${contextTarget && contextTarget.name && contextTarget.name.endsWith('.zip') ? 'Extract Here' : 'Compress'}</div>
       <div class="context-menu-separator"></div>
       <div class="context-menu-item" data-action="newFolder"><i class="ri-folder-add-line"></i>New Folder</div>
       <div class="context-menu-separator"></div>
@@ -1815,6 +1913,9 @@ function handleContextAction(action) {
       break;
     case 'changeWallpaper':
       openWallpaperPicker();
+      break;
+    case 'compress':
+      if (contextTarget) simulateCompress(contextTarget);
       break;
   }
   hideContextMenu();
