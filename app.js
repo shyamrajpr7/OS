@@ -705,6 +705,15 @@ function initFinderDragDrop() {
 }
 
 // ---- App Windows ----
+function chromeGreeting() {
+  const h = new Date().getHours();
+  const el = document.getElementById('chromeGreeting');
+  if (!el) return;
+  if (h < 12) el.textContent = 'Good morning';
+  else if (h < 17) el.textContent = 'Good afternoon';
+  else el.textContent = 'Good evening';
+}
+
 const appIdMap = {
   'Calculator.app': 'calculator-window',
   'TextEdit.app': 'textedit-window',
@@ -3193,14 +3202,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let chromeHistory = [];
   let chromeHistoryIndex = -1;
 
-  function chromeGreeting() {
-    const h = new Date().getHours();
-    const el = document.getElementById('chromeGreeting');
-    if (!el) return;
-    if (h < 12) el.textContent = 'Good morning';
-    else if (h < 17) el.textContent = 'Good afternoon';
-    else el.textContent = 'Good evening';
-  }
   chromeGreeting();
 
   function chromeNavigateTo(url) {
