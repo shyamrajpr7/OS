@@ -3305,10 +3305,10 @@ const youtubeVideos = [
   { id: 'dQw4w9WgXcQ', title: 'Never Gonna Give You Up', channel: 'Rick Astley', views: '1.5B views', time: '3:33', cat: 'music', color: '#FF0000', letter: 'R' },
   { id: 'jNQXAC9IVRw', title: 'Me at the zoo', channel: 'Jawed Karim', views: '320M views', time: '0:19', cat: 'all', color: '#4285F4', letter: 'J' },
   { id: 'kJQP7kiw5Fk', title: 'Luis Fonsi - Despacito ft. Daddy Yankee', channel: 'Luis Fonsi', views: '8.1B views', time: '4:42', cat: 'music', color: '#E91E63', letter: 'L' },
-  { id: 'kJQP7kiw5Fk', title: 'Top 10 JavaScript Tips & Tricks', channel: 'Traversy Media', views: '2.4M views', time: '15:20', cat: 'tech', color: '#FF6D00', letter: 'T' },
+  { id: 'W6NZfCO5SIk', title: 'Top 10 JavaScript Tips & Tricks', channel: 'Traversy Media', views: '2.4M views', time: '15:20', cat: 'tech', color: '#FF6D00', letter: 'T' },
   { id: '9bZkp7q19f0', title: 'PSY - GANGNAM STYLE(강남스타일) MV', channel: 'officialpsy', views: '4.6B views', time: '4:13', cat: 'music', color: '#9C27B0', letter: 'P' },
   { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', channel: 'Queen', views: '1.8B views', time: '5:55', cat: 'music', color: '#673AB7', letter: 'Q' },
-  { id: '9bZkp7q19f0', title: 'Build a macOS Clone in 1 Hour', channel: 'Fireship', views: '890K views', time: '12:08', cat: 'tech', color: '#FF5722', letter: 'F' },
+  { id: '8uM2y3mWw3k', title: 'Build a macOS Clone in 1 Hour', channel: 'Fireship', views: '890K views', time: '12:08', cat: 'tech', color: '#FF5722', letter: 'F' },
   { id: 'kXYiU_JCYtU', title: 'NCS: Infinity', channel: 'NoCopyrightSounds', views: '420M views', time: '5:08', cat: 'music', color: '#00BCD4', letter: 'N' },
   { id: 'LXb3EKWsInQ', title: 'NASA Live - Earth From Space', channel: 'NASA', views: '24M views', time: 'LIVE', cat: 'live', color: '#1565C0', letter: 'N' },
   { id: 'sXQk7LN5MVk', title: 'Minecraft but AI Controls My Mouse', channel: 'Mistah MegaManFan', views: '5.2M views', time: '18:42', cat: 'gaming', color: '#4CAF50', letter: 'M' },
@@ -3316,7 +3316,7 @@ const youtubeVideos = [
   { id: 'OPf0YbXqDm0', title: 'Mark Ronson - Uptown Funk ft. Bruno Mars', channel: 'MarkRonson', views: '4.5B views', time: '4:30', cat: 'music', color: '#FF9800', letter: 'M' },
   { id: 'JGwWNGJdvx8', title: 'Ed Sheeran - Shape of You', channel: 'Ed Sheeran', views: '5.9B views', time: '3:53', cat: 'music', color: '#E91E63', letter: 'E' },
   { id: 'RgKAFK5djSk', title: 'Wiz Khalira - See You Again ft. Charlie Puth', channel: 'Wiz Khalifa', views: '3.8B views', time: '3:57', cat: 'music', color: '#795548', letter: 'W' },
-  { id: 'fJ9rUzIMcZQ', title: 'iPhone 16 Pro Review - The Best iPhone Yet?', channel: 'MKBHD', views: '12M views', time: '18:42', cat: 'tech', color: '#F44336', letter: 'M' },
+  { id: 'mTOYf9X9N4Y', title: 'iPhone 16 Pro Review - The Best iPhone Yet?', channel: 'MKBHD', views: '12M views', time: '18:42', cat: 'tech', color: '#F44336', letter: 'M' },
   { id: '5qap5aO4i9A', title: 'Taylor Swift - Anti-Hero', channel: 'Taylor Swift', views: '1.2B views', time: '3:20', cat: 'music', color: '#9C27B0', letter: 'T' },
 ];
 
@@ -3347,17 +3347,48 @@ function renderYoutubeGrid(filter = 'all', search = '') {
 function playYoutubeVideo(id, title, channel) {
   document.getElementById('youtubeHomepage').style.display = 'none';
   document.getElementById('youtubePlayer').style.display = 'flex';
-  document.getElementById('youtubeEmbed').src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+  const embed = document.getElementById('youtubeEmbed');
+  embed.style.display = '';
+  embed.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
   document.getElementById('youtubePlayerInfo').innerHTML = `
       <div class="youtube-player-back" onclick="youtubeGoHome()"><i class="ri-arrow-left-s-line"></i> Back to Home</div>
       <div class="youtube-player-title">${title}</div>
-      <div class="youtube-player-channel">${channel}</div>`;
+      <div class="youtube-player-channel">${channel}</div>
+      <button class="youtube-open-btn" onclick="window.open('https://www.youtube.com/watch?v=${id}', '_blank')">Open in YouTube</button>`;
+
+  let fallbackEl = document.getElementById('youtubeFallback');
+  if (!fallbackEl) {
+    fallbackEl = document.createElement('div');
+    fallbackEl.id = 'youtubeFallback';
+    fallbackEl.className = 'youtube-embed-wrapper';
+    fallbackEl.style.cssText = 'display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;';
+    embed.parentNode.appendChild(fallbackEl);
+  }
+  let loadTimer = setTimeout(() => {
+    embed.style.display = 'none';
+    fallbackEl.innerHTML = `
+      <i class="ri-youtube-fill" style="font-size:48px;color:#FF0000;opacity:0.5;"></i>
+      <div style="color:#aaa;font-size:14px;">Video player could not load</div>
+      <button class="youtube-open-btn" onclick="window.open('https://www.youtube.com/watch?v=${id}', '_blank')">Open in YouTube</button>
+      <button class="youtube-open-btn" onclick="youtubeGoHome()" style="background:#333;">Back to Home</button>`;
+    fallbackEl.style.display = 'flex';
+  }, 5000);
+
+  embed.onload = () => { clearTimeout(loadTimer); };
+  embed.onerror = () => {
+    clearTimeout(loadTimer);
+    embed.style.display = 'none';
+  };
 }
 
 function youtubeGoHome() {
   document.getElementById('youtubeHomepage').style.display = 'block';
   document.getElementById('youtubePlayer').style.display = 'none';
-  document.getElementById('youtubeEmbed').src = '';
+  const embed = document.getElementById('youtubeEmbed');
+  embed.src = '';
+  embed.style.display = '';
+  const fallback = document.getElementById('youtubeFallback');
+  if (fallback) fallback.style.display = 'none';
 }
 
 renderYoutubeGrid();
