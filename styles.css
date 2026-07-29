@@ -3275,3 +3275,32 @@ body.a11y-increase-contrast .menu-bar { border-bottom: 1px solid rgba(255,255,25
   color: #fff; font-size: 11px; border-radius: 4px; white-space: nowrap;
   margin-bottom: 6px;
 }
+
+/* ===== SCREEN RECORDING ===== */
+.sr-body { display: flex; flex-direction: column; padding: 16px; gap: 16px; }
+.sr-controls { background: var(--mac-surface); border-radius: 12px; padding: 16px; text-align: center; }
+.sr-timer { font-size: 48px; font-weight: 200; color: var(--mac-text); font-variant-numeric: tabular-nums; margin-bottom: 12px; letter-spacing: 2px; }
+.sr-buttons { display: flex; gap: 10px; justify-content: center; margin-bottom: 8px; }
+.sr-record-btn, .sr-stop-btn {
+  display: flex; align-items: center; gap: 6px; padding: 8px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s ease;
+}
+.sr-record-btn { background: rgba(255,59,48,0.15); color: #FF3B30; }
+.sr-record-btn:hover:not(:disabled) { background: rgba(255,59,48,0.25); }
+.sr-record-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.sr-stop-btn { background: rgba(255,59,48,0.15); color: #FF3B30; }
+.sr-stop-btn:hover:not(:disabled) { background: rgba(255,59,48,0.25); }
+.sr-stop-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.sr-status { font-size: 12px; color: var(--mac-text-muted); }
+.sr-recordings { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.sr-recordings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--mac-text); }
+.sr-clear-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--mac-border); background: transparent; color: var(--mac-text-muted); font-size: 11px; cursor: pointer; transition: all 0.15s ease; }
+.sr-clear-btn:hover { color: #FF3B30; border-color: rgba(255,59,48,0.3); }
+.sr-recordings-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.sr-empty { text-align: center; padding: 24px; color: var(--mac-text-muted); font-size: 13px; }
+.sr-recording-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; background: var(--mac-surface); transition: background 0.15s ease; }
+.sr-recording-item:hover { background: rgba(255,255,255,0.06); }
+.sr-recording-name { font-size: 13px; font-weight: 500; color: var(--mac-text); }
+.sr-recording-meta { font-size: 11px; color: var(--mac-text-muted); margin-top: 2px; }
+.sr-recording-delete { width: 28px; height: 28px; border-radius: 6px; border: none; background: transparent; color: var(--mac-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; }
+.sr-recording-delete:hover { background: rgba(255,59,48,0.15); color: #FF3B30; }

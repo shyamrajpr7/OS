@@ -14,7 +14,8 @@ const fileSystem = {
       { name: 'System Settings.app', type: 'app', icon: 'settings', size: '9.7 MB', kind: 'Application', date: 'Apr 5, 2026' },
       { name: 'Preview.app', type: 'app', icon: 'preview', size: '7.8 MB', kind: 'Application', date: 'Feb 28, 2026' },
       { name: 'Safari.app', type: 'app', icon: 'safari', size: '22.1 MB', kind: 'Application', date: 'May 1, 2026' },
-      { name: 'Console.app', type: 'app', icon: 'terminal', size: '4.2 MB', kind: 'Application', date: 'Mar 15, 2026' }
+      { name: 'Console.app', type: 'app', icon: 'terminal', size: '4.2 MB', kind: 'Application', date: 'Mar 15, 2026' },
+      { name: 'Screen Recording.app', type: 'app', icon: 'terminal', size: '6.8 MB', kind: 'Application', date: 'Jun 1, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -731,7 +732,8 @@ const appIdMap = {
   'Reminders.app': 'reminders-window',
   'Console.app': 'logs-window',
   'Downloads.app': 'downloads-window',
-  'Time Machine.app': 'backup-window'
+  'Time Machine.app': 'backup-window',
+  'Screen Recording.app': 'screenrecording-window'
 };
 
 function openApp(appName) {
@@ -4750,6 +4752,82 @@ const spaces = {
     setTimeout(() => indicator.classList.remove('visible'), 2500);
   }
 };
+
+// ---- Screen Recording ----
+let srState = { recording: false, timer: null, seconds: 0, recordings: [] };
+
+function srStartRecording() {
+  if (srState.recording) return;
+  srState.recording = true;
+  srState.seconds = 0;
+  document.getElementById('srStartBtn').disabled = true;
+  document.getElementById('srStopBtn').disabled = false;
+  document.getElementById('srStatus').textContent = 'Recording...';
+  document.getElementById('srStatus').style.color = '#FF3B30';
+  updateSrTimer();
+  srState.timer = setInterval(() => {
+    srState.seconds++;
+    updateSrTimer();
+  }, 1000);
+  showNotification('Screen Recording', 'Recording started');
+}
+
+function srStopRecording() {
+  if (!srState.recording) return;
+  srState.recording = false;
+  clearInterval(srState.timer);
+  document.getElementById('srStartBtn').disabled = false;
+  document.getElementById('srStopBtn').disabled = true;
+  document.getElementById('srStatus').textContent = 'Ready to record';
+  document.getElementById('srStatus').style.color = '';
+  const dur = formatSrTime(srState.seconds);
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  srState.recordings.unshift({ duration: dur, date: dateStr + ' at ' + timeStr, size: (Math.random() * 50 + 5).toFixed(1) + ' MB' });
+  renderSrRecordings();
+  showNotification('Screen Recording', 'Recording saved (' + dur + ')');
+}
+
+function updateSrTimer() {
+  document.getElementById('srTimer').textContent = formatSrTime(srState.seconds);
+}
+
+function formatSrTime(s) {
+  const h = String(Math.floor(s / 3600)).padStart(2, '0');
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+  const sec = String(s % 60).padStart(2, '0');
+  return h + ':' + m + ':' + sec;
+}
+
+function renderSrRecordings() {
+  const list = document.getElementById('srRecordingsList');
+  if (!list) return;
+  if (srState.recordings.length === 0) {
+    list.innerHTML = '<div class="sr-empty">No recordings yet</div>';
+    return;
+  }
+  list.innerHTML = srState.recordings.map((r, i) =>
+    '<div class="sr-recording-item">' +
+      '<div class="sr-recording-info">' +
+        '<div class="sr-recording-name">Recording ' + (i + 1) + '</div>' +
+        '<div class="sr-recording-meta">' + r.date + ' • ' + r.duration + ' • ' + r.size + '</div>' +
+      '</div>' +
+      '<button class="sr-recording-delete" onclick="srDeleteRecording(' + i + ')"><i class="ri-delete-bin-line"></i></button>' +
+    '</div>'
+  ).join('');
+}
+
+function srDeleteRecording(i) {
+  srState.recordings.splice(i, 1);
+  renderSrRecordings();
+}
+
+function srClearAll() {
+  if (srState.recordings.length === 0) return;
+  srState.recordings = [];
+  renderSrRecordings();
+}
 
 // Initialize spaces on load
 document.addEventListener('DOMContentLoaded', () => spaces.init());
