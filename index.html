@@ -1103,6 +1103,35 @@
         </div>
       </div>
 
+      <!-- ========== WEATHER ========== -->
+      <div class="mac-window app-window" id="weather-window" style="width:640px;height:460px;top:75px;left:220px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Weather</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body weather-body">
+          <div class="weather-hero">
+            <div class="weather-hero-temp" id="weatherHeroTemp">72°</div>
+            <div class="weather-hero-desc">Sunny</div>
+            <div class="weather-hero-location">San Francisco, CA</div>
+            <div class="weather-hero-hilo">H:78° L:61°</div>
+          </div>
+          <div class="weather-details-row">
+            <div class="weather-detail-card"><i class="ri-water-percent-line"></i><span class="weather-detail-label">Humidity</span><span class="weather-detail-value">45%</span></div>
+            <div class="weather-detail-card"><i class="ri-windy-line"></i><span class="weather-detail-label">Wind</span><span class="weather-detail-value">12 mph</span></div>
+            <div class="weather-detail-card"><i class="ri-eye-line"></i><span class="weather-detail-label">Visibility</span><span class="weather-detail-value">10 mi</span></div>
+            <div class="weather-detail-card"><i class="ri-temp-hot-line"></i><span class="weather-detail-label">Feels Like</span><span class="weather-detail-value">70°</span></div>
+          </div>
+          <div class="weather-hourly" id="weatherHourly"></div>
+          <div class="weather-10day" id="weather10day"></div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -1206,6 +1235,12 @@
           </div>
           <span class="launchpad-label">Screen Recording</span>
         </div>
+        <div class="launchpad-item" data-app="Weather.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><circle cx="24" cy="16" r="6" fill="#FFD60A"/><path d="M14 30a8 8 0 0 1 0-16c.6 0 1.2.1 1.8.2a10 10 0 0 1 19.2 2.8A6 6 0 0 1 34 34H14z" fill="white"/></svg>
+          </div>
+          <span class="launchpad-label">Weather</span>
+        </div>
       </div>
     </div>
 
@@ -1262,6 +1297,10 @@
       </div>
       <div class="dock-item" data-app="Screen Recording.app" data-tooltip="Screen Recording">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF3B30"/><circle cx="24" cy="24" r="14" fill="none" stroke="white" stroke-width="2.5"/><circle cx="24" cy="24" r="5" fill="white"/><rect x="16" y="30" width="16" height="4" rx="2" fill="white" opacity="0.5"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Weather.app" data-tooltip="Weather">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><circle cx="24" cy="16" r="6" fill="#FFD60A"/><path d="M14 30a8 8 0 0 1 0-16c.6 0 1.2.1 1.8.2a10 10 0 0 1 19.2 2.8A6 6 0 0 1 34 34H14z" fill="white"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>

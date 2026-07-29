@@ -15,7 +15,8 @@ const fileSystem = {
       { name: 'Preview.app', type: 'app', icon: 'preview', size: '7.8 MB', kind: 'Application', date: 'Feb 28, 2026' },
       { name: 'Safari.app', type: 'app', icon: 'safari', size: '22.1 MB', kind: 'Application', date: 'May 1, 2026' },
       { name: 'Console.app', type: 'app', icon: 'terminal', size: '4.2 MB', kind: 'Application', date: 'Mar 15, 2026' },
-      { name: 'Screen Recording.app', type: 'app', icon: 'terminal', size: '6.8 MB', kind: 'Application', date: 'Jun 1, 2026' }
+      { name: 'Screen Recording.app', type: 'app', icon: 'terminal', size: '6.8 MB', kind: 'Application', date: 'Jun 1, 2026' },
+      { name: 'Weather.app', type: 'app', icon: 'terminal', size: '5.3 MB', kind: 'Application', date: 'Jun 2, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -733,7 +734,8 @@ const appIdMap = {
   'Console.app': 'logs-window',
   'Downloads.app': 'downloads-window',
   'Time Machine.app': 'backup-window',
-  'Screen Recording.app': 'screenrecording-window'
+  'Screen Recording.app': 'screenrecording-window',
+  'Weather.app': 'weather-window'
 };
 
 function openApp(appName) {
@@ -767,6 +769,7 @@ function openApp(appName) {
   if (winId === 'downloads-window') initDownloadManager();
   if (winId === 'chrome-window') chromeGreeting();
   if (winId === 'backup-window') initBackupApp();
+  if (winId === 'weather-window') initWeatherApp();
 }
 
 function closeWindow(winId) {
@@ -4752,6 +4755,46 @@ const spaces = {
     setTimeout(() => indicator.classList.remove('visible'), 2500);
   }
 };
+
+// ---- Weather App ----
+const hourlyData = ['Now', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM', '7PM', '8PM', '9PM'];
+const hourlyTemps = [72, 74, 76, 77, 78, 77, 75, 72, 69, 66];
+const hourlyIcons = ['ri-sun-line', 'ri-sun-line', 'ri-sun-line', 'ri-sun-line', 'ri-sun-cloudy-line', 'ri-sun-cloudy-line', 'ri-cloudy-line', 'ri-cloudy-line', 'ri-moon-line', 'ri-moon-line'];
+
+function initWeatherApp() {
+  if (document.getElementById('weatherHourly').children.length > 0) return;
+  renderWeatherHourly();
+  renderWeather10Day();
+}
+
+function renderWeatherHourly() {
+  const el = document.getElementById('weatherHourly');
+  el.innerHTML = '<div class="weather-hourly-label">Hourly Forecast</div><div class="weather-hourly-scroll">' +
+    hourlyData.map((h, i) =>
+      '<div class="weather-hourly-item' + (i === 0 ? ' current' : '') + '">' +
+        '<div class="weather-hourly-time">' + h + '</div>' +
+        '<i class="' + hourlyIcons[i] + '"></i>' +
+        '<div class="weather-hourly-temp">' + hourlyTemps[i] + '°</div>' +
+      '</div>'
+    ).join('') + '</div>';
+}
+
+function renderWeather10Day() {
+  const el = document.getElementById('weather10day');
+  el.innerHTML = '<div class="weather-10day-label">10-Day Forecast</div><div class="weather-10day-list">' +
+    weatherDays.map(d =>
+      '<div class="weather-10day-row">' +
+        '<div class="weather-10day-name">' + d.name + '</div>' +
+        '<i class="' + d.icon + '"></i>' +
+        '<div class="weather-10day-bars">' +
+          '<div class="weather-10day-bar">' +
+            '<div class="weather-10day-fill" style="left:' + ((d.lo - 50) / 30 * 100) + '%;width:' + ((d.hi - d.lo) / 30 * 100) + '%"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="weather-10day-temps"><span class="weather-10day-hi">' + d.hi + '°</span><span class="weather-10day-lo">' + d.lo + '°</span></div>' +
+      '</div>'
+    ).join('') + '</div>';
+}
 
 // ---- Screen Recording ----
 let srState = { recording: false, timer: null, seconds: 0, recordings: [] };
