@@ -3380,6 +3380,13 @@ body.a11y-increase-contrast .menu-bar { border-bottom: 1px solid rgba(255,255,25
 .dict-similar-word { color: #5856D6; cursor: pointer; text-decoration: underline; }
 .dict-similar-word:hover { color: #7B6FE0; }
 
+/* ===== CALCULATOR (Scientific) ===== */
+.calc-mode-toggle { padding: 4px 8px; cursor: pointer; color: var(--mac-text-muted); font-size: 16px; transition: color 0.2s ease; }
+.calc-mode-toggle:hover { color: var(--mac-text); }
+.calc-sci-panel { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; padding: 6px 8px; border-bottom: 1px solid var(--mac-border); }
+.calc-btn.sci { background: var(--mac-surface); color: #5AC8FA; font-size: 11px; padding: 6px 0; border-radius: 6px; border: 1px solid var(--mac-border); cursor: pointer; transition: all 0.15s ease; }
+.calc-btn.sci:hover { background: rgba(90,200,250,0.15); }
+
 /* ===== SCREEN RECORDING ===== */
 .sr-body { display: flex; flex-direction: column; padding: 16px; gap: 16px; }
 .sr-controls { background: var(--mac-surface); border-radius: 12px; padding: 16px; text-align: center; }

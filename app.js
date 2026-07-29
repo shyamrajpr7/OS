@@ -988,8 +988,44 @@ function initWindowDrag(winId) {
 }
 
 // ---- Calculator ----
+let calcSciMode = false;
+
+function toggleCalcMode() {
+  calcSciMode = !calcSciMode;
+  const win = document.getElementById('calculator-window');
+  const panel = document.getElementById('calcSciPanel');
+  const toggle = document.getElementById('calcModeToggle');
+  if (calcSciMode) {
+    win.style.width = '340px';
+    panel.style.display = '';
+    toggle.style.color = '#007AFF';
+  } else {
+    win.style.width = '250px';
+    panel.style.display = 'none';
+    toggle.style.color = '';
+  }
+}
+
 function calcInput(val) {
   const s = calcState;
+  const sciFns = { 'sin': Math.sin, 'cos': Math.cos, 'tan': Math.tan, 'log': Math.log10, 'ln': Math.log, 'sqrt': Math.sqrt };
+  if (sciFns[val]) {
+    const n = parseFloat(s.current);
+    s.current = String(sciFns[val](n));
+    s.display = s.current;
+    document.getElementById('calcDisplay').textContent = s.display;
+    return;
+  }
+  if (val === 'x²') { s.current = String(Math.pow(parseFloat(s.current), 2)); s.display = s.current; document.getElementById('calcDisplay').textContent = s.display; return; }
+  if (val === 'x³') { s.current = String(Math.pow(parseFloat(s.current), 3)); s.display = s.current; document.getElementById('calcDisplay').textContent = s.display; return; }
+  if (val === 'xⁿ') { s.operator = 'pow'; s.previous = parseFloat(s.current); s.waitingForOperand = true; return; }
+  if (val === 'π') { s.current = String(Math.PI); s.display = s.current; document.getElementById('calcDisplay').textContent = s.display; return; }
+  if (val === 'e') { s.current = String(Math.E); s.display = s.current; document.getElementById('calcDisplay').textContent = s.display; return; }
+  if (val === '!') {
+    let n = parseInt(s.current), r = 1;
+    for (let i = 2; i <= n; i++) r *= i;
+    s.current = String(r); s.display = s.current; document.getElementById('calcDisplay').textContent = s.display; return;
+  }
   if ((val >= '0' && val <= '9') || val === '.') {
     if (s.waitingForOperand) { s.current = val === '.' ? '0.' : val; s.waitingForOperand = false; }
     else { s.current = s.current === '0' && val !== '.' ? val : s.current + val; }
@@ -1014,6 +1050,7 @@ function calcEqual() {
     case '-': result = s.previous - curr; break;
     case '*': result = s.previous * curr; break;
     case '/': result = curr !== 0 ? s.previous / curr : 'Error'; break;
+    case 'pow': result = Math.pow(s.previous, curr); break;
   }
   s.current = String(result); s.display = s.current; s.previous = result; s.waitingForOperand = true;
 }

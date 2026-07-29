@@ -261,10 +261,24 @@
             <button class="tl-btn tl-maximize" data-action="maximize"></button>
           </div>
           <div class="window-title">Calculator</div>
-          <div class="window-titlebar-spacer"></div>
+          <div class="calc-mode-toggle" id="calcModeToggle" onclick="toggleCalcMode()"><i class="ri-function-line"></i></div>
         </div>
         <div class="window-body calc-body">
           <div class="calc-display" id="calcDisplay">0</div>
+          <div class="calc-sci-panel" id="calcSciPanel" style="display:none;">
+            <button class="calc-btn sci" onclick="calcInput('sin')">sin</button>
+            <button class="calc-btn sci" onclick="calcInput('cos')">cos</button>
+            <button class="calc-btn sci" onclick="calcInput('tan')">tan</button>
+            <button class="calc-btn sci" onclick="calcInput('log')">log</button>
+            <button class="calc-btn sci" onclick="calcInput('ln')">ln</button>
+            <button class="calc-btn sci" onclick="calcInput('sqrt')">√</button>
+            <button class="calc-btn sci" onclick="calcInput('x²')">x²</button>
+            <button class="calc-btn sci" onclick="calcInput('x³')">x³</button>
+            <button class="calc-btn sci" onclick="calcInput('xⁿ')">xⁿ</button>
+            <button class="calc-btn sci" onclick="calcInput('π')">π</button>
+            <button class="calc-btn sci" onclick="calcInput('e')">e</button>
+            <button class="calc-btn sci" onclick="calcInput('!')">!</button>
+          </div>
           <div class="calc-buttons">
             <button class="calc-btn func" onclick="calcInput('C')">AC</button>
             <button class="calc-btn func" onclick="calcInput('±')">±</button>
