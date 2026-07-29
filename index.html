@@ -811,12 +811,12 @@
                 </div>
               </div>
             </div>
-            <iframe id="chromeFrame" class="chrome-iframe" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"></iframe>
+            <iframe id="chromeFrame" class="chrome-iframe" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-top-navigation-by-user-activation"></iframe>
             <div id="chromeFallback" class="chrome-fallback">
               <div class="chrome-fallback-inner">
                 <div class="chrome-fallback-icon"><i class="ri-earth-line"></i></div>
                 <div class="chrome-fallback-title">This page can't be displayed</div>
-                <div class="chrome-fallback-desc">The site can't be loaded in the embedded browser due to security restrictions.</div>
+                <div class="chrome-fallback-desc" id="chromeFallbackUrl">Most websites block being loaded inside an embedded browser.</div>
                 <button class="chrome-fallback-btn" onclick="chromeOpenExternal()">
                   <i class="ri-external-link-line"></i> Open in Real Browser
                 </button>

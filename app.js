@@ -754,6 +754,7 @@ function openApp(appName) {
   if (winId === 'activity-window') initActivityMonitor();
   if (winId === 'logs-window') { initLogsViewer(); setupLogsEvents(); }
   if (winId === 'downloads-window') initDownloadManager();
+  if (winId === 'chrome-window') chromeGreeting();
   if (winId === 'backup-window') initBackupApp();
 }
 
@@ -3209,8 +3210,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('chromeFallback').style.display = 'none';
     const frame = document.getElementById('chromeFrame');
     frame.style.display = 'block';
+    frame.style.display = '';
+
+    document.getElementById('chromeFallbackUrl').textContent = 'Trying to load: ' + fullUrl;
+
+    let loadTimer = setTimeout(() => {
+      frame.style.display = 'none';
+      document.getElementById('chromeFallback').style.display = 'flex';
+    }, 5000);
+
+    frame.onload = () => {
+      clearTimeout(loadTimer);
+    };
+    frame.onerror = () => {
+      clearTimeout(loadTimer);
+      frame.style.display = 'none';
+      document.getElementById('chromeFallback').style.display = 'flex';
+    };
     frame.src = fullUrl;
-    frame.onerror = () => { frame.style.display = 'none'; document.getElementById('chromeFallback').style.display = 'flex'; };
+
     chromeHistory = chromeHistory.slice(0, chromeHistoryIndex + 1);
     chromeHistory.push(fullUrl);
     chromeHistoryIndex = chromeHistory.length - 1;
@@ -3233,7 +3251,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function chromeOpenExternal() {
     const url = document.getElementById('chromeUrl').value;
-    if (url) window.open(url, '_blank');
+    if (url) window.open(url.startsWith('http') ? url : 'https://' + url, '_blank');
   }
 
   function chromeHandleInput(val) {
@@ -3276,13 +3294,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('chromeReload').addEventListener('click', () => {
     const frame = document.getElementById('chromeFrame');
-    if (frame.style.display !== 'none' && frame.src && frame.src !== 'about:blank') frame.src = frame.src;
+    if (frame.style.display !== 'none' && frame.src && frame.src !== 'about:blank') {
+      frame.src = frame.src;
+    }
   });
-});
-
-document.getElementById('chromeReload').addEventListener('click', () => {
-  const frame = document.getElementById('chromeFrame');
-  if (frame.style.display !== 'none') frame.src = frame.src;
 });
 
 // ---- YouTube ----
