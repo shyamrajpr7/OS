@@ -1161,6 +1161,36 @@
         </div>
       </div>
 
+      <!-- ========== DICTIONARY ========== -->
+      <div class="mac-window app-window" id="dictionary-window" style="width:560px;height:440px;top:80px;left:240px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Dictionary</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body dict-body">
+          <div class="dict-toolbar">
+            <div class="dict-search-wrap">
+              <i class="ri-search-line"></i>
+              <input type="text" class="dict-search" id="dictSearch" placeholder="Search word or phrase..." onkeydown="if(event.key==='Enter')dictLookup(this.value)">
+            </div>
+            <button class="dict-lookup-btn" onclick="dictLookup(document.getElementById('dictSearch').value)"><i class="ri-arrow-right-line"></i></button>
+          </div>
+          <div class="dict-content" id="dictContent">
+            <div class="dict-welcome">
+              <i class="ri-book-open-line"></i>
+              <div class="dict-welcome-title">Dictionary</div>
+              <div class="dict-welcome-desc">Search for a word to see its definition</div>
+              <div class="dict-wotd" id="dictWotd"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -1276,6 +1306,12 @@
           </div>
           <span class="launchpad-label">App Store</span>
         </div>
+        <div class="launchpad-item" data-app="Dictionary.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5856D6"/><rect x="8" y="6" width="32" height="36" rx="3" fill="white"/><g stroke="#5856D6" stroke-width="1.2"><line x1="14" y1="16" x2="34" y2="16"/><line x1="14" y1="22" x2="34" y2="22"/><line x1="14" y1="28" x2="34" y2="28"/><line x1="14" y1="34" x2="28" y2="34"/></g><text x="24" y="13" text-anchor="middle" font-family="serif" font-size="9" fill="#5856D6" font-weight="bold">A</text></svg>
+          </div>
+          <span class="launchpad-label">Dictionary</span>
+        </div>
       </div>
     </div>
 
@@ -1340,6 +1376,10 @@
       </div>
       <div class="dock-item" data-app="App Store.app" data-tooltip="App Store">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><path d="M14 16h4l6 12 6-12h4l-8 16v6h-4v-6l-8-16z" fill="white"/><circle cx="24" cy="12" r="3" fill="white"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Dictionary.app" data-tooltip="Dictionary">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5856D6"/><rect x="8" y="6" width="32" height="36" rx="3" fill="white"/><g stroke="#5856D6" stroke-width="1.2"><line x1="14" y1="16" x2="34" y2="16"/><line x1="14" y1="22" x2="34" y2="22"/><line x1="14" y1="28" x2="34" y2="28"/><line x1="14" y1="34" x2="28" y2="34"/></g><text x="24" y="13" text-anchor="middle" font-family="serif" font-size="9" fill="#5856D6" font-weight="bold">A</text></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>

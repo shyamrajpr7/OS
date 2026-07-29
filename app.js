@@ -17,7 +17,8 @@ const fileSystem = {
       { name: 'Console.app', type: 'app', icon: 'terminal', size: '4.2 MB', kind: 'Application', date: 'Mar 15, 2026' },
       { name: 'Screen Recording.app', type: 'app', icon: 'terminal', size: '6.8 MB', kind: 'Application', date: 'Jun 1, 2026' },
       { name: 'Weather.app', type: 'app', icon: 'terminal', size: '5.3 MB', kind: 'Application', date: 'Jun 2, 2026' },
-      { name: 'App Store.app', type: 'app', icon: 'terminal', size: '14.2 MB', kind: 'Application', date: 'Jun 3, 2026' }
+      { name: 'App Store.app', type: 'app', icon: 'terminal', size: '14.2 MB', kind: 'Application', date: 'Jun 3, 2026' },
+      { name: 'Dictionary.app', type: 'app', icon: 'terminal', size: '3.6 MB', kind: 'Application', date: 'Jun 4, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -737,7 +738,8 @@ const appIdMap = {
   'Time Machine.app': 'backup-window',
   'Screen Recording.app': 'screenrecording-window',
   'Weather.app': 'weather-window',
-  'App Store.app': 'appstore-window'
+  'App Store.app': 'appstore-window',
+  'Dictionary.app': 'dictionary-window'
 };
 
 function openApp(appName) {
@@ -773,6 +775,7 @@ function openApp(appName) {
   if (winId === 'backup-window') initBackupApp();
   if (winId === 'weather-window') initWeatherApp();
   if (winId === 'appstore-window') initAppStore();
+  if (winId === 'dictionary-window') initDictionary();
 }
 
 function closeWindow(winId) {
@@ -4884,6 +4887,77 @@ function storeInstall(btn, name) {
     btn.classList.add('installed');
     showNotification('App Store', name + ' installed successfully');
   }, 1500);
+}
+
+// ---- Dictionary ----
+const dictionary = {
+  'abandon': { pos: 'verb', def: 'To leave behind or give up completely', example: 'They had to abandon the project due to lack of funds.' },
+  'benevolent': { pos: 'adjective', def: 'Well-meaning and kindly', example: 'The benevolent donor contributed to many charities.' },
+  'cascade': { pos: 'noun', def: 'A small waterfall or series of waterfalls', example: 'The water flowed down the cascade into the pool.' },
+  'diligent': { pos: 'adjective', def: 'Having or showing care in one\'s work or duties', example: 'She was a diligent student who always completed her homework.' },
+  'eloquent': { pos: 'adjective', def: 'Fluent or persuasive in speaking or writing', example: 'He delivered an eloquent speech at the ceremony.' },
+  'frugal': { pos: 'adjective', def: 'Sparing or economical with regard to money or food', example: 'They lived a frugal life, saving every penny.' },
+  'gregarious': { pos: 'adjective', def: 'Fond of company; sociable', example: 'He was a gregarious person who loved parties.' },
+  'harbinger': { pos: 'noun', def: 'A person or thing that announces or signals the approach of another', example: 'The robin is a harbinger of spring.' },
+  'idyllic': { pos: 'adjective', def: 'Extremely happy, peaceful, or picturesque', example: 'They lived in an idyllic cottage in the countryside.' },
+  'jubilant': { pos: 'adjective', def: 'Feeling or expressing great happiness and triumph', example: 'The fans were jubilant after the victory.' },
+  'kinetic': { pos: 'adjective', def: 'Relating to or resulting from motion', example: 'The kinetic energy of the moving car was immense.' },
+  'luminous': { pos: 'adjective', def: 'Full of or shedding light; bright or shining', example: 'The luminous stars lit up the night sky.' },
+  'meticulous': { pos: 'adjective', def: 'Showing great attention to detail; very careful and precise', example: 'The meticulous craftsman checked every stitch.' },
+  'nostalgia': { pos: 'noun', def: 'A sentimental longing for the past', example: 'The old photographs filled her with nostalgia.' },
+  'opulent': { pos: 'adjective', def: 'Ostentatiously rich and luxurious or lavish', example: 'The opulent palace was decorated with gold.' },
+  'pragmatic': { pos: 'adjective', def: 'Dealing with things sensibly and realistically', example: 'We need a pragmatic approach to solve this problem.' },
+  'quiescent': { pos: 'adjective', def: 'In a state or period of inactivity or dormancy', example: 'The volcano remained quiescent for centuries.' },
+  'resilient': { pos: 'adjective', def: 'Able to recover quickly from difficult conditions', example: 'The resilient community rebuilt after the storm.' },
+  'serendipity': { pos: 'noun', def: 'The occurrence of events by chance in a happy way', example: 'Finding that book was pure serendipity.' },
+  'tenacious': { pos: 'adjective', def: 'Tending to keep a firm hold of something; persistent', example: 'The tenacious reporter would not give up on the story.' },
+  'ubiquitous': { pos: 'adjective', def: 'Present, appearing, or found everywhere', example: 'Smartphones have become ubiquitous in modern society.' },
+  'verbose': { pos: 'adjective', def: 'Using or expressed in more words than are needed', example: 'His verbose explanation confused everyone.' },
+  'whimsical': { pos: 'adjective', def: 'Playfully quaint or fanciful, especially in an appealing way', example: 'The garden had a whimsical fairy-tale quality.' },
+  'xenial': { pos: 'adjective', def: 'Relating to hospitality towards guests', example: 'Their xenial welcome made us feel at home.' },
+  'yearning': { pos: 'noun', def: 'A feeling of intense longing for something', example: 'She felt a yearning to travel the world.' },
+  'zealous': { pos: 'adjective', def: 'Having or showing great energy or enthusiasm for a cause', example: 'The zealous volunteer worked tirelessly.' }
+};
+
+const wordOfTheDay = ['serendipity', 'eloquent', 'meticulous', 'resilient', 'ubiquitous', 'whimsical', 'pragmatic'];
+
+function initDictionary() {
+  const today = new Date().getDay();
+  const wotd = wordOfTheDay[today % wordOfTheDay.length];
+  const entry = dictionary[wotd];
+  if (entry) {
+    document.getElementById('dictWotd').innerHTML =
+      '<div class="dict-wotd-label">Word of the Day</div>' +
+      '<div class="dict-wotd-word">' + wotd + '</div>' +
+      '<div class="dict-wotd-pos">' + entry.pos + '</div>' +
+      '<div class="dict-wotd-def">' + entry.def + '</div>';
+  }
+}
+
+function dictLookup(query) {
+  const q = query.trim().toLowerCase();
+  const content = document.getElementById('dictContent');
+  if (!q) {
+    content.innerHTML =
+      '<div class="dict-welcome"><i class="ri-book-open-line"></i><div class="dict-welcome-title">Dictionary</div><div class="dict-welcome-desc">Search for a word to see its definition</div></div>';
+    return;
+  }
+  const entry = dictionary[q];
+  if (entry) {
+    content.innerHTML =
+      '<div class="dict-result">' +
+        '<div class="dict-result-word">' + q + '</div>' +
+        '<div class="dict-result-pos">' + entry.pos + '</div>' +
+        '<div class="dict-result-def">' + entry.def + '</div>' +
+        '<div class="dict-result-example"><em>"' + entry.example + '"</em></div>' +
+      '</div>';
+  } else {
+    const similar = Object.keys(dictionary).filter(w => w.includes(q) || q.includes(w)).slice(0, 5);
+    content.innerHTML =
+      '<div class="dict-notfound"><i class="ri-question-line"></i><div class="dict-notfound-title">Word not found</div><div class="dict-notfound-desc">No definition found for "' + q + '"</div>' +
+      (similar.length ? '<div class="dict-similar">Did you mean: ' + similar.map(w => '<span class="dict-similar-word" onclick="dictLookup(\'' + w + '\')">' + w + '</span>').join(', ') + '</div>' : '') +
+      '</div>';
+  }
 }
 
 // ---- Screen Recording ----
