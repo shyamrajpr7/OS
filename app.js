@@ -18,7 +18,12 @@ const fileSystem = {
       { name: 'Screen Recording.app', type: 'app', icon: 'terminal', size: '6.8 MB', kind: 'Application', date: 'Jun 1, 2026' },
       { name: 'Weather.app', type: 'app', icon: 'terminal', size: '5.3 MB', kind: 'Application', date: 'Jun 2, 2026' },
       { name: 'App Store.app', type: 'app', icon: 'terminal', size: '14.2 MB', kind: 'Application', date: 'Jun 3, 2026' },
-      { name: 'Dictionary.app', type: 'app', icon: 'terminal', size: '3.6 MB', kind: 'Application', date: 'Jun 4, 2026' }
+      { name: 'Dictionary.app', type: 'app', icon: 'terminal', size: '3.6 MB', kind: 'Application', date: 'Jun 4, 2026' },
+      { name: 'Voice Memos.app', type: 'app', icon: 'terminal', size: '5.1 MB', kind: 'Application', date: 'Jun 5, 2026' },
+      { name: 'Stickies.app', type: 'app', icon: 'terminal', size: '2.3 MB', kind: 'Application', date: 'Jun 6, 2026' },
+      { name: 'System Report.app', type: 'app', icon: 'terminal', size: '4.7 MB', kind: 'Application', date: 'Jun 7, 2026' },
+      { name: 'Network Utility.app', type: 'app', icon: 'terminal', size: '3.2 MB', kind: 'Application', date: 'Jun 8, 2026' },
+      { name: 'Font Book.app', type: 'app', icon: 'terminal', size: '6.0 MB', kind: 'Application', date: 'Jun 9, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -739,7 +744,12 @@ const appIdMap = {
   'Screen Recording.app': 'screenrecording-window',
   'Weather.app': 'weather-window',
   'App Store.app': 'appstore-window',
-  'Dictionary.app': 'dictionary-window'
+  'Dictionary.app': 'dictionary-window',
+  'Voice Memos.app': 'voicememos-window',
+  'Stickies.app': 'stickies-window',
+  'System Report.app': 'sysreport-window',
+  'Network Utility.app': 'netutil-window',
+  'Font Book.app': 'fontbook-window'
 };
 
 function openApp(appName) {
@@ -776,6 +786,11 @@ function openApp(appName) {
   if (winId === 'weather-window') initWeatherApp();
   if (winId === 'appstore-window') initAppStore();
   if (winId === 'dictionary-window') initDictionary();
+  if (winId === 'voicememos-window') initVoiceMemos();
+  if (winId === 'stickies-window') initStickies();
+  if (winId === 'sysreport-window') initSysReport();
+  if (winId === 'netutil-window') initNetUtil();
+  if (winId === 'fontbook-window') initFontBook();
 }
 
 function closeWindow(winId) {
@@ -4995,6 +5010,321 @@ function dictLookup(query) {
       (similar.length ? '<div class="dict-similar">Did you mean: ' + similar.map(w => '<span class="dict-similar-word" onclick="dictLookup(\'' + w + '\')">' + w + '</span>').join(', ') + '</div>' : '') +
       '</div>';
   }
+}
+
+// ---- Voice Memos ----
+let vmState = { recording: false, timer: null, seconds: 0, recordings: [], animFrame: null };
+
+function initVoiceMemos() {
+  if (vmState.recordings.length === 0) renderVmRecordings();
+}
+
+function vmStartRecording() {
+  if (vmState.recording) return;
+  vmState.recording = true;
+  vmState.seconds = 0;
+  document.getElementById('vmRecordBtn').disabled = true;
+  document.getElementById('vmStopBtn').disabled = false;
+  updateVmTimer();
+  vmState.timer = setInterval(() => { vmState.seconds++; updateVmTimer(); }, 1000);
+  const canvas = document.getElementById('vmWaveform');
+  const ctx = canvas.getContext('2d');
+  let offset = 0;
+  function draw() {
+    if (!vmState.recording) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#FF9500';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = 0; x < canvas.width; x++) {
+      const y = canvas.height / 2 + Math.sin((x + offset) * 0.05) * (Math.random() * 20 + 10);
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    offset += 2;
+    vmState.animFrame = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function vmStopRecording() {
+  if (!vmState.recording) return;
+  vmState.recording = false;
+  clearInterval(vmState.timer);
+  if (vmState.animFrame) cancelAnimationFrame(vmState.animFrame);
+  document.getElementById('vmRecordBtn').disabled = false;
+  document.getElementById('vmStopBtn').disabled = true;
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const m = Math.floor(vmState.seconds / 60);
+  const s = vmState.seconds % 60;
+  vmState.recordings.unshift({ date: dateStr, duration: m + ':' + String(s).padStart(2, '0') });
+  renderVmRecordings();
+}
+
+function updateVmTimer() {
+  const m = Math.floor(vmState.seconds / 60);
+  const s = vmState.seconds % 60;
+  document.getElementById('vmTimer').textContent = m + ':' + String(s).padStart(2, '0');
+}
+
+function renderVmRecordings() {
+  const list = document.getElementById('vmRecordingsList');
+  if (!list) return;
+  if (vmState.recordings.length === 0) { list.innerHTML = '<div class="vm-empty">No recordings</div>'; return; }
+  list.innerHTML = vmState.recordings.map((r, i) =>
+    '<div class="vm-recording-item"><div class="vm-recording-info"><div class="vm-recording-name">Recording ' + (i + 1) + '</div><div class="vm-recording-meta">' + r.date + ' • ' + r.duration + '</div></div><button class="vm-recording-delete" onclick="vmDeleteRecording(' + i + ')"><i class="ri-delete-bin-line"></i></button></div>'
+  ).join('');
+}
+
+function vmDeleteRecording(i) { vmState.recordings.splice(i, 1); renderVmRecordings(); }
+function vmClearAll() { vmState.recordings = []; renderVmRecordings(); }
+
+// ---- Stickies ----
+let stickiesData = [
+  { id: 1, text: 'Welcome to Stickies!\n\nDouble-click to edit.\nPress Cmd+Enter to save.', color: '#FFF9C4', x: 20, y: 20 },
+  { id: 2, text: 'Ideas for Thread OS:\n- More apps\n- Widget support\n- Dark mode', color: '#C8E6C9', x: 220, y: 20 }
+];
+let stickiesIdCounter = 3;
+let stickiesEditing = null;
+
+function initStickies() { renderStickies(); }
+
+function renderStickies() {
+  const grid = document.getElementById('stickiesGrid');
+  if (!grid) return;
+  grid.innerHTML = stickiesData.map(s =>
+    '<div class="stickie-note" style="background:' + s.color + ';left:' + s.x + 'px;top:' + s.y + 'px" data-id="' + s.id + '">' +
+      '<div class="stickie-header"><span class="stickie-date">' + new Date().toLocaleDateString() + '</span><button class="stickie-delete" onclick="stickiesDelete(' + s.id + ')"><i class="ri-close-line"></i></button></div>' +
+      '<div class="stickie-text" id="stickieText' + s.id + '" ondblclick="stickiesEdit(' + s.id + ')">' + s.text.replace(/\n/g, '<br>') + '</div>' +
+      '<textarea class="stickie-editor" id="stickieEditor' + s.id + '" style="display:none" onkeydown="if(event.metaKey&&event.key===\'Enter\')stickiesSave(' + s.id + ')">' + s.text + '</textarea>' +
+    '</div>'
+  ).join('');
+}
+
+function stickiesAdd() {
+  const colors = ['#FFF9C4', '#C8E6C9', '#BBDEFB', '#F8BBD0', '#E1BEE7', '#FFE0B2'];
+  const color = colors[stickiesData.length % colors.length];
+  stickiesData.push({ id: stickiesIdCounter++, text: 'New note\n\nType your text here...', color: color, x: 40 + stickiesData.length * 20 % 200, y: 40 + stickiesData.length * 20 % 200 });
+  renderStickies();
+}
+
+function stickiesDelete(id) { stickiesData = stickiesData.filter(s => s.id !== id); renderStickies(); }
+
+function stickiesEdit(id) {
+  if (stickiesEditing) document.getElementById('stickieEditor' + stickiesEditing).style.display = 'none';
+  stickiesEditing = id;
+  document.getElementById('stickieText' + id).style.display = 'none';
+  document.getElementById('stickieEditor' + id).style.display = '';
+  document.getElementById('stickieEditor' + id).focus();
+}
+
+function stickiesSave(id) {
+  const s = stickiesData.find(s => s.id === id);
+  if (!s) return;
+  s.text = document.getElementById('stickieEditor' + id).value;
+  stickiesEditing = null;
+  renderStickies();
+}
+
+// ---- System Report ----
+const sysInfo = {
+  hardware: [
+    ['Model Name', 'Thread OS Machine'],
+    ['Chip', 'Apple M2 Pro'],
+    ['Total Cores', '12 (8 performance, 4 efficiency)'],
+    ['GPU', 'Apple 19-core GPU'],
+    ['Neural Engine', '16-core'],
+    ['Serial Number', 'FVFZ2XKMD6']
+  ],
+  memory: [
+    ['Total Memory', '16 GB'],
+    ['Type', 'LPDDR5'],
+    ['Speed', '6400 MHz'],
+    ['Used', '7.2 GB'],
+    ['Free', '8.8 GB']
+  ],
+  storage: [
+    ['Device', 'Macintosh HD'],
+    ['Capacity', '512 GB'],
+    ['Available', '347.2 GB'],
+    ['Used', '164.8 GB'],
+    ['Format', 'APFS']
+  ],
+  network: [
+    ['Wi-Fi', 'Connected'],
+    ['IP Address', '192.168.1.42'],
+    ['Router', '192.168.1.1'],
+    ['DNS', '8.8.8.8'],
+    ['MAC Address', 'A4:5E:60:12:34:56'],
+    ['Interface', 'en0']
+  ],
+  software: [
+    ['Operating System', 'Thread OS 1.0.0'],
+    ['Build', '24A123'],
+    ['Kernel', 'HTML5/CSS3/JS'],
+    ['Browser', 'WebKit 620.x'],
+    ['Shell', 'thread-term 1.0'],
+    ['Time Since Boot', '1 day, 3:42']
+  ]
+};
+
+function initSysReport() {
+  showSysReportCat('hardware');
+  document.querySelectorAll('.sysreport-sidebar-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.sysreport-sidebar-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      showSysReportCat(item.dataset.cat);
+    });
+  });
+}
+
+function showSysReportCat(cat) {
+  const data = sysInfo[cat] || sysInfo.hardware;
+  const icons = { hardware: 'ri-cpu-line', storage: 'ri-hard-drive-line', memory: 'ri-database-line', network: 'ri-wifi-line', software: 'ri-code-line' };
+  document.getElementById('sysreportContent').innerHTML =
+    '<div class="sysreport-cat-header"><i class="' + (icons[cat] || 'ri-information-line') + '"></i> ' + cat.charAt(0).toUpperCase() + cat.slice(1) + '</div>' +
+    '<div class="sysreport-table">' +
+    data.map(r => '<div class="sysreport-row"><span class="sysreport-label">' + r[0] + '</span><span class="sysreport-value">' + r[1] + '</span></div>').join('') +
+    '</div>';
+}
+
+// ---- Network Utility ----
+let netutilCurrentTool = 'ping';
+
+function initNetUtil() {
+  document.querySelectorAll('.netutil-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.netutil-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      netutilCurrentTool = tab.dataset.tool;
+      document.getElementById('netutilOutput').innerHTML = '<div class="netutil-placeholder">Enter a hostname or IP address and click Run</div>';
+    });
+  });
+}
+
+function netutilRun() {
+  const input = document.getElementById('netutilInput').value.trim();
+  if (!input) return;
+  const output = document.getElementById('netutilOutput');
+  const tool = netutilCurrentTool;
+  let lines = [];
+  const now = new Date().toLocaleTimeString();
+
+  if (tool === 'ping') {
+    lines = [
+      'PING ' + input + ' (192.168.1.1): 56 data bytes',
+      '64 bytes from 192.168.1.1: icmp_seq=0 ttl=64 time=2.34 ms',
+      '64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=2.12 ms',
+      '64 bytes from 192.168.1.1: icmp_seq=2 ttl=64 time=1.98 ms',
+      '64 bytes from 192.168.1.1: icmp_seq=3 ttl=64 time=2.45 ms',
+      '64 bytes from 192.168.1.1: icmp_seq=4 ttl=64 time=2.01 ms',
+      '',
+      '--- ' + input + ' ping statistics ---',
+      '5 packets transmitted, 5 packets received, 0% packet loss',
+      'round-trip min/avg/max = 1.98/2.18/2.45 ms'
+    ];
+  } else if (tool === 'lookup') {
+    lines = [
+      'Trying: ' + input,
+      'Server: 8.8.8.8',
+      'Address: 8.8.8.8#53',
+      '',
+      'Non-authoritative answer:',
+      'Name: ' + input,
+      'Address: 142.250.80.46',
+      'Aliases: www.google.com'
+    ];
+  } else if (tool === 'traceroute') {
+    lines = [
+      'traceroute to ' + input + ' (142.250.80.46), 64 hops max',
+      ' 1  192.168.1.1   2.34 ms   2.12 ms   1.98 ms',
+      ' 2  10.0.0.1     5.67 ms   5.45 ms   5.22 ms',
+      ' 3  72.14.234.1   12.3 ms   11.8 ms   12.1 ms',
+      ' 4  108.170.252.1  14.2 ms   13.9 ms   14.5 ms',
+      ' 5  142.250.80.46   16.8 ms   16.2 ms   16.5 ms'
+    ];
+  } else if (tool === 'whois') {
+    lines = [
+      'Whois lookup for: ' + input,
+      '',
+      'Domain Name: ' + input,
+      'Registry Domain ID: 123456789',
+      'Creation Date: 1997-09-15',
+      'Expiration Date: 2028-09-14',
+      'Name Server: NS1.GOOGLE.COM',
+      'Name Server: NS2.GOOGLE.COM',
+      'Registrar: Registrar Corp',
+      'DNSSEC: unsigned'
+    ];
+  }
+
+  output.innerHTML = '<div class="netutil-tool-label">' + tool.charAt(0).toUpperCase() + tool.slice(1) + ' ' + input + ' (' + now + ')</div>' +
+    lines.map(l => '<div class="netutil-line' + (l.includes('packet loss') && l.includes('0%') ? ' success' : l.includes('packet loss') ? ' error' : '') + '">' + l + '</div>').join('');
+}
+
+// ---- Font Book ----
+const fonts = [
+  { name: 'San Francisco', family: '-apple-system, BlinkMacSystemFont', category: 'sans' },
+  { name: 'Inter', family: 'Inter', category: 'sans' },
+  { name: 'Helvetica Neue', family: 'Helvetica Neue', category: 'sans' },
+  { name: 'Arial', family: 'Arial', category: 'sans' },
+  { name: 'Times New Roman', family: 'Times New Roman', category: 'serif' },
+  { name: 'Georgia', family: 'Georgia', category: 'serif' },
+  { name: 'Palatino', family: 'Palatino', category: 'serif' },
+  { name: 'Baskerville', family: 'Baskerville', category: 'serif' },
+  { name: 'Courier New', family: 'Courier New', category: 'mono' },
+  { name: 'Menlo', family: 'Menlo', category: 'mono' },
+  { name: 'Monaco', family: 'Monaco', category: 'mono' },
+  { name: 'SF Mono', family: 'SF Mono', category: 'mono' },
+  { name: 'Brush Script MT', family: 'Brush Script MT', category: 'script' },
+  { name: 'Apple Chancery', family: 'Apple Chancery', category: 'script' },
+  { name: 'Snell Roundhand', family: 'Snell Roundhand', category: 'script' }
+];
+let fontbookCurrentCategory = 'all';
+
+function initFontBook() {
+  fontbookRenderList();
+  document.querySelectorAll('.fontbook-sidebar-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.fontbook-sidebar-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      fontbookCurrentCategory = item.dataset.collection;
+      fontbookRenderList();
+    });
+  });
+}
+
+function fontbookRenderList() {
+  const list = document.getElementById('fontbookList');
+  if (!list) return;
+  const filtered = fontbookCurrentCategory === 'all' ? fonts : fonts.filter(f => f.category === fontbookCurrentCategory);
+  list.innerHTML = filtered.map(f =>
+    '<div class="fontbook-list-item" onclick="fontbookSelect(\'' + f.family.replace(/'/g, '\\\'') + '\',\'' + f.name.replace(/'/g, '\\\'') + '\')">' +
+      '<span style="font-family:' + f.family + '">' + f.name + '</span>' +
+    '</div>'
+  ).join('');
+  if (filtered.length > 0) fontbookSelect(filtered[0].family.replace(/'/g, '\\\''), filtered[0].name.replace(/'/g, '\\\''));
+}
+
+function fontbookSelect(family, name) {
+  document.querySelectorAll('.fontbook-list-item').forEach(i => i.classList.remove('active'));
+  const items = document.querySelectorAll('.fontbook-list-item');
+  for (const item of items) {
+    if (item.textContent.trim() === name) item.classList.add('active');
+  }
+  document.getElementById('fontbookPreviewName').textContent = name;
+  document.getElementById('fontbookPreviewText').style.fontFamily = family;
+  document.getElementById('fontbookSample').style.fontFamily = family;
+  fontbookUpdatePreview();
+}
+
+function fontbookUpdatePreview() {
+  const size = parseInt(document.getElementById('fontbookSizeSlider').value);
+  document.getElementById('fontbookSizeLabel').textContent = size + 'px';
+  document.getElementById('fontbookPreviewText').style.fontSize = size + 'px';
+  document.getElementById('fontbookSample').style.fontSize = Math.min(size, 36) + 'px';
 }
 
 // ---- Screen Recording ----
