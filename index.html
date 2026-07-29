@@ -1132,6 +1132,35 @@
         </div>
       </div>
 
+      <!-- ========== APP STORE ========== -->
+      <div class="mac-window app-window" id="appstore-window" style="width:720px;height:520px;top:60px;left:160px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">App Store</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body appstore-body">
+          <div class="appstore-sidebar">
+            <div class="appstore-sidebar-section">
+              <div class="appstore-sidebar-item active" data-tab="featured"><i class="ri-star-line"></i> Featured</div>
+              <div class="appstore-sidebar-item" data-tab="categories"><i class="ri-grid-line"></i> Categories</div>
+              <div class="appstore-sidebar-item" data-tab="top"><i class="ri-trophy-line"></i> Top Charts</div>
+              <div class="appstore-sidebar-item" data-tab="arcade"><i class="ri-gamepad-line"></i> Arcade</div>
+            </div>
+            <div class="appstore-sidebar-section">
+              <div class="appstore-sidebar-label">Quick Links</div>
+              <div class="appstore-sidebar-item" data-tab="updates"><i class="ri-refresh-line"></i> Updates</div>
+              <div class="appstore-sidebar-item" data-tab="purchased"><i class="ri-download-line"></i> Purchased</div>
+            </div>
+          </div>
+          <div class="appstore-main" id="appstoreMain"></div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -1241,6 +1270,12 @@
           </div>
           <span class="launchpad-label">Weather</span>
         </div>
+        <div class="launchpad-item" data-app="App Store.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><path d="M14 16h4l6 12 6-12h4l-8 16v6h-4v-6l-8-16z" fill="white"/><circle cx="24" cy="12" r="3" fill="white"/></svg>
+          </div>
+          <span class="launchpad-label">App Store</span>
+        </div>
       </div>
     </div>
 
@@ -1301,6 +1336,10 @@
       </div>
       <div class="dock-item" data-app="Weather.app" data-tooltip="Weather">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><circle cx="24" cy="16" r="6" fill="#FFD60A"/><path d="M14 30a8 8 0 0 1 0-16c.6 0 1.2.1 1.8.2a10 10 0 0 1 19.2 2.8A6 6 0 0 1 34 34H14z" fill="white"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="App Store.app" data-tooltip="App Store">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><path d="M14 16h4l6 12 6-12h4l-8 16v6h-4v-6l-8-16z" fill="white"/><circle cx="24" cy="12" r="3" fill="white"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>

@@ -16,7 +16,8 @@ const fileSystem = {
       { name: 'Safari.app', type: 'app', icon: 'safari', size: '22.1 MB', kind: 'Application', date: 'May 1, 2026' },
       { name: 'Console.app', type: 'app', icon: 'terminal', size: '4.2 MB', kind: 'Application', date: 'Mar 15, 2026' },
       { name: 'Screen Recording.app', type: 'app', icon: 'terminal', size: '6.8 MB', kind: 'Application', date: 'Jun 1, 2026' },
-      { name: 'Weather.app', type: 'app', icon: 'terminal', size: '5.3 MB', kind: 'Application', date: 'Jun 2, 2026' }
+      { name: 'Weather.app', type: 'app', icon: 'terminal', size: '5.3 MB', kind: 'Application', date: 'Jun 2, 2026' },
+      { name: 'App Store.app', type: 'app', icon: 'terminal', size: '14.2 MB', kind: 'Application', date: 'Jun 3, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -735,7 +736,8 @@ const appIdMap = {
   'Downloads.app': 'downloads-window',
   'Time Machine.app': 'backup-window',
   'Screen Recording.app': 'screenrecording-window',
-  'Weather.app': 'weather-window'
+  'Weather.app': 'weather-window',
+  'App Store.app': 'appstore-window'
 };
 
 function openApp(appName) {
@@ -770,6 +772,7 @@ function openApp(appName) {
   if (winId === 'chrome-window') chromeGreeting();
   if (winId === 'backup-window') initBackupApp();
   if (winId === 'weather-window') initWeatherApp();
+  if (winId === 'appstore-window') initAppStore();
 }
 
 function closeWindow(winId) {
@@ -4794,6 +4797,93 @@ function renderWeather10Day() {
         '<div class="weather-10day-temps"><span class="weather-10day-hi">' + d.hi + '°</span><span class="weather-10day-lo">' + d.lo + '°</span></div>' +
       '</div>'
     ).join('') + '</div>';
+}
+
+// ---- App Store ----
+const storeApps = [
+  { name: 'Final Cut Pro', desc: 'Professional video editing', icon: 'ri-film-line', color: '#FF2D55', price: '$299.99', rating: 4.7, category: 'Video' },
+  { name: 'Logic Pro', desc: 'Music production studio', icon: 'ri-music-2-line', color: '#FF9500', price: '$199.99', rating: 4.8, category: 'Music' },
+  { name: 'Pixelmator Pro', desc: 'Image editing tool', icon: 'ri-brush-line', color: '#AF52DE', price: '$49.99', rating: 4.6, category: 'Graphics' },
+  { name: 'Things 3', desc: 'Personal task manager', icon: 'ri-checkbox-line', color: '#007AFF', price: '$9.99', rating: 4.9, category: 'Productivity' },
+  { name: 'Bear', desc: 'Markdown note taking', icon: 'ri-file-text-line', color: '#34C759', price: '$14.99', rating: 4.5, category: 'Productivity' },
+  { name: 'Pocket', desc: 'Save articles for later', icon: 'ri-bookmark-line', color: '#FF3B30', price: 'Free', rating: 4.3, category: 'Reading' },
+  { name: 'Darkroom', desc: 'Photo editor & filter', icon: 'ri-camera-line', color: '#5856D6', price: '$19.99', rating: 4.4, category: 'Photography' },
+  { name: 'Spark Mail', desc: 'Smart email client', icon: 'ri-mail-line', color: '#007AFF', price: 'Free', rating: 4.2, category: 'Business' },
+  { name: 'Tweetbot', desc: 'Twitter client', icon: 'ri-twitter-line', color: '#1DA1F2', price: '$5.99', rating: 4.1, category: 'Social' },
+  { name: '1Password', desc: 'Password manager', icon: 'ri-lock-line', color: '#FF9500', price: '$35.99/yr', rating: 4.8, category: 'Utilities' }
+];
+
+const storeCategories = ['Video', 'Music', 'Graphics', 'Productivity', 'Reading', 'Photography', 'Business', 'Social', 'Utilities'];
+let appStoreInstalled = ['Calculator.app', 'TextEdit.app', 'Terminal.app', 'Activity Monitor.app', 'System Settings.app', 'Preview.app', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Notes.app', 'Music.app', 'Disk Utility.app', 'Clock.app', 'Reminders.app', 'Console.app', 'Downloads.app', 'Time Machine.app', 'Screen Recording.app', 'Weather.app'];
+
+function initAppStore() {
+  const main = document.getElementById('appstoreMain');
+  if (!main) return;
+  showStoreTab('featured');
+  document.querySelectorAll('.appstore-sidebar-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.appstore-sidebar-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      showStoreTab(item.dataset.tab);
+    });
+  });
+}
+
+function showStoreTab(tab) {
+  const main = document.getElementById('appstoreMain');
+  if (tab === 'featured') {
+    main.innerHTML =
+      '<div class="appstore-banner"><i class="ri-apps-line"></i><div><div class="appstore-banner-title">Discover New Apps</div><div class="appstore-banner-desc">Explore top apps for Thread OS</div></div></div>' +
+      '<div class="appstore-section"><div class="appstore-section-title">Featured</div><div class="appstore-grid">' +
+      storeApps.slice(0, 6).map(a => renderStoreAppCard(a)).join('') +
+      '</div></div>' +
+      '<div class="appstore-section"><div class="appstore-section-title">Top Free</div><div class="appstore-grid">' +
+      storeApps.filter(a => a.price === 'Free').map(a => renderStoreAppCard(a)).join('') +
+      '</div></div>';
+  } else if (tab === 'categories') {
+    main.innerHTML =
+      '<div class="appstore-section"><div class="appstore-section-title">Categories</div><div class="appstore-categories">' +
+      storeCategories.map(c => {
+        const icons = { 'Video': 'ri-film-line', 'Music': 'ri-music-2-line', 'Graphics': 'ri-brush-line', 'Productivity': 'ri-checkbox-line', 'Reading': 'ri-bookmark-line', 'Photography': 'ri-camera-line', 'Business': 'ri-mail-line', 'Social': 'ri-twitter-line', 'Utilities': 'ri-lock-line' };
+        const colors = { 'Video': '#FF2D55', 'Music': '#FF9500', 'Graphics': '#AF52DE', 'Productivity': '#007AFF', 'Reading': '#FF3B30', 'Photography': '#5856D6', 'Business': '#007AFF', 'Social': '#1DA1F2', 'Utilities': '#FF9500' };
+        return '<div class="appstore-category-card"><div class="appstore-category-icon" style="background:' + colors[c] + '20;color:' + colors[c] + '"><i class="' + icons[c] + '"></i></div><div class="appstore-category-name">' + c + '</div></div>';
+      }).join('') +
+      '</div></div>';
+  } else if (tab === 'top') {
+    const sorted = [...storeApps].sort((a, b) => b.rating - a.rating);
+    main.innerHTML =
+      '<div class="appstore-section"><div class="appstore-section-title">Top Charts</div><div class="appstore-top-list">' +
+      sorted.map((a, i) => '<div class="appstore-top-item"><div class="appstore-top-rank">' + (i + 1) + '</div>' + renderStoreAppCard(a) + '</div>').join('') +
+      '</div></div>';
+  } else if (tab === 'arcade') {
+    main.innerHTML =
+      '<div class="appstore-banner" style="background:linear-gradient(135deg,#662D91,#007AFF)"><i class="ri-gamepad-line"></i><div><div class="appstore-banner-title">Arcade</div><div class="appstore-banner-desc">Play unlimited games. No ads.</div></div></div>' +
+      '<div class="appstore-section"><div class="appstore-section-title">Arcade Games</div><div class="appstore-grid">' +
+      storeApps.slice(0, 4).map(a => renderStoreAppCard({ ...a, name: a.name + ' Arcade', desc: 'Arcade edition', price: 'Arcade' })).join('') +
+      '</div></div>';
+  } else {
+    main.innerHTML = '<div style="padding:40px;text-align:center;color:var(--mac-text-muted);font-size:15px">' + tab.charAt(0).toUpperCase() + tab.slice(1) + '</div>';
+  }
+}
+
+function renderStoreAppCard(a) {
+  const isInstalled = appStoreInstalled.some(i => i.toLowerCase().includes(a.name.toLowerCase().split(' ')[0]));
+  return '<div class="appstore-app-card">' +
+    '<div class="appstore-app-icon" style="background:' + a.color + '20;color:' + a.color + '"><i class="' + a.icon + '"></i></div>' +
+    '<div class="appstore-app-info"><div class="appstore-app-name">' + a.name + '</div><div class="appstore-app-desc">' + a.desc + '</div></div>' +
+    '<div class="appstore-app-footer"><span class="appstore-app-price">' + a.price + '</span>' +
+    '<button class="appstore-get-btn' + (isInstalled ? ' installed' : '') + '" onclick="' + (isInstalled ? '' : 'storeInstall(this,\'' + a.name + '\')') + '"' + (isInstalled ? ' disabled' : '') + '>' + (isInstalled ? 'Installed' : 'Get') + '</button></div>' +
+    '<div class="appstore-rating"><i class="ri-star-fill"></i> ' + a.rating + '</div></div>';
+}
+
+function storeInstall(btn, name) {
+  btn.textContent = 'Installing...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = 'Installed';
+    btn.classList.add('installed');
+    showNotification('App Store', name + ' installed successfully');
+  }, 1500);
 }
 
 // ---- Screen Recording ----
