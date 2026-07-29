@@ -3210,7 +3210,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('chromeFallback').style.display = 'none';
     const frame = document.getElementById('chromeFrame');
     frame.style.display = 'block';
-    frame.style.display = '';
 
     document.getElementById('chromeFallbackUrl').textContent = 'Trying to load: ' + fullUrl;
 
