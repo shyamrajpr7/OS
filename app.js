@@ -1133,7 +1133,8 @@ function terminalExec(cmd) {
        'figlet      ASCII art',
        'shuf        Shuffle',
        'rev         Reverse lines',
-       'yes         Repeat string'].forEach(l => appendTermOutput('  ' + l));
+       'yes         Repeat string',
+       'seq         Number sequence'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1465,6 +1466,14 @@ function terminalExec(cmd) {
     case 'yes': {
       const msg = args.join(' ') || 'y';
       appendTermOutput(Array(5).fill(msg).join('\n')); break;
+    }
+    case 'seq': {
+      const last = parseInt(args[args.length - 1]);
+      const first = args.length > 1 ? parseInt(args[0]) : 1;
+      if (isNaN(last)) { appendTermOutput('seq: invalid number', 'err'); break; }
+      const result = [];
+      for (let i = first; i <= last; i++) result.push(i);
+      appendTermOutput(result.join('\n')); break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
