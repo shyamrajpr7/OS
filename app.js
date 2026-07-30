@@ -1137,7 +1137,8 @@ function terminalExec(cmd) {
        'seq         Number sequence',
        'df          Disk free',
        'ps          Processes',
-       'who         Logged in'].forEach(l => appendTermOutput('  ' + l));
+       'who         Logged in',
+       'banner      Big text'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1496,6 +1497,44 @@ function terminalExec(cmd) {
       appendTermOutput('shyamraj    console      Jul 30 10:42', 'success');
       appendTermOutput('shyamraj    ttys000     Jul 30 11:05', 'success');
       break;
+    }
+    case 'banner': {
+      const txt = args.join(' ').toUpperCase() || 'HELLO';
+      const bannerChars = {
+        'A': [' AA ','A  A','AAAA','A  A','A  A'],
+        'B': ['BBB ','B  B','BBB ','B  B','BBB '],
+        'C': [' CC ','C  C','C   ','C  C',' CC '],
+        'D': ['DDD ','D  D','D  D','D  D','DDD '],
+        'E': ['EEEE','E   ','EEE ','E   ','EEEE'],
+        'F': ['FFFF','F   ','FFF ','F   ','F   '],
+        'G': [' GG ','G   ','G GG','G  G',' GG '],
+        'H': ['H  H','H  H','HHHH','H  H','H  H'],
+        'I': ['III',' I ',' I ',' I ','III'],
+        'J': ['  JJ','  J','  J','J J',' JJ '],
+        'K': ['K  K','K K ','KK  ','K K ','K  K'],
+        'L': ['L   ','L   ','L   ','L   ','LLLL'],
+        'M': ['M   M','MM MM','M M M','M   M','M   M'],
+        'N': ['N   N','NN  N','N N N','N  NN','N   N'],
+        'O': [' OO ','O  O','O  O','O  O',' OO '],
+        'P': ['PPP ','P  P','PPP ','P   ','P   '],
+        'Q': [' QQQ ','Q  Q','Q  Q','Q QQ',' QQQ'],
+        'R': ['RRR ','R  R','RRR ','R R ','R  R'],
+        'S': [' SSS','S   ',' SS ','   S','SSS '],
+        'T': ['TTTT',' T  ',' T  ',' T  ',' T  '],
+        'U': ['U  U','U  U','U  U','U  U',' UU '],
+        'V': ['V  V','V  V','V  V',' VV ',' V  '],
+        'W': ['W  W','W  W','W WW','WWWW','W  W'],
+        'X': ['X  X',' X X','  X ',' X X','X  X'],
+        'Y': ['Y  Y',' Y Y','  Y ','  Y ','  Y '],
+        'Z': ['ZZZZ','   Z','  Z ',' Z  ','ZZZZ'],
+        ' ': ['    ','    ','    ','    ','    ']
+      };
+      const bannerOut = ['','','','',''];
+      for (const ch of txt) {
+        const b = bannerChars[ch] || bannerChars[' '];
+        for (let i = 0; i < 5; i++) bannerOut[i] += b[i] + ' ';
+      }
+      appendTermOutput('\n' + bannerOut.join('\n')); break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
