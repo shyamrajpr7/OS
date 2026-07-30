@@ -1126,7 +1126,7 @@ function terminalExec(cmd) {
     case '': break;
     case 'help':
       appendTermOutput('Available commands:', 'success');
-      ['ls          List directory contents', 'cd          Change directory', 'pwd         Print working directory', 'echo        Print text', 'clear       Clear terminal', 'cat         Display file contents', 'date        Show current date', 'whoami      Show current user', 'uname       Show system info', 'hostname    Show hostname', 'uptime      Show uptime', 'calc        Calculator (e.g. calc 2+2)', 'neofetch    System info'].forEach(l => appendTermOutput('  ' + l));
+      ['ls          List directory contents', 'cd          Change directory', 'pwd         Print working directory', 'echo        Print text', 'clear       Clear terminal', 'cat         Display file contents', 'date        Show current date', 'whoami      Show current user', 'uname       Show system info', 'hostname    Show hostname', 'uptime      Show uptime', 'calc        Calculator (e.g. calc 2+2)', 'neofetch    System info', 'mkdir       Create a directory', 'touch       Create an empty file', 'rm          Remove files/directories', 'cp          Copy files', 'mv          Move/rename files', 'head        Show first lines of a file', 'tail        Show last lines of a file', 'wc          Word, line, char count', 'grep        Search file contents', 'find        Find files by name', 'sort        Sort lines of text', 'history     Show command history', 'man         Show command manual', 'curl        Simulate HTTP request', 'ping        Ping a host'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1175,6 +1175,200 @@ function terminalExec(cmd) {
       appendTermOutput('   \\ /         \\  /     Memory: ∞');
       appendTermOutput('    \\___________/');
       break;
+    case 'mkdir': {
+      if (!args[0]) { appendTermOutput('mkdir: missing operand', 'err'); break; }
+      const target = resolvePath(args[0]);
+      if (getNode(target)) { appendTermOutput(`mkdir: ${args[0]}: File exists`, 'err'); break; }
+      const parentPath = target.split('/').filter(Boolean).slice(0, -1).join('/');
+      const parent = getNode('/' + parentPath);
+      if (!parent || parent.type !== 'folder') { appendTermOutput(`mkdir: ${args[0]}: No such file or directory`, 'err'); break; }
+      const name = target.split('/').filter(Boolean).pop();
+      parent.children.push(name);
+      fileSystem[target] = { type: 'folder', children: [] };
+      appendTermOutput('', 'success');
+      break;
+    }
+    case 'touch': {
+      if (!args[0]) { appendTermOutput('touch: missing operand', 'err'); break; }
+      const target = resolvePath(args[0]);
+      const parentPath = target.split('/').filter(Boolean).slice(0, -1).join('/');
+      const parent = getNode('/' + parentPath);
+      if (!parent || parent.type !== 'folder') { appendTermOutput(`touch: ${args[0]}: No such file or directory`, 'err'); break; }
+      const name = target.split('/').filter(Boolean).pop();
+      parent.children.push({ name, type: 'file', icon: 'doc', size: '0 KB', kind: 'Plain Text', date: 'Just now' });
+      fileSystem[target] = { type: 'file' };
+      appendTermOutput('', 'success');
+      break;
+    }
+    case 'rm': {
+      if (!args[0]) { appendTermOutput('rm: missing operand', 'err'); break; }
+      const target = resolvePath(args[0]);
+      const parts = target.split('/').filter(Boolean);
+      const name = parts.pop();
+      const parentPath = '/' + parts.join('/');
+      const parent = getNode(parentPath);
+      if (!parent) { appendTermOutput(`rm: ${args[0]}: No such file or directory`, 'err'); break; }
+      const before = parent.children.length;
+      parent.children = parent.children.filter(c => (typeof c === 'string' ? c : c.name) !== name);
+      if (parent.children.length === before) { appendTermOutput(`rm: ${args[0]}: No such file or directory`, 'err'); break; }
+      delete fileSystem[target];
+      appendTermOutput('', 'success');
+      break;
+    }
+    case 'cp': {
+      if (args.length < 2) { appendTermOutput('cp: missing file operand', 'err'); break; }
+      const src = resolvePath(args[0]);
+      const srcNode = getNode(src);
+      if (!srcNode) { appendTermOutput(`cp: ${args[0]}: No such file or directory`, 'err'); break; }
+      const dstBase = args[1].replace(/\/$/, '');
+      const dst = resolvePath(dstBase);
+      const dstParts = dst.split('/').filter(Boolean);
+      const dstName = dstParts.pop();
+      const dstParentPath = '/' + dstParts.join('/');
+      const dstParent = getNode(dstParentPath);
+      if (!dstParent) { appendTermOutput(`cp: ${args[1]}: No such file or directory`, 'err'); break; }
+      dstParent.children.push({ name: dstName, type: srcNode.type, icon: 'doc', size: '--', kind: srcNode.type === 'folder' ? 'Folder' : 'File', date: 'Just now' });
+      fileSystem[dst] = { ...srcNode };
+      appendTermOutput('', 'success');
+      break;
+    }
+    case 'mv': {
+      if (args.length < 2) { appendTermOutput('mv: missing file operand', 'err'); break; }
+      const src = resolvePath(args[0]);
+      const srcNode = getNode(src);
+      if (!srcNode) { appendTermOutput(`mv: ${args[0]}: No such file or directory`, 'err'); break; }
+      const dstBase = args[1].replace(/\/$/, '');
+      const dst = resolvePath(dstBase);
+      const srcParts = src.split('/').filter(Boolean);
+      const srcName = srcParts.pop();
+      const srcParentPath = '/' + srcParts.join('/');
+      const srcParent = getNode(srcParentPath);
+      if (srcParent) srcParent.children = srcParent.children.filter(c => (typeof c === 'string' ? c : c.name) !== srcName);
+      const dstParts = dst.split('/').filter(Boolean);
+      const dstName = dstParts.pop();
+      const dstParentPath = '/' + dstParts.join('/');
+      const dstParent = getNode(dstParentPath);
+      if (dstParent) dstParent.children.push({ name: dstName, type: srcNode.type, icon: 'doc', size: '--', kind: srcNode.type === 'folder' ? 'Folder' : 'File', date: 'Just now' });
+      delete fileSystem[src];
+      fileSystem[dst] = srcNode;
+      appendTermOutput('', 'success');
+      break;
+    }
+    case 'head': {
+      if (!args[0]) { appendTermOutput('head: missing operand', 'err'); break; }
+      const target = resolvePath(args[0]); const hNode = getNode(target);
+      if (!hNode || hNode.type !== 'file') { appendTermOutput(`head: ${args[0]}: No such file or directory`, 'err'); break; }
+      const hContent = getFileContent(target); const hLines = hContent.split('\n'); const hN = args[1] ? parseInt(args[1]) : 10;
+      appendTermOutput(hLines.slice(0, hN).join('\n')); break;
+    }
+    case 'tail': {
+      if (!args[0]) { appendTermOutput('tail: missing operand', 'err'); break; }
+      const target = resolvePath(args[0]); const tNode = getNode(target);
+      if (!tNode || tNode.type !== 'file') { appendTermOutput(`tail: ${args[0]}: No such file or directory`, 'err'); break; }
+      const tContent = getFileContent(target); const tLines = tContent.split('\n'); const tN = args[1] ? parseInt(args[1]) : 10;
+      appendTermOutput(tLines.slice(-tN).join('\n')); break;
+    }
+    case 'wc': {
+      if (!args[0]) { appendTermOutput('wc: missing operand', 'err'); break; }
+      const target = resolvePath(args[0]); const wNode = getNode(target);
+      if (!wNode || wNode.type !== 'file') { appendTermOutput(`wc: ${args[0]}: No such file or directory`, 'err'); break; }
+      const wContent = getFileContent(target); const wLC = wContent.split('\n').length; const wWC = wContent.split(/\s+/).filter(Boolean).length; const wCC = wContent.length;
+      appendTermOutput(`  ${wLC}  ${wWC}  ${wCC}  ${args[0]}`); break;
+    }
+    case 'grep': {
+      if (args.length < 2) { appendTermOutput('grep: missing pattern or file', 'err'); break; }
+      const pattern = args[0]; const target = resolvePath(args[1]); const gNode = getNode(target);
+      if (!gNode || gNode.type !== 'file') { appendTermOutput(`grep: ${args[1]}: No such file or directory`, 'err'); break; }
+      const gContent = getFileContent(target); const gLines = gContent.split('\n'); const matches = gLines.filter(l => l.toLowerCase().includes(pattern.toLowerCase()));
+      if (matches.length) { matches.forEach(l => appendTermOutput(l, 'success')); } else { appendTermOutput('No matches found', 'info'); }
+      break;
+    }
+    case 'find': {
+      if (!args[0]) { appendTermOutput('find: missing pattern', 'err'); break; }
+      const q = args[0].toLowerCase(); const results = [];
+      (function searchAll(path) {
+        const n = getNode(path);
+        if (n && n.type === 'folder' && n.children) n.children.forEach(c => {
+          const name = typeof c === 'string' ? c : c.name;
+          const full = (path === '/' ? '/' : path + '/') + name;
+          if (name.toLowerCase().includes(q)) results.push(full);
+          if ((typeof c === 'string' && getNode(full) && getNode(full).type === 'folder') || (typeof c !== 'string' && c.type === 'folder')) searchAll(full);
+        });
+      })(termCwd);
+      if (results.length) { results.forEach(r => appendTermOutput(r)); } else { appendTermOutput('No matches found', 'info'); }
+      break;
+    }
+    case 'sort': {
+      if (!args[0]) { appendTermOutput('sort: missing operand', 'err'); break; }
+      const target = resolvePath(args[0]); const sNode = getNode(target);
+      if (!sNode || sNode.type !== 'file') { appendTermOutput(`sort: ${args[0]}: No such file or directory`, 'err'); break; }
+      const sContent = getFileContent(target); sContent.split('\n').sort().forEach(l => appendTermOutput(l)); break;
+    }
+    case 'history': {
+      if (termHistory.length) { termHistory.forEach((c, i) => appendTermOutput(`  ${i + 1}  ${c}`)); } else { appendTermOutput('  No commands in history', 'info'); }
+      break;
+    }
+    case 'man': {
+      if (!args[0]) { appendTermOutput('What manual page do you want?', 'err'); break; }
+      const manPages = {
+        ls: 'ls -- list directory contents\n\nls [path]\n    Lists the contents of a directory.',
+        cd: 'cd -- change directory\n\ncd [path]\n    Changes the current working directory.',
+        mkdir: 'mkdir -- make directory\n\nmkdir <name>\n    Creates a new directory.',
+        touch: 'touch -- create file\n\ntouch <name>\n    Creates an empty file.',
+        rm: 'rm -- remove files\n\nrm <path>\n    Removes a file or empty directory.',
+        cp: 'cp -- copy files\n\ncp <src> <dst>\n    Copies a file.',
+        mv: 'mv -- move/rename\n\nmv <src> <dst>\n    Moves or renames a file.',
+        head: 'head -- first lines\n\nhead <file> [n]\n    Shows first n lines (default 10).',
+        tail: 'tail -- last lines\n\ntail <file> [n]\n    Shows last n lines (default 10).',
+        wc: 'wc -- word count\n\nwc <file>\n    Counts lines, words, characters.',
+        grep: 'grep -- search\n\ngrep <pattern> <file>\n    Searches file for pattern.',
+        find: 'find -- find files\n\nfind <name>\n    Finds files by name recursively.',
+        sort: 'sort -- sort lines\n\nsort <file>\n    Sorts lines alphabetically.',
+        ping: 'ping -- ping host\n\nping <host>\n    Pings a host 4 times.',
+        curl: 'curl -- fetch URL\n\ncurl <url>\n    Simulates fetching a URL.',
+        history: 'history -- show history\n\nhistory\n    Shows command history.'
+      };
+      const page = manPages[args[0].toLowerCase()];
+      if (page) appendTermOutput(page); else appendTermOutput(`No manual entry for ${args[0]}`, 'err');
+      break;
+    }
+    case 'curl': {
+      if (!args[0]) { appendTermOutput('curl: try \'curl --help\' or \'curl --manual\' for more information', 'err'); break; }
+      const curlUrl = args[0];
+      appendTermOutput('  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current', 'info');
+      appendTermOutput('                                 Dload  Upload   Total   Spent    Left  Speed', 'info');
+      let curlP = 0;
+      const curlInt = setInterval(() => {
+        curlP += Math.random() * 25 + 5;
+        if (curlP >= 100) {
+          clearInterval(curlInt);
+          appendTermOutput(`100  ${(Math.random() * 50 + 5).toFixed(1)}k    0     0  ${(Math.random() * 2 + 1).toFixed(1)}M      0 --:--:-- --:--:-- --:--:--  ${(Math.random() * 5 + 2).toFixed(1)}M`, 'info');
+          appendTermOutput(`[200 OK] Fetched ${curlUrl} (${(Math.random() * 100 + 10).toFixed(1)} KB body)`, 'success');
+        } else {
+          appendTermOutput(` ${Math.round(curlP)}  ${(curlP * (Math.random() * 0.5 + 0.5)).toFixed(1)}k    0     0  ${(Math.random() * 2 + 1).toFixed(1)}M      0 --:--:-- --:--:-- --:--:--  ${(Math.random() * 5 + 2).toFixed(1)}M`, 'info');
+        }
+      }, 200);
+      break;
+    }
+    case 'ping': {
+      if (!args[0]) { appendTermOutput('ping: missing host operand', 'err'); break; }
+      const pingHost = args[0];
+      appendTermOutput(`PING ${pingHost} (${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}): 56 data bytes`, 'info');
+      let pingSeq = 1;
+      const pingInt = setInterval(() => {
+        if (pingSeq > 4) {
+          clearInterval(pingInt);
+          appendTermOutput('', 'info');
+          appendTermOutput(`--- ${pingHost} ping statistics ---`, 'info');
+          appendTermOutput('4 packets transmitted, 4 packets received, 0% packet loss', 'success');
+          appendTermOutput(`round-trip min/avg/max/stddev = ${(Math.random() * 5 + 10).toFixed(2)}/${(Math.random() * 10 + 15).toFixed(2)}/${(Math.random() * 20 + 30).toFixed(2)}/${(Math.random() * 3 + 1).toFixed(2)} ms`, 'info');
+          return;
+        }
+        appendTermOutput(`64 bytes from ${pingHost}: icmp_seq=${pingSeq} ttl=${Math.floor(Math.random() * 30 + 50)} time=${(Math.random() * 40 + 10).toFixed(3)} ms`, 'success');
+        pingSeq++;
+      }, 800);
+      break;
+    }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
   output.scrollTop = output.scrollHeight;
