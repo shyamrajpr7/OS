@@ -1136,7 +1136,8 @@ function terminalExec(cmd) {
        'yes         Repeat string',
        'seq         Number sequence',
        'df          Disk free',
-       'ps          Processes'].forEach(l => appendTermOutput('  ' + l));
+       'ps          Processes',
+       'who         Logged in'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1489,6 +1490,11 @@ function terminalExec(cmd) {
       appendTermOutput('  123 ??         0:05.42 WindowServer', 'success');
       appendTermOutput('  456 ??         0:12.78 Finder', 'success');
       appendTermOutput('  789 ??         0:03.91 Terminal', 'success');
+      break;
+    }
+    case 'who': {
+      appendTermOutput('shyamraj    console      Jul 30 10:42', 'success');
+      appendTermOutput('shyamraj    ttys000     Jul 30 11:05', 'success');
       break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
