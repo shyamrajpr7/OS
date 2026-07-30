@@ -1131,7 +1131,8 @@ function terminalExec(cmd) {
        'cal         Calendar',
        'cowsay      Cow says',
        'figlet      ASCII art',
-       'shuf        Shuffle'].forEach(l => appendTermOutput('  ' + l));
+       'shuf        Shuffle',
+       'rev         Reverse lines'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1453,6 +1454,12 @@ function terminalExec(cmd) {
       const sLines = getFileContent(sTarget).split('\n');
       for (let i = sLines.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sLines[i], sLines[j]] = [sLines[j], sLines[i]]; }
       sLines.forEach(l => appendTermOutput(l)); break;
+    }
+    case 'rev': {
+      if (!args[0]) { appendTermOutput('rev: missing operand', 'err'); break; }
+      const rTarget = resolvePath(args[0]); const rNode = getNode(rTarget);
+      if (!rNode || rNode.type !== 'file') { appendTermOutput(`rev: ${args[0]}: No such file or directory`, 'err'); break; }
+      getFileContent(rTarget).split('\n').forEach(l => appendTermOutput(l.split('').reverse().join(''))); break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
