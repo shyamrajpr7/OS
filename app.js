@@ -1126,7 +1126,8 @@ function terminalExec(cmd) {
     case '': break;
     case 'help':
       appendTermOutput('Available commands:', 'success');
-      ['ls          List directory contents', 'cd          Change directory', 'pwd         Print working directory', 'echo        Print text', 'clear       Clear terminal', 'cat         Display file contents', 'date        Show current date', 'whoami      Show current user', 'uname       Show system info', 'hostname    Show hostname', 'uptime      Show uptime', 'calc        Calculator (e.g. calc 2+2)', 'neofetch    System info', 'mkdir       Create a directory', 'touch       Create an empty file', 'rm          Remove files/directories', 'cp          Copy files', 'mv          Move/rename files', 'head        Show first lines of a file', 'tail        Show last lines of a file', 'wc          Word, line, char count', 'grep        Search file contents', 'find        Find files by name', 'sort        Sort lines of text', 'history     Show command history', 'man         Show command manual', 'curl        Simulate HTTP request', 'ping        Ping a host'].forEach(l => appendTermOutput('  ' + l));
+      ['ls          List directory contents', 'cd          Change directory', 'pwd         Print working directory', 'echo        Print text', 'clear       Clear terminal', 'cat         Display file contents', 'date        Show current date', 'whoami      Show current user', 'uname       Show system info', 'hostname    Show hostname', 'uptime      Show uptime', 'calc        Calculator (e.g. calc 2+2)', 'neofetch    System info', 'mkdir       Create a directory', 'touch       Create an empty file', 'rm          Remove files/directories', 'cp          Copy files', 'mv          Move/rename files', 'head        Show first lines of a file', 'tail        Show last lines of a file', 'wc          Word, line, char count', 'grep        Search file contents', 'find        Find files by name', 'sort        Sort lines of text', 'history     Show command history', 'man         Show command manual', 'curl        Simulate HTTP request',        'ping        Ping a host',
+       'fortune     Random quote'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1368,6 +1369,19 @@ function terminalExec(cmd) {
         pingSeq++;
       }, 800);
       break;
+    }
+    case 'fortune': {
+      const quotes = [
+        'The best way to predict the future is to invent it.',
+        'Talk is cheap. Show me the code.',
+        'Simplicity is prerequisite for reliability.',
+        'Any fool can write code that a computer can understand.',
+        'First, solve the problem. Then, write the code.',
+        'Make it work, make it right, make it fast.',
+        'Debugging is twice as hard as writing the code.',
+        'Computers are good at following instructions, not at reading your mind.'
+      ];
+      appendTermOutput(quotes[Math.floor(Math.random() * quotes.length)], 'success'); break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
