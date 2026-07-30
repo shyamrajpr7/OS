@@ -1139,7 +1139,8 @@ function terminalExec(cmd) {
        'ps          Processes',
        'who         Logged in',
        'banner      Big text',
-       'base64      Encode/decode'].forEach(l => appendTermOutput('  ' + l));
+       'base64      Encode/decode',
+       'factor      Prime factors'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1545,6 +1546,15 @@ function terminalExec(cmd) {
       else if (mode === 'decode') { try { appendTermOutput(atob(input)); } catch (e) { appendTermOutput('base64: invalid input', 'err'); } }
       else appendTermOutput('Usage: base64 <encode|decode> <text>', 'err');
       break;
+    }
+    case 'factor': {
+      const num = parseInt(args[0]);
+      if (isNaN(num) || num < 1) { appendTermOutput('factor: invalid number', 'err'); break; }
+      let n = num; const factors = [];
+      for (let i = 2; i * i <= n; i++) { while (n % i === 0) { factors.push(i); n /= i; } }
+      if (n > 1) factors.push(n);
+      if (factors.length === 1 && factors[0] === num) appendTermOutput(`${num}: ${num}`, 'info');
+      else appendTermOutput(`${num}: ${factors.join(' ')}`); break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
