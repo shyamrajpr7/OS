@@ -1128,7 +1128,8 @@ function terminalExec(cmd) {
       appendTermOutput('Available commands:', 'success');
       ['ls          List directory contents', 'cd          Change directory', 'pwd         Print working directory', 'echo        Print text', 'clear       Clear terminal', 'cat         Display file contents', 'date        Show current date', 'whoami      Show current user', 'uname       Show system info', 'hostname    Show hostname', 'uptime      Show uptime', 'calc        Calculator (e.g. calc 2+2)', 'neofetch    System info', 'mkdir       Create a directory', 'touch       Create an empty file', 'rm          Remove files/directories', 'cp          Copy files', 'mv          Move/rename files', 'head        Show first lines of a file', 'tail        Show last lines of a file', 'wc          Word, line, char count', 'grep        Search file contents', 'find        Find files by name', 'sort        Sort lines of text', 'history     Show command history', 'man         Show command manual', 'curl        Simulate HTTP request',        'ping        Ping a host',
        'fortune     Random quote',
-       'cal         Calendar'].forEach(l => appendTermOutput('  ' + l));
+       'cal         Calendar',
+       'cowsay     Cow says'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1398,6 +1399,12 @@ function terminalExec(cmd) {
         if ((firstDay + d) % 7 === 0) cal += '\n';
       }
       appendTermOutput(cal); break;
+    }
+    case 'cowsay': {
+      const msg = args.length ? args.join(' ') : 'Moo!';
+      const border = '-'.repeat(msg.length + 2);
+      const cow = ` ${border}\n< ${msg} >\n ${border}\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||`;
+      appendTermOutput(cow); break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
