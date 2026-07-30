@@ -1129,7 +1129,8 @@ function terminalExec(cmd) {
       ['ls          List directory contents', 'cd          Change directory', 'pwd         Print working directory', 'echo        Print text', 'clear       Clear terminal', 'cat         Display file contents', 'date        Show current date', 'whoami      Show current user', 'uname       Show system info', 'hostname    Show hostname', 'uptime      Show uptime', 'calc        Calculator (e.g. calc 2+2)', 'neofetch    System info', 'mkdir       Create a directory', 'touch       Create an empty file', 'rm          Remove files/directories', 'cp          Copy files', 'mv          Move/rename files', 'head        Show first lines of a file', 'tail        Show last lines of a file', 'wc          Word, line, char count', 'grep        Search file contents', 'find        Find files by name', 'sort        Sort lines of text', 'history     Show command history', 'man         Show command manual', 'curl        Simulate HTTP request',        'ping        Ping a host',
        'fortune     Random quote',
        'cal         Calendar',
-       'cowsay     Cow says'].forEach(l => appendTermOutput('  ' + l));
+       'cowsay     Cow says',
+       'figlet     ASCII art'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1405,6 +1406,44 @@ function terminalExec(cmd) {
       const border = '-'.repeat(msg.length + 2);
       const cow = ` ${border}\n< ${msg} >\n ${border}\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||`;
       appendTermOutput(cow); break;
+    }
+    case 'figlet': {
+      const text = args.join(' ').toUpperCase() || 'FIGLET';
+      const lines = ['','','','',''];
+      for (const ch of text) {
+        const font = {
+          'A': ['  AAA  ',' AAAAA ','AA   AA','AAAAAAA','AA   AA'],
+          'B': ['BBBBBB ','BB   BB','BBBBBBB','BB   BB','BBBBBB '],
+          'C': [' CCCCC ','CC   CC','CC     ','CC   CC',' CCCCC '],
+          'D': ['DDDDDD ','DD   DD','DD   DD','DD   DD','DDDDDD '],
+          'E': ['EEEEEEE','EE     ','EEEEE  ','EE     ','EEEEEEE'],
+          'F': ['FFFFFFF','FF     ','FFFFF  ','FF     ','FF     '],
+          'G': [' GGGGG ','GG   GG','GG     ','GG  GGG',' GGGGG '],
+          'H': ['HH   HH','HH   HH','HHHHHHH','HH   HH','HH   HH'],
+          'I': ['IIIIIII','  III  ','  III  ','  III  ','IIIIIII'],
+          'J': ['JJJJJJJ','   JJ  ','   JJ  ','JJ JJ  ',' JJJJ  '],
+          'K': ['KK   KK','KK  KK ','KKKK   ','KK  KK ','KK   KK'],
+          'L': ['LL     ','LL     ','LL     ','LL     ','LLLLLLL'],
+          'M': ['MM   MM','MMM MMM','MM M MM','MM   MM','MM   MM'],
+          'N': ['NN   NN','NNN  NN','NN N NN','NN  NNN','NN   NN'],
+          'O': [' OOOOO ','OO   OO','OO   OO','OO   OO',' OOOOO '],
+          'P': ['PPPPPP ','PP   PP','PPPPPP ','PP     ','PP     '],
+          'Q': [' QQQQQ ','QQ   QQ','QQ   QQ','QQ  QQQ',' QQQQQ '],
+          'R': ['RRRRRR ','RR   RR','RRRRRR ','RR  RR ','RR   RR'],
+          'S': [' SSSSS ','SS     ',' SSSSS ','     SS',' SSSSS '],
+          'T': ['TTTTTTT','  TTT  ','  TTT  ','  TTT  ','  TTT  '],
+          'U': ['UU   UU','UU   UU','UU   UU','UU   UU',' UUUUU '],
+          'V': ['VV   VV','VV   VV','VV   VV',' VV VV ','  VVV  '],
+          'W': ['WW   WW','WW   WW','WW W WW','WWWWWWW','WW   WW'],
+          'X': ['XX   XX',' XX XX ','  XXX  ',' XX XX ','XX   XX'],
+          'Y': ['YY   YY',' YY YY ','  YYY  ','  YYY  ','  YYY  '],
+          'Z': ['ZZZZZZZ','   ZZZ ','  ZZZ  ',' ZZZ   ','ZZZZZZZ'],
+          ' ': ['      ','      ','      ','      ','      ']
+        };
+        const f = font[ch] || font[' '];
+        for (let i = 0; i < 5; i++) lines[i] += f[i] + '  ';
+      }
+      appendTermOutput('\n' + lines.join('\n')); break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
