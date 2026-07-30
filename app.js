@@ -1140,7 +1140,8 @@ function terminalExec(cmd) {
        'who         Logged in',
        'banner      Big text',
        'base64      Encode/decode',
-       'factor      Prime factors'].forEach(l => appendTermOutput('  ' + l));
+       'factor      Prime factors',
+       'env         Environment'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1555,6 +1556,15 @@ function terminalExec(cmd) {
       if (n > 1) factors.push(n);
       if (factors.length === 1 && factors[0] === num) appendTermOutput(`${num}: ${num}`, 'info');
       else appendTermOutput(`${num}: ${factors.join(' ')}`); break;
+    }
+    case 'env': {
+      appendTermOutput('TERM_PROGRAM=thread-term', 'success');
+      appendTermOutput('SHELL=/bin/zsh', 'success');
+      appendTermOutput('USER=shyamraj', 'success');
+      appendTermOutput('HOME=/Users/shyamraj', 'success');
+      appendTermOutput('PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin', 'success');
+      appendTermOutput('PWD=' + termCwd, 'success');
+      break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
