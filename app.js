@@ -1135,7 +1135,8 @@ function terminalExec(cmd) {
        'rev         Reverse lines',
        'yes         Repeat string',
        'seq         Number sequence',
-       'df          Disk free'].forEach(l => appendTermOutput('  ' + l));
+       'df          Disk free',
+       'ps          Processes'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1480,6 +1481,14 @@ function terminalExec(cmd) {
       appendTermOutput('Filesystem      Size   Used  Avail Capacity  Mounted on', 'info');
       appendTermOutput('/dev/disk1s1    233G   120G   113G    51%    /', 'success');
       appendTermOutput('devtmpfs        8.0G   4.0K   8.0G     1%    /dev', 'success');
+      break;
+    }
+    case 'ps': {
+      appendTermOutput('  PID TTY           TIME CMD', 'info');
+      appendTermOutput('    1 ??         1:23.00 launchd', 'success');
+      appendTermOutput('  123 ??         0:05.42 WindowServer', 'success');
+      appendTermOutput('  456 ??         0:12.78 Finder', 'success');
+      appendTermOutput('  789 ??         0:03.91 Terminal', 'success');
       break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
