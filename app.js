@@ -1132,7 +1132,8 @@ function terminalExec(cmd) {
        'cowsay      Cow says',
        'figlet      ASCII art',
        'shuf        Shuffle',
-       'rev         Reverse lines'].forEach(l => appendTermOutput('  ' + l));
+       'rev         Reverse lines',
+       'yes         Repeat string'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1460,6 +1461,10 @@ function terminalExec(cmd) {
       const rTarget = resolvePath(args[0]); const rNode = getNode(rTarget);
       if (!rNode || rNode.type !== 'file') { appendTermOutput(`rev: ${args[0]}: No such file or directory`, 'err'); break; }
       getFileContent(rTarget).split('\n').forEach(l => appendTermOutput(l.split('').reverse().join(''))); break;
+    }
+    case 'yes': {
+      const msg = args.join(' ') || 'y';
+      appendTermOutput(Array(5).fill(msg).join('\n')); break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
