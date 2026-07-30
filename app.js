@@ -1129,8 +1129,9 @@ function terminalExec(cmd) {
       ['ls          List directory contents', 'cd          Change directory', 'pwd         Print working directory', 'echo        Print text', 'clear       Clear terminal', 'cat         Display file contents', 'date        Show current date', 'whoami      Show current user', 'uname       Show system info', 'hostname    Show hostname', 'uptime      Show uptime', 'calc        Calculator (e.g. calc 2+2)', 'neofetch    System info', 'mkdir       Create a directory', 'touch       Create an empty file', 'rm          Remove files/directories', 'cp          Copy files', 'mv          Move/rename files', 'head        Show first lines of a file', 'tail        Show last lines of a file', 'wc          Word, line, char count', 'grep        Search file contents', 'find        Find files by name', 'sort        Sort lines of text', 'history     Show command history', 'man         Show command manual', 'curl        Simulate HTTP request',        'ping        Ping a host',
        'fortune     Random quote',
        'cal         Calendar',
-       'cowsay     Cow says',
-       'figlet     ASCII art'].forEach(l => appendTermOutput('  ' + l));
+       'cowsay      Cow says',
+       'figlet      ASCII art',
+       'shuf        Shuffle'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1444,6 +1445,14 @@ function terminalExec(cmd) {
         for (let i = 0; i < 5; i++) lines[i] += f[i] + '  ';
       }
       appendTermOutput('\n' + lines.join('\n')); break;
+    }
+    case 'shuf': {
+      if (!args[0]) { appendTermOutput('shuf: missing operand', 'err'); break; }
+      const sTarget = resolvePath(args[0]); const sNode = getNode(sTarget);
+      if (!sNode || sNode.type !== 'file') { appendTermOutput(`shuf: ${args[0]}: No such file or directory`, 'err'); break; }
+      const sLines = getFileContent(sTarget).split('\n');
+      for (let i = sLines.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sLines[i], sLines[j]] = [sLines[j], sLines[i]]; }
+      sLines.forEach(l => appendTermOutput(l)); break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
