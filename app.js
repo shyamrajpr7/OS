@@ -1138,7 +1138,8 @@ function terminalExec(cmd) {
        'df          Disk free',
        'ps          Processes',
        'who         Logged in',
-       'banner      Big text'].forEach(l => appendTermOutput('  ' + l));
+       'banner      Big text',
+       'base64      Encode/decode'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1535,6 +1536,15 @@ function terminalExec(cmd) {
         for (let i = 0; i < 5; i++) bannerOut[i] += b[i] + ' ';
       }
       appendTermOutput('\n' + bannerOut.join('\n')); break;
+    }
+    case 'base64': {
+      if (args.length < 2) { appendTermOutput('Usage: base64 <encode|decode> <text>', 'err'); break; }
+      const mode = args[0].toLowerCase();
+      const input = args.slice(1).join(' ');
+      if (mode === 'encode') appendTermOutput(btoa(input));
+      else if (mode === 'decode') { try { appendTermOutput(atob(input)); } catch (e) { appendTermOutput('base64: invalid input', 'err'); } }
+      else appendTermOutput('Usage: base64 <encode|decode> <text>', 'err');
+      break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
   }
