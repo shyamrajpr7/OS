@@ -1529,6 +1529,42 @@
         </div>
       </div>
 
+      <!-- ========== QUICKTIME ========== -->
+      <div class="mac-window app-window" id="quicktime-window" style="width:760px;height:500px;top:55px;left:110px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">QuickTime Player</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body qt-body">
+          <div class="qt-player">
+            <div class="qt-screen" id="qtScreen">
+              <div class="qt-scene" id="qtScene"><span id="qtSceneEmoji">🌊</span></div>
+              <div class="qt-screen-time" id="qtScreenTime">00:00 / 00:00</div>
+              <div class="qt-center-play" id="qtCenterPlay"><i class="ri-play-fill"></i></div>
+            </div>
+            <div class="qt-controls">
+              <button class="qt-btn" id="qtBack" title="Previous"><i class="ri-skip-back-line"></i></button>
+              <button class="qt-btn qt-play-btn" id="qtPlay"><i class="ri-play-fill"></i></button>
+              <button class="qt-btn" id="qtFwd" title="Next"><i class="ri-skip-forward-line"></i></button>
+              <input type="range" class="qt-scrub" id="qtScrub" min="0" max="100" value="0">
+              <span class="qt-time" id="qtTime">00:00 / 00:00</span>
+              <button class="qt-btn" id="qtVolumeBtn"><i class="ri-volume-up-line"></i></button>
+              <input type="range" class="qt-vol" id="qtVol" min="0" max="100" value="70">
+              <button class="qt-btn" id="qtFullscreen"><i class="ri-fullscreen-line"></i></button>
+            </div>
+          </div>
+          <aside class="qt-playlist">
+            <div class="qt-playlist-label">Playlist</div>
+            <div id="qtPlaylist"></div>
+          </aside>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -1710,6 +1746,12 @@
           </div>
           <span class="launchpad-label">FaceTime</span>
         </div>
+        <div class="launchpad-item" data-app="QuickTime Player.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#333"/><rect x="6" y="14" width="36" height="22" rx="3" fill="#1C1C1E"/><path d="M20 20v10l9-5-9-5z" fill="#fff"/><rect x="8" y="16" width="32" height="18" rx="2" fill="none" stroke="#FF6B9D" stroke-width="1"/></svg>
+          </div>
+          <span class="launchpad-label">QuickTime Player</span>
+        </div>
       </div>
     </div>
 
@@ -1818,6 +1860,10 @@
       </div>
       <div class="dock-item" data-app="FaceTime.app" data-tooltip="FaceTime">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#34C759"/><path d="M16 18l12-6v24l-12-6V18z" fill="white"/><path d="M30 21l8-4v14l-8-4V21z" fill="white" opacity="0.85"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="QuickTime Player.app" data-tooltip="QuickTime Player">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#333"/><path d="M20 20v10l9-5-9-5z" fill="white"/><rect x="6" y="14" width="36" height="22" rx="3" fill="#1C1C1E" stroke="#FF6B9D" stroke-width="1.5"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>

@@ -28,7 +28,8 @@ const fileSystem = {
       { name: 'Contacts.app', type: 'app', icon: 'terminal', size: '7.8 MB', kind: 'Application', date: 'Jun 11, 2026' },
       { name: 'Photos.app', type: 'app', icon: 'terminal', size: '42.6 MB', kind: 'Application', date: 'Jun 12, 2026' },
       { name: 'Maps.app', type: 'app', icon: 'terminal', size: '11.2 MB', kind: 'Application', date: 'Jun 13, 2026' },
-      { name: 'FaceTime.app', type: 'app', icon: 'terminal', size: '9.5 MB', kind: 'Application', date: 'Jun 14, 2026' }
+      { name: 'FaceTime.app', type: 'app', icon: 'terminal', size: '9.5 MB', kind: 'Application', date: 'Jun 14, 2026' },
+      { name: 'QuickTime Player.app', type: 'app', icon: 'terminal', size: '22.7 MB', kind: 'Application', date: 'Jun 15, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -759,7 +760,8 @@ const appIdMap = {
   'Contacts.app': 'contacts-window',
   'Photos.app': 'photos-window',
   'Maps.app': 'maps-window',
-  'FaceTime.app': 'facetime-window'
+  'FaceTime.app': 'facetime-window',
+  'QuickTime Player.app': 'quicktime-window'
 };
 
 function openApp(appName) {
@@ -806,6 +808,7 @@ function openApp(appName) {
   if (winId === 'photos-window') initPhotos();
   if (winId === 'maps-window') initMaps();
   if (winId === 'facetime-window') initFaceTime();
+  if (winId === 'quicktime-window') initQT();
 }
 
 function closeWindow(winId) {
@@ -6382,6 +6385,113 @@ function faceTimeEndCall() {
   faceTimeState.inCall = false;
   document.getElementById('facetimeCall').classList.remove('active');
   faceTimeRenderRecents();
+}
+
+// ---- QuickTime Player ----
+const qtMovies = [
+  { title: 'Ocean Waves.mov', emoji: '🌊', grad: ['#0A84FF', '#00C7BE'], dur: 214, scene: 'wave' },
+  { title: 'Golden Sunrise.mov', emoji: '🌅', grad: ['#FF9500', '#FF2D55'], dur: 142, scene: 'sunrise' },
+  { title: 'Starry Night.mov', emoji: '🌌', grad: ['#1C1C1E', '#5856D6'], dur: 186, scene: 'stars' },
+  { title: 'Forest Walk.mov', emoji: '🌲', grad: ['#28A745', '#00663A'], dur: 305, scene: 'forest' },
+  { title: 'City Lights.mov', emoji: '🌃', grad: ['#FF9F0A', '#FF3B30'], dur: 176, scene: 'city' },
+  { title: 'Demo Recording.mov', emoji: '🎬', grad: ['#AF52DE', '#FF2D55'], dur: 98, scene: 'rec' }
+];
+let qtState = { idx: 0, playing: false, t: 0, timer: null, volume: 70, fullscreen: false };
+let qtInitialized = false;
+
+function initQT() {
+  if (qtInitialized) { qtRender(); return; }
+  qtInitialized = true;
+  document.getElementById('qtPlay').addEventListener('click', qtTogglePlay);
+  document.getElementById('qtScreen').addEventListener('click', e => { if (!e.target.closest('.qt-center-play')) qtTogglePlay(); });
+  document.getElementById('qtCenterPlay').addEventListener('click', e => { e.stopPropagation(); qtTogglePlay(); });
+  document.getElementById('qtBack').addEventListener('click', () => qtStep(-1));
+  document.getElementById('qtFwd').addEventListener('click', () => qtStep(1));
+  document.getElementById('qtScrub').addEventListener('input', e => {
+    const m = qtMovies[qtState.idx];
+    qtState.t = (e.target.value / 100) * m.dur;
+    qtRenderTimes();
+  });
+  document.getElementById('qtVol').addEventListener('input', e => {
+    qtState.volume = parseInt(e.target.value);
+    document.getElementById('qtVolumeBtn').innerHTML = qtState.volume === 0 ? '<i class="ri-volume-mute-line"></i>' : qtState.volume < 50 ? '<i class="ri-volume-down-line"></i>' : '<i class="ri-volume-up-line"></i>';
+  });
+  document.getElementById('qtVolumeBtn').addEventListener('click', () => {
+    qtState.volume = qtState.volume === 0 ? 70 : 0;
+    document.getElementById('qtVol').value = qtState.volume;
+    document.getElementById('qtVolumeBtn').innerHTML = qtState.volume === 0 ? '<i class="ri-volume-mute-line"></i>' : '<i class="ri-volume-up-line"></i>';
+  });
+  document.getElementById('qtFullscreen').addEventListener('click', () => {
+    qtState.fullscreen = !qtState.fullscreen;
+    document.getElementById('quicktime-window').classList.toggle('qt-fullscreen', qtState.fullscreen);
+  });
+  qtRender();
+}
+
+function qtRender() {
+  const m = qtMovies[qtState.idx];
+  document.getElementById('qtScene').style.background = 'linear-gradient(135deg,' + m.grad[0] + ',' + m.grad[1] + ')';
+  document.getElementById('qtScene').className = 'qt-scene';
+  if (qtState.playing) document.getElementById('qtScene').classList.add('playing');
+  document.getElementById('qtScene').dataset.scene = m.scene;
+  document.getElementById('qtSceneEmoji').textContent = m.emoji;
+  qtRenderTimes();
+  qtRenderPlaylist();
+}
+
+function qtRenderTimes() {
+  const m = qtMovies[qtState.idx];
+  const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+  document.getElementById('qtTime').textContent = fmt(qtState.t) + ' / ' + fmt(m.dur);
+  document.getElementById('qtScreenTime').textContent = fmt(qtState.t) + ' / ' + fmt(m.dur);
+  document.getElementById('qtScrub').value = m.dur ? (qtState.t / m.dur) * 100 : 0;
+  document.getElementById('qtPlay').innerHTML = qtState.playing ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
+  document.getElementById('qtCenterPlay').style.display = qtState.playing ? 'none' : 'flex';
+}
+
+function qtRenderPlaylist() {
+  const el = document.getElementById('qtPlaylist');
+  if (!el) return;
+  el.innerHTML = qtMovies.map((m, i) =>
+    '<div class="qt-playlist-item' + (i === qtState.idx ? ' active' : '') + '" onclick="qtSelect(' + i + ')">' +
+      '<div class="qt-playlist-thumb" style="background:linear-gradient(135deg,' + m.grad[0] + ',' + m.grad[1] + ')">' + m.emoji + '</div>' +
+      '<div class="qt-playlist-info"><div class="qt-playlist-title">' + m.title + '</div><div class="qt-playlist-dur">' + qtFmtDur(m.dur) + '</div></div>' +
+    '</div>'
+  ).join('');
+}
+
+function qtFmtDur(s) {
+  return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+}
+
+function qtSelect(i) {
+  if (qtState.timer) clearInterval(qtState.timer);
+  qtState.idx = i;
+  qtState.t = 0;
+  qtState.playing = false;
+  qtRender();
+}
+
+function qtStep(dir) {
+  const i = (qtState.idx + dir + qtMovies.length) % qtMovies.length;
+  qtSelect(i);
+}
+
+function qtTogglePlay() {
+  const m = qtMovies[qtState.idx];
+  qtState.playing = !qtState.playing;
+  if (qtState.playing) {
+    document.getElementById('qtScene').classList.add('playing');
+    qtState.timer = setInterval(() => {
+      qtState.t += 1;
+      if (qtState.t >= m.dur) { qtState.t = 0; qtTogglePlay(); return; }
+      qtRenderTimes();
+    }, 1000);
+  } else {
+    if (qtState.timer) clearInterval(qtState.timer);
+    document.getElementById('qtScene').classList.remove('playing');
+  }
+  qtRenderTimes();
 }
 
 // Initialize spaces on load
