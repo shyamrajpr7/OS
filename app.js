@@ -122,7 +122,8 @@ let currentPath = '/Users/shyamraj/Desktop';
 let viewMode = 'list';
 let currentSort = 'name';
 let sortAsc = true;
-let selectedItem = null;
+let selectedItems = [];
+let selectionAnchor = null;
 let navHistory = ['/Users/shyamraj/Desktop'];
 let navIndex = 0;
 let zCounter = 100;
@@ -165,7 +166,8 @@ function navigateTo(path, pushHistory = true) {
     navHistory.push(path);
     navIndex = navHistory.length - 1;
   }
-  selectedItem = null;
+  selectedItems = [];
+  selectionAnchor = null;
   updateFinder();
   if (path === '/Users/shyamraj/iCloud Drive') icloudSyncSimulation();
 }
@@ -253,7 +255,7 @@ function updateFinder() {
     let rows = '';
     sorted.forEach((item, i) => {
       const iconClass = item.type === 'folder' ? 'folder-icon' : item.type === 'app' ? 'app-icon' : 'doc-icon';
-      rows += `<div class="finder-row" data-index="${i}" data-type="${item.type}" data-name="${item.name}" draggable="true" onclick="selectItem(${i})" ondblclick="openItem(${i})">
+      rows += `<div class="finder-row${selectedItems.includes(i) ? ' selected' : ''}" data-index="${i}" data-type="${item.type}" data-name="${item.name}" draggable="true" onclick="selectItem(${i}, event)" ondblclick="openItem(${i})">
         <span class="col-name"><span class="file-icon ${iconClass}">${getFileIcon(item)}</span><span>${item.name}</span></span>
         <span class="col-size">${item.size || '--'}</span>
         <span class="col-kind">${item.kind || ''}</span>
@@ -266,7 +268,7 @@ function updateFinder() {
     let grid = '';
     sorted.forEach((item, i) => {
       const iconClass = item.type === 'folder' ? 'folder' : item.type === 'app' ? 'app' : 'doc';
-      grid += `<div class="finder-grid-item" data-index="${i}" onclick="selectItem(${i})" ondblclick="openItem(${i})">
+      grid += `<div class="finder-grid-item${selectedItems.includes(i) ? ' selected' : ''}" data-index="${i}" onclick="selectItem(${i}, event)" ondblclick="openItem(${i})">
         <div class="grid-icon-wrap ${iconClass}">${getFileIcon(item)}</div>
         <span class="grid-label">${item.name}</span></div>`;
     });
@@ -283,11 +285,58 @@ function updateFinder() {
   document.getElementById('finderSearchInput').value = '';
 }
 
-function selectItem(index) {
-  selectedItem = index;
-  document.querySelectorAll('.finder-row, .finder-grid-item').forEach(el => el.classList.remove('selected'));
-  const el = document.querySelector(`[data-index="${index}"]`);
-  if (el) el.classList.add('selected');
+function selectItem(index, e) {
+  e = e || window.event;
+  const sorted = sortItems(getChildren(currentPath));
+  if (sorted.length === 0) return;
+  if (e && e.metaKey) {
+    const i = selectedItems.indexOf(index);
+    if (i === -1) selectedItems.push(index); else selectedItems.splice(i, 1);
+    selectionAnchor = index;
+  } else if (e && e.shiftKey && selectionAnchor !== null) {
+    const [lo, hi] = [Math.min(selectionAnchor, index), Math.max(selectionAnchor, index)];
+    selectedItems = [];
+    for (let i = lo; i <= hi; i++) selectedItems.push(i);
+  } else {
+    selectedItems = [index];
+    selectionAnchor = index;
+  }
+  applySelection();
+}
+
+function applySelection() {
+  document.querySelectorAll('.finder-row, .finder-grid-item').forEach(el => {
+    el.classList.toggle('selected', selectedItems.includes(parseInt(el.dataset.index)));
+  });
+  const status = document.getElementById('finderStatus');
+  if (selectedItems.length > 1 && status) {
+    status.textContent = selectedItems.length + ' items selected';
+  } else if (selectedItems.length === 1) {
+    const sorted = sortItems(getChildren(currentPath));
+    const item = sorted[selectedItems[0]];
+    if (status && item) status.textContent = '1 item selected — ' + item.kind;
+  }
+}
+
+function selectAllItems() {
+  const sorted = sortItems(getChildren(currentPath));
+  selectedItems = sorted.map((_, i) => i);
+  selectionAnchor = 0;
+  applySelection();
+}
+
+function trashSelectedItems() {
+  if (selectedItems.length === 0) return;
+  const children = getChildren(currentPath);
+  const sorted = sortItems(children);
+  const names = selectedItems.map(i => sorted[i] && sorted[i].name).filter(Boolean);
+  const parentNode = getNode(currentPath);
+  if (!parentNode) return;
+  parentNode.children = parentNode.children.filter(c => !names.includes(typeof c === 'string' ? c : c.name));
+  selectedItems = [];
+  selectionAnchor = null;
+  updateFinder();
+  if (names.length > 0) showNotifToast('Finder', names.length + ' item' + (names.length > 1 ? 's' : '') + ' moved to Trash', 'Finder');
 }
 
 function openItem(index) {
@@ -3082,7 +3131,9 @@ function handleContextAction(action) {
       break;
     }
     case 'trash':
-      if (contextTarget && contextTarget.path) {
+      if (selectedItems.length > 0 && getChildren(currentPath).length > 0) {
+        trashSelectedItems();
+      } else if (contextTarget && contextTarget.path) {
         const parts = contextTarget.path.split('/').filter(Boolean);
         const itemName = parts.pop();
         const parentPath = '/' + parts.join('/');
@@ -4776,6 +4827,7 @@ document.getElementById('finderList').addEventListener('contextmenu', e => {
     const idx = parseInt(row.dataset.index);
     const children = getChildren(currentPath);
     const sorted = sortItems(children);
+    if (!selectedItems.includes(idx)) { selectedItems = [idx]; selectionAnchor = idx; applySelection(); }
     e.stopPropagation();
     showContextMenu(e, sorted[idx] || null);
   }
@@ -4788,6 +4840,7 @@ document.getElementById('finderGrid').addEventListener('contextmenu', e => {
     const idx = parseInt(item.dataset.index);
     const children = getChildren(currentPath);
     const sorted = sortItems(children);
+    if (!selectedItems.includes(idx)) { selectedItems = [idx]; selectionAnchor = idx; applySelection(); }
     e.stopPropagation();
     showContextMenu(e, sorted[idx] || null);
   }
@@ -4850,7 +4903,21 @@ document.addEventListener('keydown', e => {
     if (!appSwitcherVisible) { showAppSwitcher(); }
     else { cycleAppSwitcher(e.shiftKey ? -1 : 1); }
   }
+  // Cmd+A -> select all in Finder
+  if ((e.metaKey || e.ctrlKey) && e.key === 'a' && finderIsActive()) { e.preventDefault(); selectAllItems(); }
+  // Delete / Backspace -> move to Trash in Finder
+  if ((e.key === 'Delete' || e.key === 'Backspace') && finderIsActive() && selectedItems.length > 0 && !isTypingInInput(e)) { e.preventDefault(); trashSelectedItems(); }
 });
+
+function finderIsActive() {
+  const win = document.getElementById('finder-window');
+  return win && !win.classList.contains('minimized') && win.classList.contains('focused');
+}
+
+function isTypingInInput(e) {
+  const el = e.target;
+  return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+}
 
 document.addEventListener('keyup', e => {
   if ((e.metaKey || e.ctrlKey) === false && appSwitcherVisible) {
