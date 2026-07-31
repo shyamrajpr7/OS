@@ -1096,7 +1096,31 @@ function initWindowDrag(winId) {
     document.addEventListener('mouseup', () => { isResizing = false; });
   }
 
+  titlebar.addEventListener('dblclick', e => {
+    if (e.target.closest('.tl-btn') || e.target.closest('button') || e.target.closest('input')) return;
+    toggleMaximizeWindow(win);
+  });
+
   win.addEventListener('mousedown', () => focusWindow(winId));
+}
+
+function toggleMaximizeWindow(win) {
+  if (!win) return;
+  if (win.style.width === '100vw') {
+    win.style.width = win.dataset.origW || '640px';
+    win.style.height = win.dataset.origH || '420px';
+    win.style.top = win.dataset.origT || '50px';
+    win.style.left = win.dataset.origL || '100px';
+  } else {
+    win.dataset.origW = win.style.width;
+    win.dataset.origH = win.style.height;
+    win.dataset.origT = win.style.top;
+    win.dataset.origL = win.style.left;
+    win.style.width = '100vw';
+    win.style.height = 'calc(100vh - 28px)';
+    win.style.top = '28px';
+    win.style.left = '0';
+  }
 }
 
 // ---- Calculator ----
@@ -3617,8 +3641,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (action === 'close') closeWindow(win.id);
       else if (action === 'minimize') minimizeWindow(win.id);
       else if (action === 'maximize') {
-        if (win.style.width === '100vw') { win.style.width = win.dataset.origW || '640px'; win.style.height = win.dataset.origH || '420px'; win.style.top = win.dataset.origT || '50px'; win.style.left = win.dataset.origL || '100px'; }
-        else { win.dataset.origW = win.style.width; win.dataset.origH = win.style.height; win.dataset.origT = win.style.top; win.dataset.origL = win.style.left; win.style.width = '100vw'; win.style.height = 'calc(100vh - 28px)'; win.style.top = '28px'; win.style.left = '0'; }
+        if (e.detail >= 2) return;
+        toggleMaximizeWindow(win);
       }
     }
   });
