@@ -3794,6 +3794,8 @@ document.addEventListener('DOMContentLoaded', () => {
   startBootScreen();
   // Battery drain simulation
   startBatterySimulation();
+  // Siri
+  initSiri();
   // Init all app windows as minimized
   Object.values(appIdMap).forEach(id => {
     const win = document.getElementById(id);
@@ -5105,6 +5107,8 @@ document.addEventListener('keydown', e => {
   }
   // Cmd+A -> select all in Finder
   if ((e.metaKey || e.ctrlKey) && e.key === 'a' && finderIsActive()) { e.preventDefault(); selectAllItems(); }
+  // Cmd+Shift+S -> Siri
+  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 's') { e.preventDefault(); if (siriIsOpen()) siriClose(); else siriOpen(); }
   // Delete / Backspace -> move to Trash in Finder
   if ((e.key === 'Delete' || e.key === 'Backspace') && finderIsActive() && selectedItems.length > 0 && !isTypingInInput(e)) { e.preventDefault(); trashSelectedItems(); }
 });
@@ -6848,6 +6852,95 @@ function refreshPermBadges() {
 
 document.getElementById('permAllow').addEventListener('click', () => settlePermission(true));
 document.getElementById('permDeny').addEventListener('click', () => settlePermission(false));
+
+// ---- Siri ----
+let siriInitialized = false;
+
+function initSiri() {
+  if (siriInitialized) return;
+  siriInitialized = true;
+  document.getElementById('siriTrayBtn').addEventListener('click', () => { if (siriIsOpen()) siriClose(); else siriOpen(); });
+  document.getElementById('siriClose').addEventListener('click', siriClose);
+  const input = document.getElementById('siriInput');
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && input.value.trim()) siriAsk(input.value.trim());
+    if (e.key === 'Escape') siriClose();
+  });
+}
+
+function siriIsOpen() { return document.getElementById('siriOverlay').classList.contains('open'); }
+
+function siriOpen() {
+  document.getElementById('siriOverlay').classList.add('open');
+  const pill = document.getElementById('siriPill');
+  pill.classList.add('listening');
+  document.getElementById('siriBubbles').innerHTML = '';
+  setTimeout(() => {
+    document.getElementById('siriInput').focus();
+    siriSay('Hi, I\'m Siri. What can I help you with?');
+  }, 700);
+}
+
+function siriClose() {
+  document.getElementById('siriOverlay').classList.remove('open');
+  document.getElementById('siriPill').classList.remove('listening');
+  document.getElementById('siriInput').value = '';
+}
+
+function siriSay(text) {
+  const bubble = document.createElement('div');
+  bubble.className = 'siri-bubble siri-bubble-user';
+  bubble.innerHTML = '<span class="siri-bubble-icon"><i class="ri-mic-2-line"></i></span>' + text;
+  document.getElementById('siriBubbles').appendChild(bubble);
+  const pill = document.getElementById('siriPill');
+  pill.classList.add('talking');
+  let i = 0;
+  const reply = document.createElement('div');
+  reply.className = 'siri-bubble siri-bubble-reply';
+  document.getElementById('siriBubbles').appendChild(reply);
+  const timer = setInterval(() => {
+    i++;
+    reply.textContent = text.slice(0, i);
+    if (i >= text.length) { clearInterval(timer); pill.classList.remove('talking'); }
+  }, 18);
+  document.getElementById('siriBubbles').scrollTop = document.getElementById('siriBubbles').scrollHeight;
+}
+
+function siriAsk(q) {
+  document.getElementById('siriInput').value = '';
+  const answer = siriAnswer(q.toLowerCase());
+  setTimeout(() => siriSay(answer), 600);
+}
+
+function siriAnswer(q) {
+  if (q.includes('time') || q.includes('clock') || q.includes('what time')) {
+    const now = new Date();
+    const h = now.getHours(), m = String(now.getMinutes()).padStart(2, '0');
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    return 'It\'s ' + (h % 12 || 12) + ':' + m + ' ' + ampm + '.';
+  }
+  if (q.includes('date') || q.includes('day is it') || q.includes('today')) {
+    const now = new Date();
+    return 'Today is ' + now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) + '.';
+  }
+  if (q.includes('weather')) return 'It\'s currently 72° and sunny in San Francisco, with a high of 78° later today.';
+  if (q.includes('battery')) return 'Your battery is at ' + batteryState.level + '%. ' + (batteryState.lpm ? 'Low Power Mode is enabled.' : '');
+  if (q.includes('who are you') || q.includes('your name')) return 'I\'m Siri, your Thread OS assistant. I live in the menu bar and I\'m always ready to help.';
+  if (q.includes('open safari') || q.includes('open mail') || q.includes('open photos') || q.includes('open terminal') || q.includes('open maps') || q.includes('open music')) {
+    const map = { 'safari': 'Safari.app', 'mail': 'Mail.app', 'photos': 'Photos.app', 'terminal': 'Terminal.app', 'maps': 'Maps.app', 'music': 'Music.app' };
+    const app = Object.keys(map).find(k => q.includes('open ' + k));
+    if (app) { setTimeout(() => openApp(map[app]), 1200); return 'Opening ' + app.charAt(0).toUpperCase() + app.slice(1) + '.'; }
+  }
+  if (q.includes('what apps') || q.includes('apps are') || q.includes('installed')) return 'You have 35 apps installed, including Safari, Mail, Photos, Maps, FaceTime, and Terminal.';
+  if (q.includes('spotlight')) return 'Press Cmd+Space to open Spotlight, or click the magnifying glass in the menu bar.';
+  if (q.includes('emoji') || q.includes('character viewer')) return 'Press Cmd+Ctrl+Space to open the emoji picker anywhere you can type.';
+  if (q.includes('hello') || q.includes('hi ') || q.startsWith('hi') || q === 'hey') return 'Hello! How can I help?';
+  if (q.includes('joke')) return 'Why did the developer go broke? Because they used up all their cache.';
+  if (q.includes('help')) return 'Try asking me the time, the weather, your battery level, or to open an app.';
+  if (q.includes('fortune')) return 'You will soon commit something that fixes the bug on the first try.';
+  if (q.includes('thanks') || q.includes('thank you')) return 'You\'re welcome!';
+  return 'I\'m not sure about that one. Try asking me for the time, weather, battery, or to open an app.';
+}
 
 // ---- Emoji & Symbols Picker ----
 const emojiCats = [

@@ -124,8 +124,9 @@
             <div class="clipboard-empty">No items copied yet</div>
           </div>
         </div>
-        <i class="ri-search-line tray-icon"></i>
-        <i class="ri-equalizer-line tray-icon"></i>
+        <i class="ri-search-line tray-icon" id="spotlightTrayBtn" title="Spotlight"></i>
+        <i class="ri-equalizer-line tray-icon" id="controlCenterTrayBtn" title="Control Center"></i>
+        <i class="ri-mic-line tray-icon" id="siriTrayBtn" style="color:#AF52DE;" title="Siri"></i>
       </div>
       <div class="menu-clock" id="menuClock"></div>
       <div class="calendar-dropdown" id="calendarDropdown">
@@ -2363,6 +2364,17 @@
         <button class="permission-btn" id="permDeny">Don't Allow</button>
         <button class="permission-btn permission-btn-primary" id="permAllow">Allow</button>
       </div>
+    </div>
+  </div>
+
+  <!-- SIRI -->
+  <div class="siri-overlay" id="siriOverlay">
+    <div class="siri-bubbles" id="siriBubbles"></div>
+    <div class="siri-pill" id="siriPill">
+      <div class="siri-pill-icon"><i class="ri-mic-fill"></i></div>
+      <div class="siri-pill-input"><input type="text" id="siriInput" placeholder="Ask Siri…" autocomplete="off"></div>
+      <div class="siri-pill-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <button class="siri-close-btn" id="siriClose"><i class="ri-close-line"></i></button>
     </div>
   </div>
 
