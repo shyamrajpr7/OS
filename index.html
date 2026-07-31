@@ -1446,6 +1446,49 @@
         </div>
       </div>
 
+      <!-- ========== MAPS ========== -->
+      <div class="mac-window app-window" id="maps-window" style="width:880px;height:580px;top:35px;left:180px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Maps</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body maps-body">
+          <aside class="maps-sidebar">
+            <div class="maps-search"><i class="ri-search-line"></i><input type="text" id="mapsSearch" placeholder="Search Maps"></div>
+            <div class="maps-search-results" id="mapsResults"></div>
+            <div class="maps-sidebar-label">Favorites</div>
+            <div class="maps-fav" id="mapsFavs"></div>
+            <div class="maps-sidebar-label">Places</div>
+            <div class="maps-places" id="mapsPlaces"></div>
+          </aside>
+          <div class="maps-canvas-wrap" id="mapsCanvasWrap">
+            <div class="maps-canvas" id="mapsCanvas">
+              <div class="maps-grid"></div>
+              <div class="maps-water maps-water-1"></div>
+              <div class="maps-water maps-water-2"></div>
+              <div class="maps-road maps-road-h"></div>
+              <div class="maps-road maps-road-v"></div>
+              <div class="maps-road maps-road-h2"></div>
+              <div class="maps-park maps-park-1"></div>
+              <div class="maps-park maps-park-2"></div>
+              <div class="maps-markers" id="mapsMarkers"></div>
+              <div class="maps-pin-popup" id="mapsPopup"></div>
+            </div>
+            <div class="maps-zoom">
+              <button id="mapsZoomIn"><i class="ri-add-line"></i></button>
+              <button id="mapsZoomOut"><i class="ri-subtract-line"></i></button>
+              <button id="mapsLocate"><i class="ri-navigation-fill"></i></button>
+            </div>
+            <div class="maps-coords" id="mapsCoords">37.3349° N, 122.0090° W</div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -1615,6 +1658,12 @@
           </div>
           <span class="launchpad-label">Photos</span>
         </div>
+        <div class="launchpad-item" data-app="Maps.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#00A84F"/><path d="M24 8c-7 0-12 5.2-12 11.6 0 8.6 12 20.4 12 20.4s12-11.8 12-20.4C36 13.2 31 8 24 8z" fill="#fff"/><circle cx="24" cy="19" r="4.5" fill="#00A84F"/></svg>
+          </div>
+          <span class="launchpad-label">Maps</span>
+        </div>
       </div>
     </div>
 
@@ -1715,6 +1764,10 @@
       </div>
       <div class="dock-item" data-app="Photos.app" data-tooltip="Photos">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF6B9D"/><circle cx="19" cy="19" r="4" fill="white"/><path d="M10 12a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V12z" fill="none" stroke="white" stroke-width="2.5"/><path d="M12 36l10-10 6 6 8-8 8 8" stroke="white" stroke-width="2.5" fill="none" stroke-linejoin="round"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Maps.app" data-tooltip="Maps">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#00A84F"/><path d="M24 8c-7 0-12 5.2-12 11.6 0 8.6 12 20.4 12 20.4s12-11.8 12-20.4C36 13.2 31 8 24 8z" fill="white"/><circle cx="24" cy="19" r="4.5" fill="#00A84F"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>

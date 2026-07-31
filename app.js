@@ -26,7 +26,8 @@ const fileSystem = {
       { name: 'Font Book.app', type: 'app', icon: 'terminal', size: '6.0 MB', kind: 'Application', date: 'Jun 9, 2026' },
       { name: 'Mail.app', type: 'app', icon: 'terminal', size: '18.4 MB', kind: 'Application', date: 'Jun 10, 2026' },
       { name: 'Contacts.app', type: 'app', icon: 'terminal', size: '7.8 MB', kind: 'Application', date: 'Jun 11, 2026' },
-      { name: 'Photos.app', type: 'app', icon: 'terminal', size: '42.6 MB', kind: 'Application', date: 'Jun 12, 2026' }
+      { name: 'Photos.app', type: 'app', icon: 'terminal', size: '42.6 MB', kind: 'Application', date: 'Jun 12, 2026' },
+      { name: 'Maps.app', type: 'app', icon: 'terminal', size: '11.2 MB', kind: 'Application', date: 'Jun 13, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -755,7 +756,8 @@ const appIdMap = {
   'Font Book.app': 'fontbook-window',
   'Mail.app': 'mail-window',
   'Contacts.app': 'contacts-window',
-  'Photos.app': 'photos-window'
+  'Photos.app': 'photos-window',
+  'Maps.app': 'maps-window'
 };
 
 function openApp(appName) {
@@ -800,6 +802,7 @@ function openApp(appName) {
   if (winId === 'mail-window') initMail();
   if (winId === 'contacts-window') initContacts();
   if (winId === 'photos-window') initPhotos();
+  if (winId === 'maps-window') initMaps();
 }
 
 function closeWindow(winId) {
@@ -6138,6 +6141,124 @@ function photosLbRender() {
   document.getElementById('photosLbTile').innerHTML = '<div class="photos-lb-img" style="background:linear-gradient(135deg,' + p.grad[0] + ',' + p.grad[1] + ')"><span>' + p.emoji + '</span></div>';
   document.getElementById('photosLbInfo').innerHTML = '<div class="photos-lb-title">' + p.title + '</div><div class="photos-lb-date">' + p.date + ' • ' + (photosAlbums[p.album] || 'Library') + '</div>';
   document.getElementById('photosLbFav').innerHTML = p.fav ? '<i class="ri-star-fill"></i>' : '<i class="ri-star-line"></i>';
+}
+
+// ---- Maps ----
+const mapsPlaces = [
+  { name: 'Apple Park', emoji: '🍎', x: 55, y: 38, coords: '37.3349° N, 122.0090° W', region: 'Cupertino, CA', fav: true, desc: 'Corporate headquarters of Apple Inc., shaped like a giant spaceship.' },
+  { name: 'Golden Gate Bridge', emoji: '🌉', x: 30, y: 62, coords: '37.8199° N, 122.4783° W', region: 'San Francisco, CA', fav: true, desc: 'Iconic suspension bridge spanning the Golden Gate strait.' },
+  { name: 'Central Park', emoji: '🌳', x: 68, y: 30, coords: '40.7829° N, 73.9654° W', region: 'New York, NY', fav: false, desc: '840-acre urban park between the Upper West and Upper East Sides.' },
+  { name: 'Eiffel Tower', emoji: '🗼', x: 18, y: 44, coords: '48.8584° N, 2.2945° E', region: 'Paris, France', fav: false, desc: 'Wrought-iron lattice tower on the Champ de Mars.' },
+  { name: 'Sydney Opera House', emoji: '🎭', x: 84, y: 70, coords: '33.8568° S, 151.2153° E', region: 'Sydney, Australia', fav: false, desc: 'Multi-venue performing arts centre with sail-shaped roofs.' },
+  { name: 'Tokyo Tower', emoji: '🗼', x: 78, y: 24, coords: '35.6586° N, 139.7454° E', region: 'Tokyo, Japan', fav: false, desc: 'Communications and observation tower inspired by the Eiffel Tower.' },
+  { name: 'Big Ben', emoji: '🕰️', x: 42, y: 52, coords: '51.5007° N, 0.1246° W', region: 'London, UK', fav: false, desc: 'Great Bell of the clock at the north end of the Palace of Westminster.' },
+  { name: 'Statue of Liberty', emoji: '🗽', x: 60, y: 48, coords: '40.6892° N, 74.0445° W', region: 'New York, NY', fav: false, desc: 'Neoclassical sculpture on Liberty Island in New York Harbor.' }
+];
+let mapsState = { zoom: 1, panX: 0, panY: 0, selected: null, query: '' };
+let mapsInitialized = false;
+
+function initMaps() {
+  if (mapsInitialized) { mapsRender(); return; }
+  mapsInitialized = true;
+  document.getElementById('mapsSearch').addEventListener('input', e => { mapsState.query = e.target.value.toLowerCase(); mapsRenderResults(); });
+  document.getElementById('mapsZoomIn').addEventListener('click', () => mapsZoom(0.25));
+  document.getElementById('mapsZoomOut').addEventListener('click', () => mapsZoom(-0.25));
+  document.getElementById('mapsLocate').addEventListener('click', () => mapsCenterOn(3));
+  const wrap = document.getElementById('mapsCanvasWrap');
+  let drag = null;
+  wrap.addEventListener('mousedown', e => { if (e.target.closest('.maps-pin') || e.target.closest('.maps-pin-popup')) return; drag = { x: e.clientX, y: e.clientY, px: mapsState.panX, py: mapsState.panY }; });
+  window.addEventListener('mousemove', e => {
+    if (!drag) return;
+    mapsState.panX = drag.px + (e.clientX - drag.x);
+    mapsState.panY = drag.py + (e.clientY - drag.y);
+    mapsApplyTransform();
+  });
+  window.addEventListener('mouseup', () => { drag = null; });
+  mapsRender();
+}
+
+function mapsZoom(delta) {
+  mapsState.zoom = Math.min(2.5, Math.max(0.6, mapsState.zoom + delta));
+  mapsApplyTransform();
+}
+
+function mapsApplyTransform() {
+  const canvas = document.getElementById('mapsCanvas');
+  if (!canvas) return;
+  canvas.style.transform = 'scale(' + mapsState.zoom + ') translate(' + mapsState.panX + 'px,' + mapsState.panY + 'px)';
+  document.getElementById('mapsCoords').textContent = mapsState.selected ? mapsState.selected.coords : '37.3349° N, 122.0090° W';
+}
+
+function mapsCenterOn(idx) {
+  const p = mapsPlaces[idx];
+  if (!p) return;
+  mapsState.selected = p;
+  mapsState.panX = (50 - p.x) * mapsState.zoom * 3;
+  mapsState.panY = (50 - p.y) * mapsState.zoom * 3;
+  mapsApplyTransform();
+  mapsRenderMarkers();
+  mapsShowPopup(p);
+  mapsRenderResults();
+}
+
+function mapsShowPopup(p) {
+  const popup = document.getElementById('mapsPopup');
+  if (!popup) return;
+  popup.innerHTML =
+    '<div class="maps-popup-name"><span>' + p.emoji + '</span> ' + p.name + '</div>' +
+    '<div class="maps-popup-desc">' + p.desc + '</div>' +
+    '<div class="maps-popup-region">' + p.region + ' • ' + p.coords + '</div>' +
+    '<div class="maps-popup-actions">' +
+      '<button class="maps-popup-btn" onclick="mapsDirections()">Directions</button>' +
+      '<button class="maps-popup-btn" onclick="mapsToggleFav()">' + (p.fav ? 'Remove Favorite' : 'Add Favorite') + '</button>' +
+    '</div>';
+  popup.classList.add('visible');
+}
+
+function mapsDirections() {
+  showNotifToast('Maps', 'Directions opened for ' + mapsState.selected.name, 'Maps.app');
+}
+
+function mapsToggleFav() {
+  if (!mapsState.selected) return;
+  mapsState.selected.fav = !mapsState.selected.fav;
+  mapsShowPopup(mapsState.selected);
+  mapsRenderResults();
+}
+
+function mapsRender() {
+  mapsRenderMarkers();
+  mapsRenderResults();
+  mapsApplyTransform();
+}
+
+function mapsRenderMarkers() {
+  const el = document.getElementById('mapsMarkers');
+  if (!el) return;
+  el.innerHTML = mapsPlaces.map((p, i) =>
+    '<div class="maps-pin' + (mapsState.selected === p ? ' selected' : '') + '" style="left:' + p.x + '%;top:' + p.y + '%;" onclick="mapsCenterOn(' + i + ');event.stopPropagation();">' +
+      '<div class="maps-pin-head"><span>' + p.emoji + '</span></div>' +
+      '<div class="maps-pin-shadow"></div>' +
+    '</div>'
+  ).join('');
+}
+
+function mapsRenderResults() {
+  const list = mapsPlaces.filter(p => !mapsState.query || p.name.toLowerCase().includes(mapsState.query) || p.region.toLowerCase().includes(mapsState.query));
+  document.getElementById('mapsResults').innerHTML = list.map((p, i) => {
+    const realIdx = mapsPlaces.indexOf(p);
+    return '<div class="maps-result" onclick="mapsCenterOn(' + realIdx + ')">' +
+      '<span class="maps-result-emoji">' + p.emoji + '</span>' +
+      '<div class="maps-result-info"><div class="maps-result-name">' + p.name + '</div><div class="maps-result-region">' + p.region + '</div></div>' +
+    '</div>';
+  }).join('');
+  document.getElementById('mapsFavs').innerHTML = mapsPlaces.filter(p => p.fav).map((p, i) => {
+    const realIdx = mapsPlaces.indexOf(p);
+    return '<div class="maps-fav-item" onclick="mapsCenterOn(' + realIdx + ')">' + p.emoji + ' <span>' + p.name + '</span></div>';
+  }).join('');
+  document.getElementById('mapsPlaces').innerHTML = mapsPlaces.map((p, i) =>
+    '<div class="maps-fav-item" onclick="mapsCenterOn(' + i + ')">' + p.emoji + ' <span>' + p.name + '</span></div>'
+  ).join('');
 }
 
 // Initialize spaces on load
