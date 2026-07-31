@@ -42,7 +42,9 @@ const fileSystem = {
   '/Users/shyamraj/Desktop': {
     type: 'folder', children: [
       { name: 'thread-os', type: 'folder', size: '--', kind: 'Folder', date: 'May 15, 2026' },
-      { name: 'project-ideas.txt', type: 'file', icon: 'doc', size: '2.4 KB', kind: 'Plain Text', date: 'May 10, 2026' }
+      { name: 'project-ideas.txt', type: 'file', icon: 'doc', size: '2.4 KB', kind: 'Plain Text', date: 'May 10, 2026' },
+      { name: 'list-a.txt', type: 'file', icon: 'doc', size: '0.3 KB', kind: 'Plain Text', date: 'Jun 16, 2026' },
+      { name: 'list-b.txt', type: 'file', icon: 'doc', size: '0.3 KB', kind: 'Plain Text', date: 'Jun 16, 2026' }
     ]
   },
   '/Users/shyamraj/Documents': {
@@ -550,6 +552,8 @@ function openPreview(item, type) {
 function getFileContent(path) {
   const textFiles = {
     '/Users/shyamraj/Desktop/project-ideas.txt': 'Project Ideas:\n\n1. Thread OS - A macOS-style web desktop\n2. AI Chat Interface\n3. Markdown Editor\n4. Portfolio Website\n5. Task Management App',
+    '/Users/shyamraj/Desktop/list-a.txt': 'apple\nbanana\nbanana\ncherry\napple\ndate',
+    '/Users/shyamraj/Desktop/list-b.txt': 'apple\nbanana\ncherry\nelderberry',
     '/Users/shyamraj/Documents/notes.txt': 'Meeting Notes - May 12, 2026\n\n- Discussed Q3 roadmap\n- New feature requests from beta users\n- Performance improvements needed for large files\n- Release target: end of June',
     '/Users/shyamraj/Documents/resume.pdf': '[PDF Document]\n\nThis is a PDF file preview.\nOpen with Preview to view contents.'
   };
@@ -1262,7 +1266,15 @@ function terminalExec(cmd) {
        'banner      Big text',
        'base64      Encode/decode',
        'factor      Prime factors',
-       'env         Environment'].forEach(l => appendTermOutput('  ' + l));
+       'env         Environment',
+       'tree        Directory tree',
+       'du          Disk usage',
+       'kill        Terminate process',
+       'which       Locate command',
+       'id          User identity',
+       'uniq        Unique lines',
+       'nl          Number lines',
+       'diff        Compare files'].forEach(l => appendTermOutput('  ' + l));
       break;
     case 'ls': {
       const target = args[0] ? resolvePath(args[0]) : termCwd;
@@ -1685,6 +1697,88 @@ function terminalExec(cmd) {
       appendTermOutput('HOME=/Users/shyamraj', 'success');
       appendTermOutput('PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin', 'success');
       appendTermOutput('PWD=' + termCwd, 'success');
+      break;
+    }
+    case 'tree': {
+      const target = args[0] ? resolvePath(args[0]) : termCwd;
+      const node = getNode(target);
+      if (!node || node.type !== 'folder') { appendTermOutput(`tree: ${args[0] || target}: No such file or directory`, 'err'); break; }
+      const lines = [];
+      function treeWalk(path, prefix) {
+        const children = getChildren(path);
+        children.forEach((c, i) => {
+          const last = i === children.length - 1;
+          lines.push(prefix + (last ? '└── ' : '├── ') + c.name + (c.type === 'folder' ? '/' : ''));
+          if (c.type === 'folder') treeWalk(path + '/' + c.name, prefix + (last ? '    ' : '│   '));
+        });
+      }
+      const rootName = target.split('/').filter(Boolean).pop() || '/';
+      lines.push(rootName);
+      treeWalk(target, '');
+      lines.forEach(l => appendTermOutput(l, 'info'));
+      break;
+    }
+    case 'du': {
+      const target = args[0] ? resolvePath(args[0]) : termCwd;
+      const node = getNode(target);
+      if (!node) { appendTermOutput(`du: ${args[0] || target}: No such file or directory`, 'err'); break; }
+      if (node.type === 'file') { appendTermOutput(node.size + '\t' + node.name, 'info'); break; }
+      const children = getChildren(target);
+      let total = 0;
+      children.forEach(c => { appendTermOutput((c.size && c.size !== '--' ? c.size : '0') + '\t' + c.name, 'info'); if (c.size && c.size !== '--') { const n = parseFloat(c.size) || 0; total += n; } });
+      appendTermOutput(total.toFixed(1) + ' MB\ttotal', 'success');
+      break;
+    }
+    case 'kill': {
+      const pid = args[0];
+      if (!pid) { appendTermOutput('kill: usage: kill [-9] pid', 'err'); break; }
+      const procs = [{ pid: 101, name: 'Finder' }, { pid: 128, name: 'Safari' }, { pid: 204, name: 'Terminal' }, { pid: 311, name: 'Mail' }];
+      const target = pid === '-9' ? args[1] : pid;
+      const proc = procs.find(p => String(p.pid) === target);
+      if (!proc) { appendTermOutput(`kill: kill ${target}: no such process`, 'err'); break; }
+      appendTermOutput(`[1]  ${proc.name} (${proc.pid}) terminated`, 'success');
+      break;
+    }
+    case 'which': {
+      if (!args[0]) { appendTermOutput('which: missing operand', 'err'); break; }
+      const known = ['ls', 'cd', 'pwd', 'echo', 'cat', 'date', 'whoami', 'uname', 'hostname', 'uptime', 'calc', 'neofetch', 'mkdir', 'touch', 'rm', 'cp', 'mv', 'head', 'tail', 'wc', 'grep', 'find', 'sort', 'history', 'man', 'curl', 'ping', 'fortune', 'cal', 'cowsay', 'figlet', 'shuf', 'rev', 'yes', 'seq', 'df', 'ps', 'who', 'banner', 'base64', 'factor', 'env', 'tree', 'du', 'kill', 'which', 'id', 'uniq', 'nl', 'diff'];
+      if (known.includes(args[0])) { appendTermOutput('/usr/local/bin/' + args[0], 'success'); break; }
+      appendTermOutput(args[0] + ' not found', 'err');
+      break;
+    }
+    case 'id': {
+      const uid = args[0] ? parseInt(args[0]) : 501;
+      appendTermOutput('uid=' + uid + '(shyamraj) gid=20(staff) groups=20(staff),12(everyone),61(localaccounts)', 'success');
+      break;
+    }
+    case 'uniq': {
+      const target = args[0] ? resolvePath(args[0]) : null;
+      const lines = target ? getFileContent(target).split('\n') : args.slice(1).join(' ');
+      const seen = new Set();
+      lines.forEach(l => { if (!seen.has(l)) { seen.add(l); appendTermOutput(l, 'info'); } });
+      break;
+    }
+    case 'nl': {
+      const target = args[0] ? resolvePath(args[0]) : null;
+      const lines = target ? getFileContent(target).split('\n') : args.join(' ');
+      lines.forEach((l, i) => appendTermOutput(String(i + 1).padStart(3) + '\t' + l, 'info'));
+      break;
+    }
+    case 'diff': {
+      if (args.length < 2) { appendTermOutput('diff: usage: diff file1 file2', 'err'); break; }
+      const f1 = resolvePath(args[0]); const f2 = resolvePath(args[1]);
+      if (!getNode(f1) || !getNode(f2)) { appendTermOutput('diff: No such file or directory', 'err'); break; }
+      const a = getFileContent(f1).split('\n'); const b = getFileContent(f2).split('\n');
+      let changes = 0;
+      const max = Math.max(a.length, b.length);
+      for (let i = 0; i < max; i++) {
+        if (a[i] !== b[i]) {
+          changes++;
+          if (a[i] !== undefined) appendTermOutput('< ' + a[i], 'err');
+          if (b[i] !== undefined) appendTermOutput('> ' + b[i], 'success');
+        }
+      }
+      if (changes === 0) appendTermOutput('No differences', 'success');
       break;
     }
     default: appendTermOutput(`thread-term: command not found: ${command}`, 'err');
