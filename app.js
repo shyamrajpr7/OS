@@ -2797,6 +2797,62 @@ function closeBatteryPopup() {
   document.getElementById('batteryPopup').classList.remove('open');
 }
 
+// ---- Battery Drain Simulation ----
+const batteryState = { level: 87, lpm: false, warned20: false, warned10: false, warned5: false, charging: false };
+let batteryInterval = null;
+
+function startBatterySimulation() {
+  batteryUpdateUI();
+  batteryInterval = setInterval(() => {
+    if (batteryState.charging) {
+      batteryState.level = Math.min(100, batteryState.level + 1);
+      if (batteryState.level >= 100) { batteryState.charging = false; }
+    } else {
+      batteryState.level = Math.max(1, batteryState.level - 1);
+    }
+    batteryUpdateUI();
+  }, batteryState.lpm ? 180000 : 90000);
+}
+
+function batteryUpdateUI() {
+  const lvl = batteryState.level;
+  const icon = document.getElementById('batteryTrayBtn');
+  const menuPct = document.getElementById('batteryMenuPct');
+  const levelEl = document.getElementById('batteryLevel');
+  const pctEl = document.getElementById('batteryPct');
+  const timeEl = document.getElementById('batteryTime');
+  if (!icon) return;
+  if (batteryState.charging) {
+    icon.className = 'ri-battery-charge-fill tray-icon';
+  } else if (lvl > 75) icon.className = 'ri-battery-full-fill tray-icon';
+  else if (lvl > 50) icon.className = 'ri-battery-2-fill tray-icon';
+  else if (lvl > 25) icon.className = 'ri-battery-1-fill tray-icon';
+  else if (lvl > 10) icon.className = 'ri-battery-low-fill tray-icon';
+  else icon.className = 'ri-battery-2-fill tray-icon';
+  const low = lvl <= 20;
+  icon.style.color = low ? '#FF453A' : batteryState.lpm ? '#FFD60A' : '';
+  if (menuPct) menuPct.textContent = lvl + '%';
+  if (levelEl) { levelEl.style.width = lvl + '%'; levelEl.style.background = low ? '#FF453A' : lvl <= 50 ? '#FF9F0A' : '#34C759'; }
+  if (pctEl) pctEl.textContent = lvl + '%';
+  if (timeEl) timeEl.textContent = batteryState.charging ? 'Charging…' : Math.floor(lvl * 2.6 / 60) + ':' + String(Math.round((lvl * 2.6) % 60)).padStart(2, '0') + ' remaining';
+  batteryCheckWarnings();
+}
+
+function batteryCheckWarnings() {
+  const lvl = batteryState.level;
+  if (lvl <= 5 && !batteryState.warned5) { batteryState.warned5 = true; showNotifToast('Low Battery', '5% battery remaining — connect to power', 'System Settings.app'); batteryState.charging = true; showNotifToast('Charging', 'Connected to power — charging', 'System Settings.app'); batteryUpdateUI(); }
+  else if (lvl <= 10 && !batteryState.warned10) { batteryState.warned10 = true; showNotifToast('Low Battery', '10% battery remaining — consider charging soon', 'System Settings.app'); }
+  else if (lvl <= 20 && !batteryState.warned20) { batteryState.warned20 = true; showNotifToast('Low Battery', '20% battery remaining', 'System Settings.app'); }
+}
+
+function toggleLowPowerMode() {
+  batteryState.lpm = !batteryState.lpm;
+  document.getElementById('batteryLpm').classList.toggle('active', batteryState.lpm);
+  if (batteryInterval) { clearInterval(batteryInterval); batteryInterval = null; }
+  startBatterySimulation();
+  showNotifToast('Low Power Mode', batteryState.lpm ? 'Enabled — battery drain slowed' : 'Disabled', 'System Settings.app');
+}
+
 // ---- Calendar Dropdown ----
 let calYear, calMonth;
 
@@ -3717,6 +3773,8 @@ document.addEventListener('DOMContentLoaded', () => {
   updateLockUsers();
   // Boot screen
   startBootScreen();
+  // Battery drain simulation
+  startBatterySimulation();
   // Init all app windows as minimized
   Object.values(appIdMap).forEach(id => {
     const win = document.getElementById(id);
@@ -5097,7 +5155,7 @@ initCalendar();
 
 // Battery popup
 document.getElementById('batteryTrayBtn').addEventListener('click', toggleBatteryPopup);
-document.getElementById('batteryLpm').addEventListener('click', function () { this.classList.toggle('active'); });
+document.getElementById('batteryLpm').addEventListener('click', toggleLowPowerMode);
 
 // Screenshot overlay - mouse events for region selection
 const ssOverlay = document.getElementById('screenshotOverlay');
