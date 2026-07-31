@@ -29,7 +29,8 @@ const fileSystem = {
       { name: 'Photos.app', type: 'app', icon: 'terminal', size: '42.6 MB', kind: 'Application', date: 'Jun 12, 2026' },
       { name: 'Maps.app', type: 'app', icon: 'terminal', size: '11.2 MB', kind: 'Application', date: 'Jun 13, 2026' },
       { name: 'FaceTime.app', type: 'app', icon: 'terminal', size: '9.5 MB', kind: 'Application', date: 'Jun 14, 2026' },
-      { name: 'QuickTime Player.app', type: 'app', icon: 'terminal', size: '22.7 MB', kind: 'Application', date: 'Jun 15, 2026' }
+      { name: 'QuickTime Player.app', type: 'app', icon: 'terminal', size: '22.7 MB', kind: 'Application', date: 'Jun 15, 2026' },
+      { name: 'Screen Time.app', type: 'app', icon: 'terminal', size: '8.9 MB', kind: 'Application', date: 'Jun 16, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -844,7 +845,8 @@ const appIdMap = {
   'Photos.app': 'photos-window',
   'Maps.app': 'maps-window',
   'FaceTime.app': 'facetime-window',
-  'QuickTime Player.app': 'quicktime-window'
+  'QuickTime Player.app': 'quicktime-window',
+  'Screen Time.app': 'screentime-window'
 };
 
 function openApp(appName) {
@@ -892,6 +894,7 @@ function openApp(appName) {
   if (winId === 'maps-window') initMaps();
   if (winId === 'facetime-window') initFaceTime();
   if (winId === 'quicktime-window') initQT();
+  if (winId === 'screentime-window') initScreenTime();
 }
 
 function closeWindow(winId) {
@@ -6826,6 +6829,136 @@ function emojiInsert(emoji) {
     showNotifToast('Character Viewer', 'Emoji copied to clipboard: ' + emoji, 'Finder');
   }
   emojiRenderCats();
+}
+
+// ---- Screen Time ----
+const stWeek = [
+  { day: 'Mon', mins: 118 }, { day: 'Tue', mins: 142 }, { day: 'Wed', mins: 96 },
+  { day: 'Thu', mins: 154 }, { day: 'Fri', mins: 87 }, { day: 'Sat', mins: 205 }, { day: 'Sun', mins: 168 }
+];
+const stApps = [
+  { name: 'Safari', emoji: '🧭', color: '#0A84FF', mins: 58 },
+  { name: 'Messages', emoji: '💬', color: '#34C759', mins: 34 },
+  { name: 'Music', emoji: '🎵', color: '#FF2D55', mins: 22 },
+  { name: 'Photos', emoji: '🌄', color: '#FF6B9D', mins: 18 },
+  { name: 'Terminal', emoji: '⌨️', color: '#1C1C1E', mins: 14 }
+];
+let stState = { day: 'today', downtime: false, totalMins: 102, tick: null };
+let stInitialized = false;
+
+function initScreenTime() {
+  if (stInitialized) { stRender(); return; }
+  stInitialized = true;
+  document.querySelectorAll('.st-nav').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.st-nav').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      stState.day = item.dataset.day;
+      stRender();
+    });
+  });
+  document.getElementById('stDowntimeBtn').addEventListener('click', () => {
+    stState.downtime = !stState.downtime;
+    const btn = document.getElementById('stDowntimeBtn');
+    btn.innerHTML = stState.downtime ? '<i class="ri-moon-fill"></i> Downtime On' : '<i class="ri-moon-line"></i> Downtime Off';
+    btn.classList.toggle('on', stState.downtime);
+    showNotifToast('Screen Time', 'Downtime ' + (stState.downtime ? 'enabled' : 'disabled'), 'Screen Time.app');
+  });
+  stState.tick = setInterval(() => {
+    if (!stInitialized) return;
+    stState.totalMins += 1;
+    if (stState.day === 'today') stRenderSummary();
+  }, 60000);
+  stRender();
+}
+
+function stRender() {
+  const titles = { today: 'Today', week: 'This Week', apps: 'App Limits', always: 'Always Allowed' };
+  document.getElementById('stHeaderTitle').textContent = titles[stState.day] || 'Today';
+  if (stState.day === 'today') stRenderSummary();
+  else if (stState.day === 'week') stRenderWeek();
+  else if (stState.day === 'apps') stRenderLimits();
+  else stRenderAlways();
+}
+
+function stFmt(mins) {
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+}
+
+function stRenderSummary() {
+  document.getElementById('stTotal').textContent = stFmt(stState.totalMins);
+  stRenderChart();
+  const list = document.getElementById('stApps');
+  list.innerHTML = stApps.map(a => {
+    const pct = Math.round((a.mins / stState.totalMins) * 100);
+    return '<div class="st-app">' +
+      '<span class="st-app-emoji">' + a.emoji + '</span>' +
+      '<div class="st-app-info"><div class="st-app-row"><span class="st-app-name">' + a.name + '</span><span class="st-app-time">' + stFmt(a.mins) + '</span></div>' +
+      '<div class="st-app-bar"><div class="st-app-bar-fill" style="width:' + Math.max(6, pct) + '%;background:' + a.color + '"></div></div></div>' +
+    '</div>';
+  }).join('');
+}
+
+function stRenderChart() {
+  const bars = document.getElementById('stBars');
+  const labels = document.getElementById('stChartLabels');
+  if (!bars) return;
+  const max = Math.max(...stWeek.map(d => d.mins));
+  bars.innerHTML = stWeek.map((d, i) => {
+    const h = Math.max(4, (d.mins / max) * 90);
+    return '<rect x="' + (i * 42 + 6) + '" y="' + (105 - h) + '" width="26" height="' + h + '" rx="4" fill="' + (i === 6 ? '#0A84FF' : 'rgba(10,132,255,0.45)') + '"></rect>';
+  }).join('');
+  labels.innerHTML = stWeek.map(d => '<span>' + d.day + '</span>').join('');
+  const today = stWeek[6];
+  document.getElementById('stDelta').textContent = 'Avg ' + stFmt(Math.round(stWeek.reduce((s, d) => s + d.mins, 0) / 7)) + ' / day • Today: ' + stFmt(stState.totalMins);
+}
+
+function stRenderWeek() {
+  const max = Math.max(...stWeek.map(d => d.mins));
+  const bars = document.getElementById('stBars');
+  bars.innerHTML = stWeek.map((d, i) => {
+    const h = Math.max(4, (d.mins / max) * 90);
+    return '<rect x="' + (i * 42 + 6) + '" y="' + (105 - h) + '" width="26" height="' + h + '" rx="4" fill="rgba(10,132,255,0.55)"></rect>';
+  }).join('');
+  document.getElementById('stChartLabels').innerHTML = stWeek.map(d => '<span>' + d.day + '</span>').join('');
+  document.getElementById('stTotal').textContent = stFmt(stWeek.reduce((s, d) => s + d.mins, 0));
+  document.getElementById('stDelta').textContent = 'Weekly average ' + stFmt(Math.round(stWeek.reduce((s, d) => s + d.mins, 0) / 7)) + ' per day';
+  const list = document.getElementById('stApps');
+  list.innerHTML = stWeek.map((d, i) => {
+    const pct = Math.round((d.mins / max) * 100);
+    return '<div class="st-app">' +
+      '<span class="st-app-emoji">' + (i === 6 ? '📅' : '📆') + '</span>' +
+      '<div class="st-app-info"><div class="st-app-row"><span class="st-app-name">' + d.day + '</span><span class="st-app-time">' + stFmt(d.mins) + '</span></div>' +
+      '<div class="st-app-bar"><div class="st-app-bar-fill" style="width:' + Math.max(6, pct) + '%;background:#0A84FF"></div></div></div>' +
+    '</div>';
+  }).join('');
+}
+
+function stRenderLimits() {
+  document.getElementById('stTotal').textContent = '0';
+  document.getElementById('stDelta').textContent = 'Set daily limits for individual apps';
+  const list = document.getElementById('stApps');
+  list.innerHTML = stApps.map(a =>
+    '<div class="st-app">' +
+      '<span class="st-app-emoji">' + a.emoji + '</span>' +
+      '<div class="st-app-info"><div class="st-app-row"><span class="st-app-name">' + a.name + '</span><span class="st-app-time" style="color:var(--mac-text-muted);">No limit</span></div></div>' +
+    '</div>'
+  ).join('');
+}
+
+function stRenderAlways() {
+  document.getElementById('stTotal').textContent = '8';
+  document.getElementById('stDelta').textContent = 'Apps always available during downtime';
+  const list = document.getElementById('stApps');
+  list.innerHTML = [
+    { name: 'Phone', emoji: '📞' }, { name: 'Messages', emoji: '💬' }, { name: 'Maps', emoji: '🗺️' }, { name: 'FaceTime', emoji: '📹' }
+  ].map(a =>
+    '<div class="st-app">' +
+      '<span class="st-app-emoji">' + a.emoji + '</span>' +
+      '<div class="st-app-info"><div class="st-app-row"><span class="st-app-name">' + a.name + '</span><span class="st-app-time" style="color:#34C759;"><i class="ri-check-line"></i> Always</span></div></div>' +
+    '</div>'
+  ).join('');
 }
 
 // Initialize spaces on load

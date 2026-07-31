@@ -1569,6 +1569,50 @@
         </div>
       </div>
 
+      <!-- ========== SCREEN TIME ========== -->
+      <div class="mac-window app-window" id="screentime-window" style="width:840px;height:540px;top:45px;left:160px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Screen Time</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body st-body">
+          <aside class="st-sidebar">
+            <div class="st-nav active" data-day="today"><i class="ri-sun-line"></i> Today</div>
+            <div class="st-nav" data-day="week"><i class="ri-calendar-line"></i> This Week</div>
+            <div class="st-sidebar-label">Limits</div>
+            <div class="st-nav" data-day="apps"><i class="ri-apps-2-line"></i> App Limits</div>
+            <div class="st-nav" data-day="always"><i class="ri-checkbox-circle-line"></i> Always Allowed</div>
+          </aside>
+          <div class="st-main">
+            <div class="st-header">
+              <div class="st-header-title" id="stHeaderTitle">Today</div>
+              <div class="st-downtime-btn" id="stDowntimeBtn"><i class="ri-moon-line"></i> Downtime Off</div>
+            </div>
+            <div class="st-summary">
+              <div class="st-total">
+                <div class="st-total-value" id="stTotal">1h 42m</div>
+                <div class="st-total-label">Total Screen Time</div>
+                <div class="st-total-delta" id="stDelta">+12% vs last week</div>
+              </div>
+              <div class="st-chart">
+                <svg viewBox="0 0 300 120" class="st-svg">
+                  <line x1="0" y1="105" x2="300" y2="105" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                  <g id="stBars"></g>
+                </svg>
+                <div class="st-chart-labels" id="stChartLabels"></div>
+              </div>
+            </div>
+            <div class="st-apps-head">Most Used</div>
+            <div class="st-apps" id="stApps"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -1756,6 +1800,12 @@
           </div>
           <span class="launchpad-label">QuickTime Player</span>
         </div>
+        <div class="launchpad-item" data-app="Screen Time.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5E5CE6"/><path d="M8 26h32v6H8z" fill="#fff" opacity="0.35"/><path d="M8 32h32v6H8z" fill="#fff" opacity="0.75"/><path d="M8 20h32v6H8z" fill="#fff"/><path d="M24 8v6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="8" r="2" fill="#FFD60A"/></svg>
+          </div>
+          <span class="launchpad-label">Screen Time</span>
+        </div>
       </div>
     </div>
 
@@ -1868,6 +1918,10 @@
       </div>
       <div class="dock-item" data-app="QuickTime Player.app" data-tooltip="QuickTime Player">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#333"/><path d="M20 20v10l9-5-9-5z" fill="white"/><rect x="6" y="14" width="36" height="22" rx="3" fill="#1C1C1E" stroke="#FF6B9D" stroke-width="1.5"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Screen Time.app" data-tooltip="Screen Time">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5E5CE6"/><path d="M8 20h32v6H8z" fill="white"/><path d="M8 32h32v6H8z" fill="white" opacity="0.75"/><path d="M24 8v6" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="8" r="2" fill="#FFD60A"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>

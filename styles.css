@@ -3781,3 +3781,37 @@ body.a11y-increase-contrast .menu-bar { border-bottom: 1px solid rgba(255,255,25
 .emoji-cell { height: 38px; border: none; border-radius: 8px; background: transparent; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.1s ease, transform 0.1s ease; }
 .emoji-cell:hover { background: rgba(255,255,255,0.1); transform: scale(1.18); }
 .emoji-empty { grid-column: 1 / -1; text-align: center; color: var(--mac-text-muted); font-size: 13px; padding: 30px 0; }
+
+/* ---- Screen Time ---- */
+.st-body { display: flex; padding: 0; overflow: hidden; }
+.st-sidebar { width: 160px; min-width: 160px; background: rgba(0,0,0,0.28); padding: 12px 8px; border-right: 1px solid rgba(255,255,255,0.06); }
+.st-sidebar-label { font-size: 11px; color: var(--mac-text-muted); padding: 10px 10px 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.st-nav { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; font-size: 13px; color: var(--mac-text); cursor: pointer; margin-bottom: 2px; transition: all 0.12s ease; }
+.st-nav:hover { background: rgba(255,255,255,0.07); }
+.st-nav.active { background: rgba(94,92,230,0.4); color: #fff; }
+.st-nav i { font-size: 15px; color: #5E5CE6; }
+.st-nav.active i { color: #fff; }
+.st-main { flex: 1; padding: 16px 20px; overflow-y: auto; }
+.st-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.st-header-title { font-size: 18px; font-weight: 700; color: #fff; }
+.st-downtime-btn { display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.15); border-radius: 18px; background: transparent; color: var(--mac-text); font-size: 12px; padding: 6px 14px; cursor: pointer; transition: all 0.15s ease; }
+.st-downtime-btn:hover { background: rgba(255,255,255,0.08); }
+.st-downtime-btn.on { background: #5E5CE6; border-color: #5E5CE6; color: #fff; }
+.st-summary { display: flex; gap: 24px; background: rgba(255,255,255,0.05); border-radius: 14px; padding: 18px; margin-bottom: 18px; align-items: center; }
+.st-total { text-align: center; min-width: 150px; }
+.st-total-value { font-size: 30px; font-weight: 800; color: #fff; }
+.st-total-label { font-size: 12px; color: var(--mac-text-muted); margin-top: 2px; }
+.st-total-delta { font-size: 11px; color: #34C759; margin-top: 6px; }
+.st-chart { flex: 1; }
+.st-svg { width: 100%; height: auto; display: block; }
+.st-chart-labels { display: flex; justify-content: space-around; font-size: 10.5px; color: var(--mac-text-muted); margin-top: 4px; }
+.st-apps-head { font-size: 13px; font-weight: 600; color: var(--mac-text); margin-bottom: 8px; }
+.st-app { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 10px; margin-bottom: 4px; transition: background 0.12s ease; }
+.st-app:hover { background: rgba(255,255,255,0.05); }
+.st-app-emoji { width: 36px; height: 36px; border-radius: 9px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
+.st-app-info { flex: 1; }
+.st-app-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.st-app-name { font-size: 13px; font-weight: 500; color: var(--mac-text); }
+.st-app-time { font-size: 12px; color: var(--mac-text-muted); font-family: Menlo, monospace; }
+.st-app-bar { height: 5px; border-radius: 3px; background: rgba(255,255,255,0.1); overflow: hidden; }
+.st-app-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
