@@ -27,7 +27,8 @@ const fileSystem = {
       { name: 'Mail.app', type: 'app', icon: 'terminal', size: '18.4 MB', kind: 'Application', date: 'Jun 10, 2026' },
       { name: 'Contacts.app', type: 'app', icon: 'terminal', size: '7.8 MB', kind: 'Application', date: 'Jun 11, 2026' },
       { name: 'Photos.app', type: 'app', icon: 'terminal', size: '42.6 MB', kind: 'Application', date: 'Jun 12, 2026' },
-      { name: 'Maps.app', type: 'app', icon: 'terminal', size: '11.2 MB', kind: 'Application', date: 'Jun 13, 2026' }
+      { name: 'Maps.app', type: 'app', icon: 'terminal', size: '11.2 MB', kind: 'Application', date: 'Jun 13, 2026' },
+      { name: 'FaceTime.app', type: 'app', icon: 'terminal', size: '9.5 MB', kind: 'Application', date: 'Jun 14, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -757,7 +758,8 @@ const appIdMap = {
   'Mail.app': 'mail-window',
   'Contacts.app': 'contacts-window',
   'Photos.app': 'photos-window',
-  'Maps.app': 'maps-window'
+  'Maps.app': 'maps-window',
+  'FaceTime.app': 'facetime-window'
 };
 
 function openApp(appName) {
@@ -803,6 +805,7 @@ function openApp(appName) {
   if (winId === 'contacts-window') initContacts();
   if (winId === 'photos-window') initPhotos();
   if (winId === 'maps-window') initMaps();
+  if (winId === 'facetime-window') initFaceTime();
 }
 
 function closeWindow(winId) {
@@ -6020,7 +6023,7 @@ function contactsCall(id) {
   const c = contactsData.find(x => x.id === id);
   if (!c) return;
   openApp('FaceTime.app');
-  if (typeof initFaceTime === 'function') { faceTimeState.selectedId = c.id; faceTimeCall(c.id); }
+  if (typeof faceTimeCall === 'function') faceTimeCall(c.name);
   showNotifToast(c.name, 'Calling ' + c.phone + '…', 'FaceTime.app');
 }
 
@@ -6259,6 +6262,126 @@ function mapsRenderResults() {
   document.getElementById('mapsPlaces').innerHTML = mapsPlaces.map((p, i) =>
     '<div class="maps-fav-item" onclick="mapsCenterOn(' + i + ')">' + p.emoji + ' <span>' + p.name + '</span></div>'
   ).join('');
+}
+
+// ---- FaceTime ----
+const faceTimeRecentsData = [
+  { name: 'Tim Cook', emoji: '🍎', color: '#007AFF', time: 'Yesterday', type: 'in' },
+  { name: 'Jony Ive', emoji: '✏️', color: '#34C759', time: 'Mon', type: 'missed' },
+  { name: 'Ada Lovelace', emoji: '🪄', color: '#5AC8FA', time: 'Jun 24', type: 'out' }
+];
+let faceTimeState = { query: '', selectedId: null, inCall: false, seconds: 0, timer: null, muted: false, videoOn: true, speaker: false };
+let faceTimeInitialized = false;
+
+function initFaceTime() {
+  if (faceTimeInitialized) { faceTimeRender(); return; }
+  faceTimeInitialized = true;
+  document.getElementById('facetimeSearch').addEventListener('input', e => { faceTimeState.query = e.target.value.toLowerCase(); faceTimeRenderGrid(); });
+  document.getElementById('ftMute').addEventListener('click', () => {
+    faceTimeState.muted = !faceTimeState.muted;
+    document.getElementById('ftMute').innerHTML = faceTimeState.muted ? '<i class="ri-mic-off-line"></i>' : '<i class="ri-mic-line"></i>';
+    document.getElementById('ftMute').classList.toggle('ft-control-off', faceTimeState.muted);
+  });
+  document.getElementById('ftVideo').addEventListener('click', () => {
+    faceTimeState.videoOn = !faceTimeState.videoOn;
+    document.getElementById('ftVideo').innerHTML = faceTimeState.videoOn ? '<i class="ri-vidicon-line"></i>' : '<i class="ri-vidicon-off-line"></i>';
+    document.getElementById('ftVideo').classList.toggle('ft-control-off', !faceTimeState.videoOn);
+  });
+  document.getElementById('ftSpeaker').addEventListener('click', () => {
+    faceTimeState.speaker = !faceTimeState.speaker;
+    document.getElementById('ftSpeaker').innerHTML = faceTimeState.speaker ? '<i class="ri-volume-up-fill"></i>' : '<i class="ri-volume-up-line"></i>';
+  });
+  document.getElementById('ftEnd').addEventListener('click', () => faceTimeEndCall());
+  faceTimeRender();
+}
+
+function faceTimeContactEmoji(name) {
+  const map = { 'Tim Cook': '🍎', 'Jony Ive': '✏️', 'Steve Wozniak': '💾', 'Grace Hopper': '⚓', 'Alan Turing': '🤖', 'Ada Lovelace': '🪄', 'Linus Torvalds': '🐧', 'Margaret Hamilton': '🚀' };
+  return map[name] || '👤';
+}
+
+function faceTimeContactColor(name) {
+  const c = contactsData.find(x => x.name === name);
+  return c ? c.color : '#007AFF';
+}
+
+function faceTimeRender() {
+  faceTimeRenderGrid();
+  faceTimeRenderFavs();
+  faceTimeRenderRecents();
+}
+
+function faceTimeRenderGrid() {
+  const grid = document.getElementById('facetimeGrid');
+  if (!grid) return;
+  const list = contactsData.filter(c => !faceTimeState.query || c.name.toLowerCase().includes(faceTimeState.query));
+  grid.innerHTML = list.map(c =>
+    '<div class="facetime-tile" onclick="faceTimeCall(\'' + c.name.replace(/'/g, '\\\'') + '\')">' +
+      '<div class="facetime-tile-avatar" style="background:' + c.color + '">' + faceTimeContactEmoji(c.name) + '</div>' +
+      '<div class="facetime-tile-name">' + c.name + '</div>' +
+      '<div class="facetime-tile-action">FaceTime</div>' +
+    '</div>'
+  ).join('');
+  if (list.length === 0) grid.innerHTML = '<div class="facetime-empty">No contacts found</div>';
+}
+
+function faceTimeRenderFavs() {
+  const el = document.getElementById('facetimeFavs');
+  if (!el) return;
+  el.innerHTML = contactsData.filter(c => c.flagged).map(c =>
+    '<div class="facetime-recent-item" onclick="faceTimeCall(\'' + c.name.replace(/'/g, '\\\'') + '\')">' +
+      '<span class="facetime-recent-avatar" style="background:' + c.color + '">' + faceTimeContactEmoji(c.name) + '</span>' +
+      '<span class="facetime-recent-name">' + c.name + '</span>' +
+      '<i class="ri-phone-line facetime-recent-call"></i>' +
+    '</div>'
+  ).join('');
+}
+
+function faceTimeRenderRecents() {
+  const el = document.getElementById('facetimeRecents');
+  if (!el) return;
+  el.innerHTML = faceTimeRecentsData.map(r =>
+    '<div class="facetime-recent-item" onclick="faceTimeCall(\'' + r.name.replace(/'/g, '\\\'') + '\')">' +
+      '<span class="facetime-recent-avatar" style="background:' + faceTimeContactColor(r.name) + '">' + r.emoji + '</span>' +
+      '<span class="facetime-recent-name">' + r.name + '</span>' +
+      '<span class="facetime-recent-meta"><i class="ri-' + (r.type === 'missed' ? 'arrow-down-line' : r.type === 'out' ? 'arrow-up-line' : 'arrow-down-line') + '"></i>' + r.time + '</span>' +
+    '</div>'
+  ).join('');
+}
+
+function faceTimeCall(name) {
+  const c = contactsData.find(x => x.name === name);
+  if (faceTimeState.inCall) faceTimeEndCall();
+  faceTimeState.inCall = true;
+  faceTimeState.seconds = 0;
+  faceTimeState.muted = false; faceTimeState.videoOn = true; faceTimeState.speaker = false;
+  document.getElementById('ftName').textContent = name + '…';
+  document.getElementById('ftAvatar').textContent = faceTimeContactEmoji(name);
+  document.getElementById('ftAvatar').style.background = faceTimeContactColor(name);
+  document.getElementById('facetimeCall').classList.add('active');
+  setTimeout(() => {
+    if (!faceTimeState.inCall) return;
+    document.getElementById('ftName').textContent = name;
+    document.getElementById('ftTimer').textContent = faceTimeFormatTime(faceTimeState.seconds);
+    faceTimeState.timer = setInterval(() => {
+      if (!faceTimeState.inCall) return;
+      faceTimeState.seconds++;
+      document.getElementById('ftTimer').textContent = faceTimeFormatTime(faceTimeState.seconds);
+    }, 1000);
+    faceTimeRecentsData.unshift({ name, emoji: faceTimeContactEmoji(name), time: 'Now', type: 'in' });
+  }, 1600);
+}
+
+function faceTimeFormatTime(s) {
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+
+function faceTimeEndCall() {
+  if (faceTimeState.timer) clearInterval(faceTimeState.timer);
+  faceTimeState.timer = null;
+  faceTimeState.inCall = false;
+  document.getElementById('facetimeCall').classList.remove('active');
+  faceTimeRenderRecents();
 }
 
 // Initialize spaces on load

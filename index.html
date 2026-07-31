@@ -1489,6 +1489,46 @@
         </div>
       </div>
 
+      <!-- ========== FACETIME ========== -->
+      <div class="mac-window app-window" id="facetime-window" style="width:860px;height:560px;top:30px;left:140px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">FaceTime</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body facetime-body">
+          <div class="facetime-main">
+            <div class="facetime-new">
+              <div class="facetime-new-title">Start a new FaceTime</div>
+              <div class="facetime-new-input"><i class="ri-user-add-line"></i><input type="text" id="facetimeSearch" placeholder="Enter name or phone number"></div>
+            </div>
+            <div class="facetime-grid" id="facetimeGrid"></div>
+          </div>
+          <div class="facetime-recents">
+            <div class="facetime-recents-label">Favorites</div>
+            <div id="facetimeFavs"></div>
+            <div class="facetime-recents-label" style="margin-top:14px;">Recents</div>
+            <div id="facetimeRecents"></div>
+          </div>
+        </div>
+        <div class="facetime-call" id="facetimeCall">
+          <div class="facetime-call-video"><div class="facetime-call-avatar" id="ftAvatar">👤</div></div>
+          <div class="facetime-call-name" id="ftName">Calling…</div>
+          <div class="facetime-call-timer" id="ftTimer">00:00</div>
+          <div class="facetime-call-controls">
+            <button class="ft-control" id="ftMute"><i class="ri-mic-line"></i></button>
+            <button class="ft-control" id="ftVideo"><i class="ri-vidicon-line"></i></button>
+            <button class="ft-control" id="ftSpeaker"><i class="ri-volume-up-line"></i></button>
+            <button class="ft-control ft-control-end" id="ftEnd"><i class="ri-phone-fill"></i></button>
+          </div>
+          <div class="facetime-selfview">Me <div class="facetime-selfview-avatar">🙂</div></div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -1664,6 +1704,12 @@
           </div>
           <span class="launchpad-label">Maps</span>
         </div>
+        <div class="launchpad-item" data-app="FaceTime.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#34C759"/><path d="M16 18l12-6v24l-12-6V18z" fill="#fff"/><path d="M30 21l8-4v14l-8-4V21z" fill="#fff" opacity="0.85"/></svg>
+          </div>
+          <span class="launchpad-label">FaceTime</span>
+        </div>
       </div>
     </div>
 
@@ -1768,6 +1814,10 @@
       </div>
       <div class="dock-item" data-app="Maps.app" data-tooltip="Maps">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#00A84F"/><path d="M24 8c-7 0-12 5.2-12 11.6 0 8.6 12 20.4 12 20.4s12-11.8 12-20.4C36 13.2 31 8 24 8z" fill="white"/><circle cx="24" cy="19" r="4.5" fill="#00A84F"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="FaceTime.app" data-tooltip="FaceTime">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#34C759"/><path d="M16 18l12-6v24l-12-6V18z" fill="white"/><path d="M30 21l8-4v14l-8-4V21z" fill="white" opacity="0.85"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>
