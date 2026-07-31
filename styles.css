@@ -3755,3 +3755,8 @@ body.a11y-increase-contrast .menu-bar { border-bottom: 1px solid rgba(255,255,25
 .qt-playlist-title { font-size: 12px; color: var(--mac-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .qt-playlist-dur { font-size: 10.5px; color: var(--mac-text-muted); margin-top: 2px; }
 .qt-fullscreen { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999 !important; border-radius: 0 !important; }
+
+/* ---- iCloud Drive ---- */
+.sidebar-sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #0A84FF; opacity: 0; transition: opacity 0.2s ease; margin-left: auto; }
+.sidebar-sync-dot.syncing { opacity: 1; animation: icloudSyncPulse 1s ease-in-out infinite; }
+@keyframes icloudSyncPulse { 0%,100% { transform: scale(0.7); opacity: 0.5; } 50% { transform: scale(1.15); opacity: 1; } }

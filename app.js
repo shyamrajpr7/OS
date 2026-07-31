@@ -67,7 +67,19 @@ const fileSystem = {
     ]
   },
   '/Users/shyamraj/Movies': { type: 'folder', children: [] },
-  '/Users/shyamraj/Public': { type: 'folder', children: [] }
+  '/Users/shyamraj/Public': { type: 'folder', children: [] },
+  '/Users/shyamraj/iCloud Drive': {
+    type: 'folder', children: [
+      { name: 'Notes', type: 'folder', size: '--', kind: 'Folder', date: 'Jun 1, 2026' },
+      { name: 'Numbers', type: 'folder', size: '--', kind: 'Folder', date: 'Jun 1, 2026' },
+      { name: 'Keynote', type: 'folder', size: '--', kind: 'Folder', date: 'Jun 1, 2026' },
+      { name: 'Pages', type: 'folder', size: '--', kind: 'Folder', date: 'Jun 1, 2026' },
+      { name: 'quarterly-report.key', type: 'file', icon: 'doc', size: '18.4 MB', kind: 'Keynote Presentation', date: 'Jun 20, 2026' },
+      { name: 'budget-2026.numbers', type: 'file', icon: 'doc', size: '6.2 MB', kind: 'Numbers Spreadsheet', date: 'Jun 18, 2026' },
+      { name: 'proposal.pdf', type: 'file', icon: 'pdf', size: '3.1 MB', kind: 'PDF Document', date: 'Jun 15, 2026' },
+      { name: 'design-mockups.pages', type: 'file', icon: 'doc', size: '9.7 MB', kind: 'Pages Document', date: 'Jun 12, 2026' }
+    ]
+  }
 };
 
 function getNode(path) { return fileSystem[path] || null; }
@@ -155,6 +167,24 @@ function navigateTo(path, pushHistory = true) {
   }
   selectedItem = null;
   updateFinder();
+  if (path === '/Users/shyamraj/iCloud Drive') icloudSyncSimulation();
+}
+
+let icloudSyncTimer = null;
+let icloudSynced = false;
+
+function icloudSyncSimulation() {
+  const status = document.getElementById('finderStatus');
+  const dot = document.querySelector('.sidebar-sync-dot');
+  if (!status) return;
+  if (icloudSyncTimer) clearTimeout(icloudSyncTimer);
+  if (dot) dot.classList.add('syncing');
+  status.textContent = icloudSynced ? 'All files synced with iCloud' : 'Syncing with iCloud…';
+  icloudSyncTimer = setTimeout(() => {
+    icloudSynced = true;
+    if (currentPath === '/Users/shyamraj/iCloud Drive') status.textContent = 'All files synced with iCloud';
+    if (dot) dot.classList.remove('syncing');
+  }, 1800);
 }
 
 function goBack() { if (navIndex > 0) { navIndex--; navigateTo(navHistory[navIndex], false); } }
