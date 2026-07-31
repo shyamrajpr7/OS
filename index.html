@@ -1338,6 +1338,44 @@
         </div>
       </div>
 
+      <!-- ========== MAIL ========== -->
+      <div class="mac-window app-window" id="mail-window" style="width:820px;height:540px;top:45px;left:170px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Mail</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body mail-body">
+          <aside class="mail-sidebar">
+            <div class="mail-sidebar-label">Mailboxes</div>
+            <div class="mail-mailbox active" data-mailbox="inbox"><i class="ri-inbox-line"></i> Inbox<span class="mail-mailbox-count" id="mailInboxCount"></span></div>
+            <div class="mail-mailbox" data-mailbox="flagged"><i class="ri-star-line"></i> Flagged<span class="mail-mailbox-count" id="mailFlaggedCount"></span></div>
+            <div class="mail-mailbox" data-mailbox="sent"><i class="ri-send-plane-line"></i> Sent</div>
+            <div class="mail-mailbox" data-mailbox="drafts"><i class="ri-draft-line"></i> Drafts</div>
+            <div class="mail-mailbox" data-mailbox="trash"><i class="ri-delete-bin-line"></i> Trash</div>
+          </aside>
+          <div class="mail-main">
+            <div class="mail-toolbar">
+              <div class="mail-actions">
+                <button class="mail-action-btn" id="mailComposeBtn" title="New Message"><i class="ri-pencil-line"></i></button>
+                <button class="mail-action-btn" id="mailArchiveBtn" title="Archive"><i class="ri-archive-line"></i></button>
+                <button class="mail-action-btn" id="mailDeleteBtn" title="Delete"><i class="ri-delete-bin-line"></i></button>
+                <button class="mail-action-btn" id="mailFlagBtn" title="Flag"><i class="ri-star-line"></i></button>
+              </div>
+              <div class="mail-search"><i class="ri-search-line"></i><input type="text" id="mailSearch" placeholder="Search Mail"></div>
+            </div>
+            <div class="mail-list" id="mailList"></div>
+            <div class="mail-reading" id="mailReading">
+              <div class="mail-reading-placeholder">Select a message to read</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -1489,6 +1527,12 @@
           </div>
           <span class="launchpad-label">Font Book</span>
         </div>
+        <div class="launchpad-item" data-app="Mail.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><path d="M6 14a2 2 0 0 1 2-2h32a2 2 0 0 1 2 2v22a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V14z" fill="#fff"/><path d="M6 15l18 12 18-12v-1a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v1z" fill="#E3F0FF"/><path d="M6 16l18 12 18-12v20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V16z" fill="#4DA6FF"/></svg>
+          </div>
+          <span class="launchpad-label">Mail</span>
+        </div>
       </div>
     </div>
 
@@ -1577,6 +1621,10 @@
       </div>
       <div class="dock-item" data-app="Font Book.app" data-tooltip="Font Book">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><text x="24" y="30" text-anchor="middle" font-family="Georgia" font-size="24" fill="white" font-weight="bold">Aa</text></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Mail.app" data-tooltip="Mail">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><rect x="6" y="14" width="36" height="24" rx="4" fill="white"/><path d="M6 16l18 12 18-12" stroke="#4DA6FF" stroke-width="2.5" fill="none" stroke-linejoin="round"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>

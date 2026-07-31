@@ -23,7 +23,8 @@ const fileSystem = {
       { name: 'Stickies.app', type: 'app', icon: 'terminal', size: '2.3 MB', kind: 'Application', date: 'Jun 6, 2026' },
       { name: 'System Report.app', type: 'app', icon: 'terminal', size: '4.7 MB', kind: 'Application', date: 'Jun 7, 2026' },
       { name: 'Network Utility.app', type: 'app', icon: 'terminal', size: '3.2 MB', kind: 'Application', date: 'Jun 8, 2026' },
-      { name: 'Font Book.app', type: 'app', icon: 'terminal', size: '6.0 MB', kind: 'Application', date: 'Jun 9, 2026' }
+      { name: 'Font Book.app', type: 'app', icon: 'terminal', size: '6.0 MB', kind: 'Application', date: 'Jun 9, 2026' },
+      { name: 'Mail.app', type: 'app', icon: 'terminal', size: '18.4 MB', kind: 'Application', date: 'Jun 10, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -749,7 +750,8 @@ const appIdMap = {
   'Stickies.app': 'stickies-window',
   'System Report.app': 'sysreport-window',
   'Network Utility.app': 'netutil-window',
-  'Font Book.app': 'fontbook-window'
+  'Font Book.app': 'fontbook-window',
+  'Mail.app': 'mail-window'
 };
 
 function openApp(appName) {
@@ -791,6 +793,7 @@ function openApp(appName) {
   if (winId === 'sysreport-window') initSysReport();
   if (winId === 'netutil-window') initNetUtil();
   if (winId === 'fontbook-window') initFontBook();
+  if (winId === 'mail-window') initMail();
 }
 
 function closeWindow(winId) {
@@ -5792,6 +5795,130 @@ function srClearAll() {
   if (srState.recordings.length === 0) return;
   srState.recordings = [];
   renderSrRecordings();
+}
+
+// ---- Mail ----
+const mailEmails = [
+  { id: 1, mailbox: 'inbox', from: 'Sundar Pichai', subject: 'Q3 planning sync', preview: 'Team, let’s lock in the roadmap for next quarter. Please add your items before Friday.', date: '9:41 AM', read: false, flagged: false, color: '#34C759', body: 'Team,\n\nLet’s lock in the roadmap for next quarter. Please add your items to the shared doc before Friday EOD.\n\nBest,\nSundar' },
+  { id: 2, mailbox: 'inbox', from: 'Figma', subject: 'Your new team files', preview: 'The Thread OS team invited you to 3 new design files.', date: '8:12 AM', read: false, flagged: false, color: '#FF9500', body: 'Hi,\n\nThe Thread OS team invited you to 3 new design files:\n\n• macOS Tahoe mockups\n• Window chrome explorations\n• Dock magnify studies\n\nOpen them in Figma to leave comments.\n\n— The Figma Team' },
+  { id: 3, mailbox: 'inbox', from: 'Apple', subject: 'Your receipt from the App Store', preview: 'Your recent purchase of 0.99 — thank you for your support.', date: 'Yesterday', read: false, flagged: true, color: '#8E8E93', body: 'Thanks for shopping in the App Store.\n\nYour purchase was successful. A copy of your receipt is attached.\n\n— Apple' },
+  { id: 4, mailbox: 'inbox', from: 'Tim Cook', subject: 'Welcome to Thread OS', preview: 'On behalf of everyone at Apple, welcome to your new Mac experience.', date: 'Yesterday', read: true, flagged: false, color: '#AF52DE', body: 'Hi there,\n\nOn behalf of everyone at Apple, welcome to your new Mac experience. We designed it to feel right at home.\n\nEnjoy,\nTim' },
+  { id: 5, mailbox: 'inbox', from: 'GitHub', subject: '[Thread OS] 15 commits pushed', preview: 'shyamraj pushed 15 commits to main. View commit details.', date: 'Mon', read: true, flagged: false, color: '#1C1C1E', body: 'shyamraj pushed 15 commits to main.\n\nFeat: add Fortune terminal command\nFeat: add base64 terminal command\n…\n\nView commits on GitHub →' },
+  { id: 6, mailbox: 'sent', from: 'You', subject: 'Re: Weekly standup', preview: 'Sounds good — I’ll have the demo ready by Thursday.', date: 'Fri', read: true, flagged: false, color: '#0A84FF', body: 'Sounds good — I’ll have the demo ready by Thursday.\n\nThanks!' },
+  { id: 7, mailbox: 'sent', from: 'You', subject: 'Invoice #1042', preview: 'Attached is the invoice for last month’s work.', date: 'Jun 27', read: true, flagged: false, color: '#0A84FF', body: 'Hi,\n\nAttached is the invoice for last month’s work.\n\nBest regards' },
+  { id: 8, mailbox: 'drafts', from: 'Draft', subject: 'Product ideas for Thread OS', preview: 'A few rough ideas for the next release:', date: 'Draft', read: true, flagged: false, color: '#8E8E93', body: 'A few rough ideas for the next release:\n\n• Mail app\n• iCloud Drive\n• Screen Time' },
+  { id: 9, mailbox: 'trash', from: 'Newsletter', subject: 'Weekly digest', preview: 'Here’s what you missed this week.', date: 'Jun 20', read: true, flagged: false, color: '#8E8E93', body: 'Here’s what you missed this week.\n\n— The Team' }
+];
+let mailState = { mailbox: 'inbox', selectedId: null, query: '' };
+let mailInitialized = false;
+
+function initMail() {
+  if (mailInitialized) { mailRender(); return; }
+  mailInitialized = true;
+  document.querySelectorAll('.mail-mailbox').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.mail-mailbox').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      mailState.mailbox = item.dataset.mailbox;
+      mailState.selectedId = null;
+      mailRender();
+    });
+  });
+  document.getElementById('mailSearch').addEventListener('input', e => {
+    mailState.query = e.target.value.toLowerCase();
+    mailRender();
+  });
+  document.getElementById('mailComposeBtn').addEventListener('click', () => {
+    mailState.mailbox = 'drafts';
+    document.querySelectorAll('.mail-mailbox').forEach(i => i.classList.toggle('active', i.dataset.mailbox === 'drafts'));
+    mailState.selectedId = 8;
+    mailRender();
+  });
+  document.getElementById('mailArchiveBtn').addEventListener('click', mailMoveCurrent);
+  document.getElementById('mailDeleteBtn').addEventListener('click', () => mailDeleteCurrent(true));
+  document.getElementById('mailFlagBtn').addEventListener('click', () => {
+    const msg = mailState.selectedId ? mailEmails.find(e => e.id === mailState.selectedId) : null;
+    if (!msg) return;
+    msg.flagged = !msg.flagged;
+    mailRender();
+  });
+  mailRender();
+}
+
+function mailVisible() {
+  return mailEmails.filter(e => {
+    if (e.mailbox === 'sent' && e.from === 'You' && mailState.mailbox === 'inbox') return false;
+    if (e.mailbox === 'drafts' && mailState.mailbox === 'inbox') return false;
+    if (e.mailbox === 'trash' && mailState.mailbox === 'inbox') return false;
+    if (mailState.mailbox === 'flagged' && !e.flagged) return false;
+    if (e.mailbox !== mailState.mailbox && mailState.mailbox !== 'flagged') return false;
+    if (mailState.query) {
+      const hay = (e.from + ' ' + e.subject + ' ' + e.preview).toLowerCase();
+      if (!hay.includes(mailState.query)) return false;
+    }
+    return true;
+  });
+}
+
+function mailRender() {
+  const list = document.getElementById('mailList');
+  if (!list) return;
+  const visible = mailVisible();
+  document.getElementById('mailInboxCount').textContent = mailEmails.filter(e => e.mailbox === 'inbox' && !e.read).length;
+  document.getElementById('mailFlaggedCount').textContent = mailEmails.filter(e => e.flagged).length || '';
+  list.innerHTML = visible.map(e => {
+    const unread = mailState.mailbox === 'inbox' && !e.read;
+    return '<div class="mail-list-item' + (unread ? ' unread' : '') + (mailState.selectedId === e.id ? ' selected' : '') + '" onclick="mailSelect(' + e.id + ')">' +
+      '<div class="mail-list-from"><span class="mail-avatar" style="background:' + e.color + '">' + e.from.charAt(0).toUpperCase() + '</span><span class="mail-from-name">' + e.from + '</span>' + (e.flagged ? '<i class="ri-star-fill mail-flag-icon"></i>' : '') + '</div>' +
+      '<div class="mail-list-subject">' + e.subject + '</div>' +
+      '<div class="mail-list-preview">' + e.preview + '</div>' +
+      '<div class="mail-list-date">' + e.date + '</div>' +
+    '</div>';
+  }).join('');
+  if (visible.length === 0) list.innerHTML = '<div class="mail-empty">No messages</div>';
+  if (visible.length > 0 && !visible.find(e => e.id === mailState.selectedId)) mailSelect(visible[0].id);
+  mailRenderReading();
+}
+
+function mailSelect(id) {
+  const msg = mailEmails.find(e => e.id === id);
+  if (!msg) return;
+  mailState.selectedId = id;
+  if (msg.mailbox === 'inbox') msg.read = true;
+  mailRender();
+}
+
+function mailRenderReading() {
+  const pane = document.getElementById('mailReading');
+  if (!pane) return;
+  const msg = mailState.selectedId ? mailEmails.find(e => e.id === mailState.selectedId) : null;
+  if (!msg) { pane.innerHTML = '<div class="mail-reading-placeholder">Select a message to read</div>'; return; }
+  pane.innerHTML =
+    '<div class="mail-message-head">' +
+      '<span class="mail-avatar mail-msg-avatar" style="background:' + msg.color + '">' + msg.from.charAt(0).toUpperCase() + '</span>' +
+      '<div class="mail-message-from">' + msg.from + '</div>' +
+      '<div class="mail-message-meta">to Me ' + (msg.mailbox === 'sent' ? '• ' + msg.date : '') + '</div>' +
+      '<div class="mail-message-subject">' + msg.subject + '</div>' +
+    '</div>' +
+    '<div class="mail-message-body">' + msg.body.split('\n').join('<br>') + '</div>';
+}
+
+function mailMoveCurrent() {
+  const msg = mailState.selectedId ? mailEmails.find(e => e.id === mailState.selectedId) : null;
+  if (!msg || msg.mailbox === 'trash') return;
+  msg.mailbox = 'trash';
+  msg.read = true;
+  mailState.selectedId = null;
+  mailRender();
+}
+
+function mailDeleteCurrent(permanent) {
+  const msg = mailState.selectedId ? mailEmails.find(e => e.id === mailState.selectedId) : null;
+  if (!msg) return;
+  const idx = mailEmails.indexOf(msg);
+  mailEmails.splice(idx, 1);
+  mailState.selectedId = null;
+  mailRender();
 }
 
 // Initialize spaces on load
