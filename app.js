@@ -24,7 +24,8 @@ const fileSystem = {
       { name: 'System Report.app', type: 'app', icon: 'terminal', size: '4.7 MB', kind: 'Application', date: 'Jun 7, 2026' },
       { name: 'Network Utility.app', type: 'app', icon: 'terminal', size: '3.2 MB', kind: 'Application', date: 'Jun 8, 2026' },
       { name: 'Font Book.app', type: 'app', icon: 'terminal', size: '6.0 MB', kind: 'Application', date: 'Jun 9, 2026' },
-      { name: 'Mail.app', type: 'app', icon: 'terminal', size: '18.4 MB', kind: 'Application', date: 'Jun 10, 2026' }
+      { name: 'Mail.app', type: 'app', icon: 'terminal', size: '18.4 MB', kind: 'Application', date: 'Jun 10, 2026' },
+      { name: 'Contacts.app', type: 'app', icon: 'terminal', size: '7.8 MB', kind: 'Application', date: 'Jun 11, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -751,7 +752,8 @@ const appIdMap = {
   'System Report.app': 'sysreport-window',
   'Network Utility.app': 'netutil-window',
   'Font Book.app': 'fontbook-window',
-  'Mail.app': 'mail-window'
+  'Mail.app': 'mail-window',
+  'Contacts.app': 'contacts-window'
 };
 
 function openApp(appName) {
@@ -794,6 +796,7 @@ function openApp(appName) {
   if (winId === 'netutil-window') initNetUtil();
   if (winId === 'fontbook-window') initFontBook();
   if (winId === 'mail-window') initMail();
+  if (winId === 'contacts-window') initContacts();
 }
 
 function closeWindow(winId) {
@@ -5919,6 +5922,126 @@ function mailDeleteCurrent(permanent) {
   mailEmails.splice(idx, 1);
   mailState.selectedId = null;
   mailRender();
+}
+
+// ---- Contacts ----
+let contactsData = [
+  { id: 1, name: 'Tim Cook', company: 'Apple', title: 'CEO', phone: '+1 (408) 996-1010', email: 'tim@apple.com', color: '#007AFF', initials: 'TC', flagged: true },
+  { id: 2, name: 'Jony Ive', company: 'LoveFrom', title: 'Designer', phone: '+44 20 7946 0958', email: 'jony@lovefrom.com', color: '#34C759', initials: 'JI' },
+  { id: 3, name: 'Steve Wozniak', company: 'Apple', title: 'Co-Founder', phone: '+1 (408) 555-0142', email: 'woz@apple.com', color: '#FF9500', initials: 'SW' },
+  { id: 4, name: 'Grace Hopper', company: 'US Navy', title: 'Rear Admiral', phone: '+1 (202) 555-0199', email: 'grace@navy.mil', color: '#AF52DE', initials: 'GH' },
+  { id: 5, name: 'Alan Turing', company: 'National Physical Lab', title: 'Mathematician', phone: '+44 20 7946 0145', email: 'alan@npl.co.uk', color: '#FF2D55', initials: 'AT' },
+  { id: 6, name: 'Ada Lovelace', company: 'Analytical Engine', title: 'Mathematician', phone: '+44 20 7946 0233', email: 'ada@analytical.com', color: '#5AC8FA', initials: 'AL', flagged: true },
+  { id: 7, name: 'Linus Torvalds', company: 'Linux Foundation', title: 'Creator of Linux', phone: '+358 9 4245 0100', email: 'linus@kernel.org', color: '#FF9F0A', initials: 'LT' },
+  { id: 8, name: 'Margaret Hamilton', company: 'MIT', title: 'Software Engineer', phone: '+1 (617) 253-1000', email: 'margaret@mit.edu', color: '#30D158', initials: 'MH' }
+];
+let contactsState = { group: 'all', selectedId: null, query: '' };
+let contactsInitialized = false;
+
+function initContacts() {
+  if (contactsInitialized) { contactsRender(); return; }
+  contactsInitialized = true;
+  document.querySelectorAll('.contacts-group[data-group]').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.contacts-group').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      contactsState.group = item.dataset.group;
+      contactsState.selectedId = null;
+      contactsRender();
+    });
+  });
+  document.getElementById('contactsSearch').addEventListener('input', e => {
+    contactsState.query = e.target.value.toLowerCase();
+    contactsRender();
+  });
+  document.getElementById('contactsAddBtn').addEventListener('click', contactsAdd);
+  contactsRender();
+}
+
+function contactsVisible() {
+  return contactsData.filter(c => {
+    if (contactsState.group === 'favorites' && !c.flagged) return false;
+    if (contactsState.query && !(c.name + ' ' + (c.company || '')).toLowerCase().includes(contactsState.query)) return false;
+    return true;
+  });
+}
+
+function contactsRender() {
+  const list = document.getElementById('contactsList');
+  if (!list) return;
+  const visible = contactsVisible();
+  document.getElementById('contactsCount').textContent = visible.length;
+  list.innerHTML = visible.map(c =>
+    '<div class="contacts-list-item' + (contactsState.selectedId === c.id ? ' selected' : '') + '" onclick="contactsSelect(' + c.id + ')">' +
+      '<span class="contacts-avatar" style="background:' + c.color + '">' + c.initials + '</span>' +
+      '<div class="contacts-list-name">' + c.name + '</div>' +
+    '</div>'
+  ).join('');
+  if (visible.length === 0) list.innerHTML = '<div class="contacts-empty">No contacts</div>';
+  if (visible.length > 0 && !visible.find(c => c.id === contactsState.selectedId)) contactsSelect(visible[0].id);
+  contactsRenderDetail();
+}
+
+function contactsSelect(id) {
+  contactsState.selectedId = id;
+  contactsRender();
+}
+
+function contactsRenderDetail() {
+  const pane = document.getElementById('contactsDetail');
+  if (!pane) return;
+  const c = contactsData.find(x => x.id === contactsState.selectedId);
+  if (!c) { pane.innerHTML = '<div class="contacts-detail-empty">Select a contact</div>'; return; }
+  pane.innerHTML =
+    '<div class="contacts-detail-card">' +
+      '<span class="contacts-avatar contacts-big-avatar" style="background:' + c.color + '">' + c.initials + '</span>' +
+      '<div class="contacts-detail-name">' + c.name + '</div>' +
+      '<div class="contacts-detail-title">' + (c.title || '') + (c.company ? ' — ' + c.company : '') + '</div>' +
+      '<div class="contacts-detail-actions">' +
+        '<button class="contacts-detail-action" onclick="contactsCall(' + c.id + ')"><i class="ri-phone-line"></i><span>Call</span></button>' +
+        '<button class="contacts-detail-action" onclick="contactsMail(' + c.id + ')"><i class="ri-mail-line"></i><span>Mail</span></button>' +
+        '<button class="contacts-detail-action" onclick="contactsDelete(' + c.id + ')"><i class="ri-delete-bin-line"></i><span>Delete</span></button>' +
+      '</div>' +
+      '<div class="contacts-detail-rows">' +
+        '<div class="contacts-detail-row"><i class="ri-phone-line"></i><span>' + c.phone + '</span></div>' +
+        '<div class="contacts-detail-row"><i class="ri-mail-line"></i><span>' + c.email + '</span></div>' +
+        '<div class="contacts-detail-row"><i class="ri-building-line"></i><span>' + (c.company || '') + '</span></div>' +
+      '</div>' +
+    '</div>';
+}
+
+function contactsCall(id) {
+  const c = contactsData.find(x => x.id === id);
+  if (!c) return;
+  openApp('FaceTime.app');
+  if (typeof initFaceTime === 'function') { faceTimeState.selectedId = c.id; faceTimeCall(c.id); }
+  showNotifToast(c.name, 'Calling ' + c.phone + '…', 'FaceTime.app');
+}
+
+function contactsMail(id) {
+  const c = contactsData.find(x => x.id === id);
+  if (!c) return;
+  openApp('Mail.app');
+  showNotifToast('Compose', 'New message to ' + c.email, 'Mail.app');
+}
+
+function contactsDelete(id) {
+  contactsData = contactsData.filter(x => x.id !== id);
+  contactsState.selectedId = null;
+  contactsRender();
+}
+
+function contactsAdd() {
+  const name = prompt('Full name:');
+  if (!name) return;
+  const phone = prompt('Phone:') || '—';
+  const email = prompt('Email:') || '—';
+  const colors = ['#007AFF', '#34C759', '#FF9500', '#AF52DE', '#FF2D55', '#5AC8FA', '#FF9F0A', '#30D158'];
+  const initials = name.split(/\s+/).map(w => w.charAt(0).toUpperCase()).slice(0, 2).join('') || '?';
+  const c = { id: Date.now(), name, phone, email, company: '', title: '', color: colors[contactsData.length % colors.length], initials };
+  contactsData.push(c);
+  contactsState.selectedId = c.id;
+  contactsRender();
 }
 
 // Initialize spaces on load

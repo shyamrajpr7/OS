@@ -1376,6 +1376,36 @@
         </div>
       </div>
 
+      <!-- ========== CONTACTS ========== -->
+      <div class="mac-window app-window" id="contacts-window" style="width:760px;height:480px;top:60px;left:120px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Contacts</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body contacts-body">
+          <aside class="contacts-groups">
+            <div class="contacts-groups-label">iCloud</div>
+            <div class="contacts-group active" data-group="all"><i class="ri-user-star-line"></i> All Contacts<span class="contacts-group-count" id="contactsCount"></span></div>
+            <div class="contacts-group" data-group="favorites"><i class="ri-star-line"></i> Favorites</div>
+            <div class="contacts-group-label" style="margin-top:16px;">My Card</div>
+            <div class="contacts-group"><i class="ri-id-card-line"></i> shyamraj</div>
+          </aside>
+          <div class="contacts-list-pane">
+            <div class="contacts-search"><i class="ri-search-line"></i><input type="text" id="contactsSearch" placeholder="Search"></div>
+            <div class="contacts-list" id="contactsList"></div>
+          </div>
+          <div class="contacts-detail" id="contactsDetail">
+            <div class="contacts-detail-empty">Select a contact</div>
+          </div>
+          <button class="contacts-add-btn" id="contactsAddBtn" title="New Contact"><i class="ri-add-line"></i></button>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -1533,6 +1563,12 @@
           </div>
           <span class="launchpad-label">Mail</span>
         </div>
+        <div class="launchpad-item" data-app="Contacts.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 20a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm-8 4h16l3 16H13l3-16z" fill="#fff"/></svg>
+          </div>
+          <span class="launchpad-label">Contacts</span>
+        </div>
       </div>
     </div>
 
@@ -1625,6 +1661,10 @@
       </div>
       <div class="dock-item" data-app="Mail.app" data-tooltip="Mail">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><rect x="6" y="14" width="36" height="24" rx="4" fill="white"/><path d="M6 16l18 12 18-12" stroke="#4DA6FF" stroke-width="2.5" fill="none" stroke-linejoin="round"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Contacts.app" data-tooltip="Contacts">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 20a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm-8 4h16l3 16H13l3-16z" fill="white"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>
