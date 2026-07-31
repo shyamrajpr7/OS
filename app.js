@@ -895,6 +895,24 @@ function openApp(appName) {
   if (winId === 'facetime-window') initFaceTime();
   if (winId === 'quicktime-window') initQT();
   if (winId === 'screentime-window') initScreenTime();
+
+  // Privacy permissions
+  if (winId === 'facetime-window') {
+    requestPermission(appName, 'camera').then(ok => { if (!ok) showNotifToast('FaceTime', 'Camera access denied', 'FaceTime.app'); });
+    requestPermission(appName, 'mic').then(ok => { if (!ok) showNotifToast('FaceTime', 'Microphone access denied', 'FaceTime.app'); });
+  }
+  if (winId === 'photos-window') {
+    requestPermission(appName, 'photos').then(ok => { if (!ok) showNotifToast('Photos', 'Photo library access denied', 'Photos.app'); });
+  }
+  if (winId === 'maps-window') {
+    requestPermission(appName, 'location').then(ok => { if (!ok) showNotifToast('Maps', 'Location access denied', 'Maps.app'); });
+  }
+  if (winId === 'voicememos-window') {
+    requestPermission(appName, 'mic').then(ok => { if (!ok) showNotifToast('Voice Memos', 'Microphone access denied', 'Voice Memos.app'); });
+  }
+  if (winId === 'screenrecording-window') {
+    requestPermission(appName, 'camera').then(ok => { if (!ok) showNotifToast('Screen Recording', 'Screen recording permission denied', 'Screen Recording.app'); });
+  }
 }
 
 function closeWindow(winId) {
@@ -2557,6 +2575,7 @@ function switchSettingsPanel(panel) {
   document.querySelectorAll('.settings-panel').forEach(el => el.style.display = 'none');
   const target = document.getElementById('settings-' + panel);
   if (target) target.style.display = '';
+  if (panel === 'privacy') refreshPermBadges();
 }
 
 // ---- Software Update ----
@@ -4819,7 +4838,9 @@ function startNotifSimulation() {
   notifTimer = setInterval(() => {
     if (document.getElementById('dndToggle')?.classList.contains('on')) return;
     const msg = notifMessages[Math.floor(Math.random() * notifMessages.length)];
-    showNotifToast(msg.title, msg.body, msg.app);
+    requestPermission(msg.app || 'System', 'notifications').then(ok => {
+      if (ok) showNotifToast(msg.title, msg.body, msg.app);
+    });
   }, 25000);
 }
 
@@ -6769,6 +6790,64 @@ function qtTogglePlay() {
   }
   qtRenderTimes();
 }
+
+// ---- App Permission Prompts ----
+const permMeta = {
+  camera: { icon: 'ri-camera-line', label: 'Camera', desc: 'Used to let people see you during video calls.' },
+  mic: { icon: 'ri-mic-line', label: 'Microphone', desc: 'Used to let people hear you during calls and recordings.' },
+  location: { icon: 'ri-navigation-line', label: 'Location Services', desc: 'Used to provide maps, directions, and location-based features.' },
+  photos: { icon: 'ri-image-line', label: 'Photos', desc: 'Used to access your photo library so you can choose images.' },
+  contacts: { icon: 'ri-contacts-line', label: 'Contacts', desc: 'Used to let you choose people for messaging and calls.' },
+  calendar: { icon: 'ri-calendar-line', label: 'Calendar', desc: 'Used to read and write events in your calendar.' },
+  notifications: { icon: 'ri-notification-3-line', label: 'Notifications', desc: 'Alerts, sounds, and badges can appear in the Notification Center.' }
+};
+let permissionState = {};
+try { permissionState = JSON.parse(localStorage.getItem('threados_permissions') || '{}'); } catch (e) { permissionState = {}; }
+let pendingPerm = null;
+
+function getPerm(key, app) { return permissionState[key] && permissionState[key][app]; }
+function savePerms() { localStorage.setItem('threados_permissions', JSON.stringify(permissionState)); }
+
+function requestPermission(app, type) {
+  return new Promise(resolve => {
+    if (getPerm(type, app) === true) { resolve(true); return; }
+    if (getPerm(type, app) === false) { resolve(false); return; }
+    const meta = permMeta[type];
+    const ov = document.getElementById('permissionOverlay');
+    document.getElementById('permIcon').innerHTML = '<i class="' + meta.icon + '"></i>';
+    document.getElementById('permTitle').textContent = '"' + app.replace('.app', '') + '" would like to access the ' + meta.label;
+    document.getElementById('permDesc').textContent = meta.desc;
+    ov.classList.add('visible');
+    pendingPerm = { app, type, resolve };
+  });
+}
+
+function settlePermission(allow) {
+  if (!pendingPerm) return;
+  const { app, type, resolve } = pendingPerm;
+  pendingPerm = null;
+  if (!permissionState[type]) permissionState[type] = {};
+  permissionState[type][app] = allow;
+  savePerms();
+  document.getElementById('permissionOverlay').classList.remove('visible');
+  refreshPermBadges();
+  resolve(allow);
+}
+
+function refreshPermBadges() {
+  document.querySelectorAll('.perm-badge').forEach(btn => {
+    const key = btn.dataset.perm;
+    const apps = permissionState[key] || {};
+    const vals = Object.values(apps);
+    const allAllowed = vals.length > 0 && vals.every(v => v === true);
+    btn.classList.toggle('denied', vals.length > 0 && vals.every(v => v === false));
+    btn.textContent = allAllowed ? 'Allowed' : (vals.length > 0 ? 'Some Apps' : 'Allow');
+    if (vals.length > 0 && !allAllowed && vals.some(v => v === true)) btn.textContent = 'Partial';
+  });
+}
+
+document.getElementById('permAllow').addEventListener('click', () => settlePermission(true));
+document.getElementById('permDeny').addEventListener('click', () => settlePermission(false));
 
 // ---- Emoji & Symbols Picker ----
 const emojiCats = [

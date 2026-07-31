@@ -625,11 +625,13 @@
             <!-- Privacy -->
             <div class="settings-panel" id="settings-privacy" style="display:none;">
               <h2>Privacy & Security</h2>
-              <div class="setting-row"><span>Location Services</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
-              <div class="setting-row"><span>Contacts</span><span class="setting-desc">Safari, Messages</span></div>
-              <div class="setting-row"><span>Calendar</span><span class="setting-desc">None</span></div>
-              <div class="setting-row"><span>Camera</span><span class="setting-desc">Zoom, FaceTime</span></div>
-              <div class="setting-row"><span>Microphone</span><span class="setting-desc">Zoom, FaceTime</span></div>
+              <div class="setting-row"><span>Location Services</span><button class="perm-badge" data-perm="location">Allow</button></div>
+              <div class="setting-row"><span>Contacts</span><button class="perm-badge" data-perm="contacts">Allow</button></div>
+              <div class="setting-row"><span>Calendar</span><button class="perm-badge" data-perm="calendar">Allow</button></div>
+              <div class="setting-row"><span>Camera</span><button class="perm-badge" data-perm="camera">Allow</button></div>
+              <div class="setting-row"><span>Microphone</span><button class="perm-badge" data-perm="mic">Allow</button></div>
+              <div class="setting-row"><span>Photos</span><button class="perm-badge" data-perm="photos">Allow</button></div>
+              <div class="setting-row"><span>Notifications</span><button class="perm-badge" data-perm="notifications">Allow</button></div>
             </div>
             <!-- Accessibility -->
             <div class="settings-panel" id="settings-accessibility" style="display:none;">
@@ -2349,6 +2351,19 @@
   <!-- ACCESSIBILITY MAGNIFIER -->
   <div class="a11y-magnifier" id="a11yMagnifierLens" style="display:none;">
     <div class="a11y-magnifier-content" id="a11yMagnifierContent"></div>
+  </div>
+
+  <!-- PERMISSION PROMPT -->
+  <div class="permission-overlay" id="permissionOverlay">
+    <div class="permission-dialog">
+      <div class="permission-icon" id="permIcon"><i class="ri-camera-line"></i></div>
+      <div class="permission-title" id="permTitle">"FaceTime" would like to access the Camera</div>
+      <div class="permission-desc" id="permDesc">Used to let people see you during video calls.</div>
+      <div class="permission-buttons">
+        <button class="permission-btn" id="permDeny">Don't Allow</button>
+        <button class="permission-btn permission-btn-primary" id="permAllow">Allow</button>
+      </div>
+    </div>
   </div>
 
   <!-- EMOJI & SYMBOLS PICKER -->

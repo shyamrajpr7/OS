@@ -3815,3 +3815,21 @@ body.a11y-increase-contrast .menu-bar { border-bottom: 1px solid rgba(255,255,25
 .st-app-time { font-size: 12px; color: var(--mac-text-muted); font-family: Menlo, monospace; }
 .st-app-bar { height: 5px; border-radius: 3px; background: rgba(255,255,255,0.1); overflow: hidden; }
 .st-app-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+
+/* ---- Permission Prompts ---- */
+.permission-overlay { position: fixed; inset: 0; z-index: 99997; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; }
+.permission-overlay.visible { display: flex; animation: permFade 0.15s ease; }
+@keyframes permFade { from { opacity: 0; } to { opacity: 1; } }
+.permission-dialog { width: 380px; background: rgba(45,45,52,0.98); border: 1px solid rgba(255,255,255,0.14); border-radius: 14px; padding: 22px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.6); animation: permPop 0.18s ease; }
+@keyframes permPop { from { transform: scale(0.94); } to { transform: scale(1); } }
+.permission-icon { width: 52px; height: 52px; border-radius: 12px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 24px; color: #0A84FF; }
+.permission-title { font-size: 14px; font-weight: 600; color: #fff; }
+.permission-desc { font-size: 12px; color: var(--mac-text-muted); margin-top: 8px; line-height: 1.5; }
+.permission-buttons { display: flex; gap: 10px; margin-top: 20px; }
+.permission-btn { flex: 1; border: none; border-radius: 9px; padding: 9px 0; font-size: 13px; font-weight: 600; color: var(--mac-text); background: rgba(255,255,255,0.12); cursor: pointer; transition: all 0.12s ease; }
+.permission-btn:hover { background: rgba(255,255,255,0.2); }
+.permission-btn-primary { background: #0A84FF; color: #fff; }
+.permission-btn-primary:hover { background: #2b95ff; }
+.perm-badge { border: 1px solid rgba(10,132,255,0.5); border-radius: 14px; background: rgba(10,132,255,0.15); color: #0A84FF; font-size: 11px; font-weight: 600; padding: 3px 12px; cursor: pointer; transition: all 0.15s ease; }
+.perm-badge:hover { background: rgba(10,132,255,0.28); }
+.perm-badge.denied { border-color: rgba(255,69,58,0.5); background: rgba(255,69,58,0.15); color: #FF453A; }
