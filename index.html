@@ -1406,6 +1406,46 @@
         </div>
       </div>
 
+      <!-- ========== PHOTOS ========== -->
+      <div class="mac-window app-window" id="photos-window" style="width:860px;height:560px;top:40px;left:200px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Photos</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body photos-body">
+          <aside class="photos-sidebar">
+            <div class="photos-sidebar-label">Library</div>
+            <div class="photos-nav-item active" data-view="library"><i class="ri-image-2-line"></i> Library</div>
+            <div class="photos-nav-item" data-view="favorites"><i class="ri-star-line"></i> Favorites</div>
+            <div class="photos-nav-item" data-view="recents"><i class="ri-clock-line"></i> Recents</div>
+            <div class="photos-sidebar-label" style="margin-top:16px;">Albums</div>
+            <div class="photos-nav-item" data-view="album" data-album="beach"><i class="ri-umbrella-line"></i> Beach Trip</div>
+            <div class="photos-nav-item" data-view="album" data-album="city"><i class="ri-building-2-line"></i> City Nights</div>
+            <div class="photos-nav-item" data-view="album" data-album="nature"><i class="ri-tree-line"></i> Nature</div>
+          </aside>
+          <div class="photos-main">
+            <div class="photos-toolbar">
+              <div class="photos-toolbar-title" id="photosTitle">Library</div>
+              <div class="photos-search"><i class="ri-search-line"></i><input type="text" id="photosSearch" placeholder="Search"></div>
+            </div>
+            <div class="photos-grid" id="photosGrid"></div>
+          </div>
+        </div>
+        <div class="photos-lightbox" id="photosLightbox">
+          <button class="photos-lb-btn photos-lb-close" id="photosLbClose"><i class="ri-close-line"></i></button>
+          <button class="photos-lb-btn photos-lb-prev" id="photosLbPrev"><i class="ri-arrow-left-s-line"></i></button>
+          <button class="photos-lb-btn photos-lb-next" id="photosLbNext"><i class="ri-arrow-right-s-line"></i></button>
+          <div class="photos-lb-tile" id="photosLbTile"></div>
+          <div class="photos-lb-info" id="photosLbInfo"></div>
+          <button class="photos-lb-btn photos-lb-fav" id="photosLbFav"><i class="ri-star-line"></i></button>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -1569,6 +1609,12 @@
           </div>
           <span class="launchpad-label">Contacts</span>
         </div>
+        <div class="launchpad-item" data-app="Photos.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF6B9D"/><defs><linearGradient id="phg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD86B"/><stop offset="0.5" stop-color="#FF6B9D"/><stop offset="1" stop-color="#5AC8FA"/></linearGradient></defs><path d="M10 12a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V12z" fill="url(#phg)"/><circle cx="19" cy="19" r="4" fill="#fff"/><path d="M12 36l10-10 6 6 8-8 8 8v2a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4v-2z" fill="#fff"/></svg>
+          </div>
+          <span class="launchpad-label">Photos</span>
+        </div>
       </div>
     </div>
 
@@ -1665,6 +1711,10 @@
       </div>
       <div class="dock-item" data-app="Contacts.app" data-tooltip="Contacts">
         <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 20a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm-8 4h16l3 16H13l3-16z" fill="white"/></svg></div>
+        <div class="dock-indicator"></div>
+      </div>
+      <div class="dock-item" data-app="Photos.app" data-tooltip="Photos">
+        <div class="dock-item-img"><svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF6B9D"/><circle cx="19" cy="19" r="4" fill="white"/><path d="M10 12a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V12z" fill="none" stroke="white" stroke-width="2.5"/><path d="M12 36l10-10 6 6 8-8 8 8" stroke="white" stroke-width="2.5" fill="none" stroke-linejoin="round"/></svg></div>
         <div class="dock-indicator"></div>
       </div>
       <div class="dock-separator"></div>

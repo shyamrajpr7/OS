@@ -25,7 +25,8 @@ const fileSystem = {
       { name: 'Network Utility.app', type: 'app', icon: 'terminal', size: '3.2 MB', kind: 'Application', date: 'Jun 8, 2026' },
       { name: 'Font Book.app', type: 'app', icon: 'terminal', size: '6.0 MB', kind: 'Application', date: 'Jun 9, 2026' },
       { name: 'Mail.app', type: 'app', icon: 'terminal', size: '18.4 MB', kind: 'Application', date: 'Jun 10, 2026' },
-      { name: 'Contacts.app', type: 'app', icon: 'terminal', size: '7.8 MB', kind: 'Application', date: 'Jun 11, 2026' }
+      { name: 'Contacts.app', type: 'app', icon: 'terminal', size: '7.8 MB', kind: 'Application', date: 'Jun 11, 2026' },
+      { name: 'Photos.app', type: 'app', icon: 'terminal', size: '42.6 MB', kind: 'Application', date: 'Jun 12, 2026' }
     ]
   },
   '/System': { type: 'folder', children: ['Library'] },
@@ -753,7 +754,8 @@ const appIdMap = {
   'Network Utility.app': 'netutil-window',
   'Font Book.app': 'fontbook-window',
   'Mail.app': 'mail-window',
-  'Contacts.app': 'contacts-window'
+  'Contacts.app': 'contacts-window',
+  'Photos.app': 'photos-window'
 };
 
 function openApp(appName) {
@@ -797,6 +799,7 @@ function openApp(appName) {
   if (winId === 'fontbook-window') initFontBook();
   if (winId === 'mail-window') initMail();
   if (winId === 'contacts-window') initContacts();
+  if (winId === 'photos-window') initPhotos();
 }
 
 function closeWindow(winId) {
@@ -6042,6 +6045,99 @@ function contactsAdd() {
   contactsData.push(c);
   contactsState.selectedId = c.id;
   contactsRender();
+}
+
+// ---- Photos ----
+const photosData = [
+  { id: 1, emoji: '🌊', title: 'Malibu Sunrise', date: 'Jun 28, 2026', album: 'beach', fav: true, grad: ['#4DA6FF', '#0A84FF'] },
+  { id: 2, emoji: '🏖️', title: 'Santa Monica Pier', date: 'Jun 27, 2026', album: 'beach', fav: false, grad: ['#FFD86B', '#FF9500'] },
+  { id: 3, emoji: '🌴', title: 'Palm Shadows', date: 'Jun 25, 2026', album: 'beach', fav: false, grad: ['#30D158', '#00663A'] },
+  { id: 4, emoji: '🏄', title: 'Catching Waves', date: 'Jun 24, 2026', album: 'beach', fav: true, grad: ['#5AC8FA', '#0A84FF'] },
+  { id: 5, emoji: '🌇', title: 'Downtown at Dusk', date: 'Jun 22, 2026', album: 'city', fav: false, grad: ['#FF9F0A', '#FF2D55'] },
+  { id: 6, emoji: '🌃', title: 'Skyline Lights', date: 'Jun 20, 2026', album: 'city', fav: true, grad: ['#5856D6', '#1C1C1E'] },
+  { id: 7, emoji: '🌉', title: 'Golden Gate Fog', date: 'Jun 18, 2026', album: 'city', fav: false, grad: ['#FF5E5B', '#FF2D55'] },
+  { id: 8, emoji: '🚕', title: 'Night Cab', date: 'Jun 16, 2026', album: 'city', fav: false, grad: ['#FFD60A', '#FF9F0A'] },
+  { id: 9, emoji: '🏔️', title: 'Alpine Ridge', date: 'Jun 14, 2026', album: 'nature', fav: true, grad: ['#64D2FF', '#0A84FF'] },
+  { id: 10, emoji: '🌲', title: 'Redwood Trail', date: 'Jun 12, 2026', album: 'nature', fav: false, grad: ['#28A745', '#00663A'] },
+  { id: 11, emoji: '🌸', title: 'Cherry Blossom', date: 'Jun 10, 2026', album: 'nature', fav: false, grad: ['#FF8FAB', '#FF2D55'] },
+  { id: 12, emoji: '🦋', title: 'Meadow Wing', date: 'Jun 8, 2026', album: 'nature', fav: false, grad: ['#AF52DE', '#5856D6'] },
+  { id: 13, emoji: '🐬', title: 'Ocean Play', date: 'Jun 6, 2026', album: 'beach', fav: false, grad: ['#5AC8FA', '#00C7BE'] },
+  { id: 14, emoji: '🌄', title: 'Mountain Dawn', date: 'Jun 4, 2026', album: 'nature', fav: true, grad: ['#FFB347', '#FF6B9D'] },
+  { id: 15, emoji: '🏙️', title: 'Roof Terrace', date: 'Jun 2, 2026', album: 'city', fav: false, grad: ['#6E6E96', '#1C1C1E'] },
+  { id: 16, emoji: '🐚', title: 'Seashell Find', date: 'May 30, 2026', album: 'beach', fav: false, grad: ['#FFC0CB', '#FF6B9D'] }
+];
+const photosAlbums = { beach: 'Beach Trip', city: 'City Nights', nature: 'Nature' };
+let photosState = { view: 'library', album: null, query: '', lbId: null };
+let photosInitialized = false;
+
+function initPhotos() {
+  if (photosInitialized) { photosRender(); return; }
+  photosInitialized = true;
+  document.querySelectorAll('.photos-nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.photos-nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      photosState.view = item.dataset.view;
+      photosState.album = item.dataset.album || null;
+      document.getElementById('photosTitle').textContent = photosState.view === 'library' ? 'Library' : photosState.view === 'favorites' ? 'Favorites' : photosState.view === 'recents' ? 'Recents' : (photosAlbums[photosState.album] || 'Album');
+      photosRender();
+    });
+  });
+  document.getElementById('photosSearch').addEventListener('input', e => { photosState.query = e.target.value.toLowerCase(); photosRender(); });
+  document.getElementById('photosLbClose').addEventListener('click', () => { photosState.lbId = null; photosRender(); });
+  document.getElementById('photosLbPrev').addEventListener('click', () => photosLbStep(-1));
+  document.getElementById('photosLbNext').addEventListener('click', () => photosLbStep(1));
+  document.getElementById('photosLbFav').addEventListener('click', () => {
+    const p = photosData.find(x => x.id === photosState.lbId);
+    if (p) { p.fav = !p.fav; photosLbRender(); }
+  });
+  photosRender();
+}
+
+function photosVisible() {
+  let list = photosData.slice();
+  if (photosState.view === 'favorites') list = list.filter(p => p.fav);
+  else if (photosState.view === 'album') list = list.filter(p => p.album === photosState.album);
+  if (photosState.query) list = list.filter(p => (p.title + ' ' + p.album).toLowerCase().includes(photosState.query));
+  return list;
+}
+
+function photosRender() {
+  const grid = document.getElementById('photosGrid');
+  if (!grid) return;
+  const list = photosVisible();
+  grid.innerHTML = list.map(p =>
+    '<div class="photos-tile" onclick="photosOpen(' + p.id + ')">' +
+      '<div class="photos-tile-img" style="background:linear-gradient(135deg,' + p.grad[0] + ',' + p.grad[1] + ')"><span>' + p.emoji + '</span>' + (p.fav ? '<i class="ri-star-fill photos-tile-fav"></i>' : '') + '</div>' +
+      '<div class="photos-tile-title">' + p.title + '</div>' +
+    '</div>'
+  ).join('');
+  if (list.length === 0) grid.innerHTML = '<div class="photos-empty">No photos</div>';
+  if (photosState.lbId && list.find(p => p.id === photosState.lbId)) photosLbRender();
+}
+
+function photosOpen(id) {
+  photosState.lbId = id;
+  photosLbRender();
+}
+
+function photosLbStep(dir) {
+  const list = photosVisible();
+  const idx = list.findIndex(p => p.id === photosState.lbId);
+  if (idx === -1) return;
+  photosState.lbId = list[(idx + dir + list.length) % list.length].id;
+  photosLbRender();
+}
+
+function photosLbRender() {
+  const lb = document.getElementById('photosLightbox');
+  if (!lb) return;
+  const p = photosData.find(x => x.id === photosState.lbId);
+  if (!p) { lb.classList.remove('open'); return; }
+  lb.classList.add('open');
+  document.getElementById('photosLbTile').innerHTML = '<div class="photos-lb-img" style="background:linear-gradient(135deg,' + p.grad[0] + ',' + p.grad[1] + ')"><span>' + p.emoji + '</span></div>';
+  document.getElementById('photosLbInfo').innerHTML = '<div class="photos-lb-title">' + p.title + '</div><div class="photos-lb-date">' + p.date + ' • ' + (photosAlbums[p.album] || 'Library') + '</div>';
+  document.getElementById('photosLbFav').innerHTML = p.fav ? '<i class="ri-star-fill"></i>' : '<i class="ri-star-line"></i>';
 }
 
 // Initialize spaces on load
