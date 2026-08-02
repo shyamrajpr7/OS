@@ -188,6 +188,7 @@
       <div class="dcw-time" id="dcwTime"></div>
       <div class="dcw-date" id="dcwDate"></div>
     </div>
+    <div class="desktop-widgets" id="desktopWidgets"></div>
     <div class="desktop-icons" id="desktopIcons">
       <div class="desktop-icon" data-app="Finder">
         <div class="desktop-icon-img">
@@ -2198,6 +2199,18 @@
     <div class="context-menu-item" data-action="newFolder"><i class="ri-folder-add-line"></i>New Folder</div>
     <div class="context-menu-separator"></div>
     <div class="context-menu-item context-menu-danger" data-action="trash"><i class="ri-delete-bin-line"></i>Move to Trash</div>
+  </div>
+
+  <!-- WIDGETS GALLERY -->
+  <div class="widgets-overlay" id="widgetsOverlay">
+    <div class="widgets-picker">
+      <div class="widgets-picker-header">
+        <span>Edit Widgets</span>
+        <button class="widgets-picker-close" id="widgetsPickerClose"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="widgets-picker-desc">Drag or click a widget to add it to your desktop</div>
+      <div class="widgets-grid" id="widgetsGrid"></div>
+    </div>
   </div>
 
   <!-- WALLPAPER PICKER -->

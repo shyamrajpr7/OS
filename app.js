@@ -3277,6 +3277,7 @@ function showContextMenu(e, target) {
     menu.innerHTML = `
       <div class="context-menu-item" data-action="useStacks"><i class="ri-stack-line"></i>${stacksEnabled ? 'Disable' : 'Use'} Stacks</div>
       <div class="context-menu-separator"></div>
+      <div class="context-menu-item" data-action="editWidgets"><i class="ri-layout-masonry-line"></i>Edit Widgets…</div>
       <div class="context-menu-item" data-action="changeWallpaper"><i class="ri-image-line"></i>Change Wallpaper...</div>
       <div class="context-menu-separator"></div>
       <div class="context-menu-item" data-action="newFolder"><i class="ri-folder-add-line"></i>New Folder</div>
@@ -3332,6 +3333,9 @@ function handleContextAction(action) {
   switch (action) {
     case 'useStacks':
       toggleDesktopStacks();
+      break;
+    case 'editWidgets':
+      openWidgetsPicker();
       break;
     case 'open':
       if (contextTarget) {
@@ -4925,6 +4929,102 @@ if (document.getElementById('notifTrayBtn')) {
   });
 }
 
+// ---- Desktop Widgets ----
+const widgetDefs = [
+  { type: 'clock', name: 'Clock', icon: 'ri-time-line', desc: 'Current time & date' },
+  { type: 'weather', name: 'Weather', icon: 'ri-sun-line', desc: 'Current conditions' },
+  { type: 'calendar', name: 'Calendar', icon: 'ri-calendar-line', desc: 'Today\'s date & events' },
+  { type: 'battery', name: 'Battery', icon: 'ri-battery-2-fill', desc: 'Battery level' },
+  { type: 'worldclock', name: 'World Clock', icon: 'ri-earth-line', desc: 'Times around the world' },
+  { type: 'notes', name: 'Notes', icon: 'ri-sticky-note-line', desc: 'A quick pinned note' }
+];
+let installedWidgets = ['clock'];
+let widgetsTimer = null;
+
+function openWidgetsPicker() {
+  const grid = document.getElementById('widgetsGrid');
+  grid.innerHTML = widgetDefs.map(w => {
+    const installed = installedWidgets.includes(w.type);
+    return '<div class="widgets-gallery-item">' +
+      '<div class="widgets-gallery-preview" data-type="' + w.type + '">' + renderWidgetPreview(w.type) + '</div>' +
+      '<div class="widgets-gallery-info"><span>' + w.name + '</span><small>' + w.desc + '</small></div>' +
+      '<button class="widgets-add-btn ' + (installed ? 'installed' : '') + '" data-type="' + w.type + '" onclick="toggleWidget(this)">' + (installed ? '<i class="ri-check-line"></i> Added' : '<i class="ri-add-line"></i> Add') + '</button>' +
+    '</div>';
+  }).join('');
+  document.getElementById('widgetsOverlay').style.display = 'flex';
+}
+
+function closeWidgetsPicker() {
+  document.getElementById('widgetsOverlay').style.display = 'none';
+}
+
+function toggleWidget(btn) {
+  const type = btn.dataset.type;
+  if (installedWidgets.includes(type)) {
+    installedWidgets = installedWidgets.filter(t => t !== type);
+  } else {
+    installedWidgets.push(type);
+  }
+  renderWidgets();
+  openWidgetsPicker();
+}
+
+function renderWidgets() {
+  const container = document.getElementById('desktopWidgets');
+  container.innerHTML = installedWidgets.map(type => {
+    return '<div class="desktop-widget" data-type="' + type + '">' +
+      '<div class="widget-remove" onclick="removeWidget(this)" title="Remove widget"><i class="ri-close-line"></i></div>' +
+      renderWidgetPreview(type) +
+    '</div>';
+  }).join('');
+}
+
+function removeWidget(el) {
+  const type = el.closest('.desktop-widget').dataset.type;
+  installedWidgets = installedWidgets.filter(t => t !== type);
+  renderWidgets();
+}
+
+function renderWidgetPreview(type) {
+  const now = new Date();
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const h12 = now.getHours() % 12 || 12;
+  const m = now.getMinutes().toString().padStart(2, '0');
+  switch (type) {
+    case 'clock':
+      return '<div class="widget-clock"><div class="widget-clock-time">' + h12 + ':' + m + '</div><div class="widget-clock-date">' + days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + '</div></div>';
+    case 'weather':
+      return '<div class="widget-weather"><div class="widget-weather-icon"><i class="ri-sun-line"></i></div><div class="widget-weather-temp">72°</div><div class="widget-weather-desc">Sunny</div><div class="widget-weather-hilo">H:78° L:61°</div></div>';
+    case 'calendar':
+      return '<div class="widget-calendar"><div class="widget-cal-month">' + months[now.getMonth()].slice(0, 3).toUpperCase() + '</div><div class="widget-cal-day">' + now.getDate() + '</div><div class="widget-cal-event">Team standup · 9:30 AM</div></div>';
+    case 'battery':
+      return '<div class="widget-battery"><div class="widget-battery-icon"><i class="ri-battery-2-fill"></i></div><div class="widget-battery-pct">87%</div><div class="widget-battery-time">4:23 remaining</div></div>';
+    case 'worldclock':
+      return '<div class="widget-worldclock"><div class="widget-wc-city"><span>Cupertino</span><span class="widget-wc-time">' + h12 + ':' + m + ' AM</span></div><div class="widget-wc-city"><span>London</span><span class="widget-wc-time">' + h12 + ':' + m + ' PM</span></div><div class="widget-wc-city"><span>Tokyo</span><span class="widget-wc-time">' + h12 + ':' + m + ' AM</span></div></div>';
+    case 'notes':
+      return '<div class="widget-notes"><div class="widget-notes-title">Quick Note</div><div class="widget-notes-body">Remember to backup the thread-os repo and send the Q3 planning notes.</div></div>';
+  }
+  return '';
+}
+
+function startWidgetsClock() {
+  if (widgetsTimer) clearInterval(widgetsTimer);
+  widgetsTimer = setInterval(() => {
+    document.querySelectorAll('#desktopWidgets .desktop-widget[data-type="clock"] .widget-clock, #widgetsGrid .widgets-gallery-preview[data-type="clock"]').forEach(el => {
+      el.outerHTML = renderWidgetPreview('clock');
+    });
+    document.querySelectorAll('#desktopWidgets .desktop-widget[data-type="worldclock"] .widget-worldclock, #widgetsGrid .widgets-gallery-preview[data-type="worldclock"]').forEach(el => {
+      el.outerHTML = renderWidgetPreview('worldclock');
+    });
+  }, 30000);
+}
+
+document.getElementById('widgetsPickerClose').addEventListener('click', closeWidgetsPicker);
+document.getElementById('widgetsOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeWidgetsPicker(); });
+renderWidgets();
+startWidgetsClock();
+
 // ---- Desktop Stacks ----
 let stacksEnabled = false;
 
@@ -5154,7 +5254,7 @@ document.querySelectorAll('.activity-tab').forEach(el => {
 
 // Global keyboard shortcuts
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); }
+  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); }
   // Cmd+F or Ctrl+F -> focus search
   if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
   // Cmd+Shift+3 -> full screenshot
