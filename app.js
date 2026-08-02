@@ -5437,8 +5437,61 @@ document.querySelectorAll('.wallpaper-option').forEach(el => {
 });
 
 // CC sliders -> OSD
-document.getElementById('ccBrightness').addEventListener('input', function () { showOSD('brightness', this.value); });
-document.getElementById('ccVolume').addEventListener('input', function () { showOSD('volume', this.value); });
+document.getElementById('ccBrightness').addEventListener('input', function () { sysBrightness = parseInt(this.value); showOSD('brightness', this.value); });
+document.getElementById('ccVolume').addEventListener('input', function () { sysVolume = parseInt(this.value); syncSystemSliders(); showOSD('volume', this.value); });
+
+// ---- Volume & Brightness OSD ----
+let sysVolume = 75;
+let sysBrightness = 80;
+let muted = false;
+let mutedVolume = 75;
+
+function syncSystemSliders() {
+  const ccV = document.getElementById('ccVolume');
+  const ccB = document.getElementById('ccBrightness');
+  if (ccV) ccV.value = sysVolume;
+  if (ccB) ccB.value = sysBrightness;
+  const out = document.getElementById('soundOutputVolume');
+  if (out) out.textContent = sysVolume + '%';
+}
+
+function adjustVolume(delta) {
+  sysVolume = Math.max(0, Math.min(100, sysVolume + delta));
+  if (sysVolume > 0 && muted) { muted = false; }
+  syncSystemSliders();
+  showOSD('volume', sysVolume);
+}
+
+function adjustBrightness(delta) {
+  sysBrightness = Math.max(0, Math.min(100, sysBrightness + delta));
+  syncSystemSliders();
+  showOSD('brightness', sysBrightness);
+}
+
+function toggleMute() {
+  muted = !muted;
+  if (muted) { mutedVolume = sysVolume; sysVolume = 0; }
+  else { sysVolume = mutedVolume || 75; }
+  syncSystemSliders();
+  showOSD('volume', sysVolume);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.altKey && !e.metaKey && !e.ctrlKey && !e.shiftKey) {
+    if (e.key === 'ArrowUp') { e.preventDefault(); adjustVolume(5); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); adjustVolume(-5); return; }
+    if (e.key === 'ArrowRight') { e.preventDefault(); adjustBrightness(5); return; }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); adjustBrightness(-5); return; }
+  }
+  switch (e.key) {
+    case 'F1': e.preventDefault(); adjustBrightness(-10); break;
+    case 'F2': e.preventDefault(); adjustBrightness(10); break;
+    case 'F10': e.preventDefault(); toggleMute(); break;
+    case 'F11': e.preventDefault(); adjustVolume(-10); break;
+    case 'F12': e.preventDefault(); adjustVolume(10); break;
+  }
+});
+syncSystemSliders();
 
 // Force Quit dialog
 document.getElementById('forcequitCancel').addEventListener('click', closeForceQuit);
