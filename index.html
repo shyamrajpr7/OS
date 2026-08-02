@@ -609,6 +609,7 @@
         <div class="window-body settings-body">
           <aside class="settings-sidebar">
             <div class="settings-nav-item active" data-panel="general"><i class="ri-settings-3-line"></i><span>General</span></div>
+            <div class="settings-nav-item" data-panel="login-items"><i class="ri-rocket-line"></i><span>Login Items</span></div>
             <div class="settings-nav-item" data-panel="appearance"><i class="ri-palette-line"></i><span>Appearance</span></div>
             <div class="settings-nav-item" data-panel="desktop-dock"><i class="ri-layout-bottom-line"></i><span>Desktop & Dock</span></div>
             <div class="settings-nav-item" data-panel="display"><i class="ri-computer-line"></i><span>Displays</span></div>
@@ -626,7 +627,17 @@
               <div class="setting-row"><span>About This Mac</span><span class="setting-desc">Thread OS 1.0.0</span></div>
               <div class="setting-row clickable" onclick="switchSettingsPanel('software-update')"><span>Software Update</span><span class="setting-desc" id="generalUpdateStatus">Up to date</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>
               <div class="setting-row"><span>Storage</span><span class="setting-desc">234 GB available of 512 GB</span></div>
-              <div class="setting-row"><span>Login Items</span><span class="setting-desc">2 items</span></div>
+              <div class="setting-row clickable" onclick="switchSettingsPanel('login-items')"><span>Login Items</span><span class="setting-desc" id="generalLoginItemsCount">2 items</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>
+            </div>
+            <!-- Login Items -->
+            <div class="settings-panel" id="settings-login-items" style="display:none;">
+              <h2>Login Items</h2>
+              <div class="li-desc">These items open automatically when you log in. You can manage them here or toggle them at any time.</div>
+              <h3 class="li-section-label">Open at Login</h3>
+              <div class="li-list" id="liList"></div>
+              <button class="li-add-btn" id="liAddBtn"><i class="ri-add-line"></i> Add Item…</button>
+              <h3 class="li-section-label" style="margin-top:22px;">Allow in the Background</h3>
+              <div class="li-list" id="liBgList"></div>
             </div>
             <!-- Software Update -->
             <div class="settings-panel" id="settings-software-update" style="display:none;">

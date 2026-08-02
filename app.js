@@ -2668,6 +2668,7 @@ function switchSettingsPanel(panel) {
   if (target) target.style.display = '';
   if (panel === 'privacy') refreshPermBadges();
   if (panel === 'desktop-dock') applyDockAppearance();
+  if (panel === 'login-items') renderLoginItems();
 }
 
 // ---- Desktop & Dock Settings ----
@@ -2736,6 +2737,71 @@ document.addEventListener('mousemove', e => {
     document.body.classList.toggle('menubar-revealed', e.clientY < 8);
   }
 });
+
+// ---- Login Items ----
+const loginItems = [
+  { name: 'Thread Menu Bar', icon: 'ri-apps-2-line', color: '#818CF8', enabled: true, kind: 'login' },
+  { name: 'Syncthing', icon: 'ri-cloud-line', color: '#0A84FF', enabled: true, kind: 'login' },
+  { name: 'Docker Desktop', icon: 'ri-docker-line', color: '#2496ED', enabled: false, kind: 'login' }
+];
+const loginBgItems = [
+  { name: 'SoftwareUpdateNotificationManager', icon: 'ri-download-cloud-line', color: '#8E8E93', enabled: true, kind: 'bg' },
+  { name: 'iCloud Photos', icon: 'ri-cloud-line', color: '#0A84FF', enabled: true, kind: 'bg' }
+];
+
+function renderLoginItems() {
+  const list = document.getElementById('liList');
+  if (!list) return;
+  list.innerHTML = loginItems.map(item =>
+    '<div class="li-item">' +
+      '<div class="li-item-icon" style="background:' + item.color + '"><i class="' + item.icon + '"></i></div>' +
+      '<span class="li-item-name">' + item.name + '</span>' +
+      '<button class="li-remove" onclick="removeLoginItem(\'' + item.name.replace(/'/g, "\\'") + '\')" title="Remove"><i class="ri-close-line"></i></button>' +
+      '<div class="toggle-switch ' + (item.enabled ? 'on' : '') + '" onclick="toggleLoginItem(this)"></div>' +
+    '</div>'
+  ).join('');
+  const bgList = document.getElementById('liBgList');
+  if (bgList) {
+    bgList.innerHTML = loginBgItems.map(item =>
+      '<div class="li-item">' +
+        '<div class="li-item-icon" style="background:' + item.color + '"><i class="' + item.icon + '"></i></div>' +
+        '<span class="li-item-name">' + item.name + '</span>' +
+        '<div class="toggle-switch ' + (item.enabled ? 'on' : '') + '" onclick="toggleSetting(this)"></div>' +
+      '</div>'
+    ).join('');
+  }
+  updateLoginItemsCount();
+}
+
+function toggleLoginItem(el) {
+  el.classList.toggle('on');
+}
+
+function removeLoginItem(name) {
+  const idx = loginItems.findIndex(i => i.name === name);
+  if (idx > -1) loginItems.splice(idx, 1);
+  renderLoginItems();
+}
+
+function addLoginItem() {
+  const name = prompt('Type an app name to open at login:', 'Music.app');
+  if (name && name.trim()) {
+    const clean = name.trim();
+    if (!loginItems.find(i => i.name === clean)) {
+      loginItems.push({ name: clean, icon: 'ri-apps-2-line', color: '#AF52DE', enabled: true, kind: 'login' });
+      renderLoginItems();
+      showNotifToast('System Settings', clean + ' will open at login', 'System Settings.app');
+    }
+  }
+}
+
+function updateLoginItemsCount() {
+  const el = document.getElementById('generalLoginItemsCount');
+  if (el) el.textContent = loginItems.length + ' item' + (loginItems.length === 1 ? '' : 's');
+}
+
+document.getElementById('liAddBtn').addEventListener('click', addLoginItem);
+renderLoginItems();
 
 // ---- Software Update ----
 const suState = {
