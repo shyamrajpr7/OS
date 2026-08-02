@@ -614,6 +614,7 @@
             <div class="settings-nav-item" data-panel="desktop-dock"><i class="ri-layout-bottom-line"></i><span>Desktop & Dock</span></div>
             <div class="settings-nav-item" data-panel="display"><i class="ri-computer-line"></i><span>Displays</span></div>
             <div class="settings-nav-item" data-panel="sound"><i class="ri-volume-up-line"></i><span>Sound</span></div>
+            <div class="settings-nav-item" data-panel="keyboard"><i class="ri-keyboard-line"></i><span>Keyboard</span></div>
             <div class="settings-nav-item" data-panel="network"><i class="ri-wifi-line"></i><span>Network</span></div>
             <div class="settings-nav-item" data-panel="battery"><i class="ri-battery-2-charge-line"></i><span>Battery</span></div>
             <div class="settings-nav-item" data-panel="notifications"><i class="ri-notification-3-line"></i><span>Notifications</span></div>
@@ -762,6 +763,81 @@
               <div class="setting-row"><span>Input Volume</span><span class="setting-desc">50%</span></div>
               <div class="setting-row"><span>Alert Sound</span><span class="setting-desc">Sosumi</span></div>
               <div class="setting-row"><span>Play Sound on Startup</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+            </div>
+            <!-- Keyboard -->
+            <div class="settings-panel" id="settings-keyboard" style="display:none;">
+              <h2>Keyboard</h2>
+              <div class="a11y-section">
+                <h3>Key Repeat</h3>
+                <div class="a11y-control">
+                  <label class="a11y-label">Key Repeat Rate</label>
+                  <div class="a11y-slider-row">
+                    <span class="a11y-slider-val" id="kbRepeatVal">3</span>
+                    <input type="range" class="a11y-slider" id="kbRepeatRate" min="1" max="5" step="1" value="3" oninput="updateKbRepeat(this.value)">
+                  </div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Delay Until Repeat</label>
+                  <div class="a11y-slider-row">
+                    <span class="a11y-slider-val" id="kbDelayVal">3</span>
+                    <input type="range" class="a11y-slider" id="kbDelayUntil" min="1" max="5" step="1" value="3" oninput="updateKbDelay(this.value)">
+                  </div>
+                </div>
+              </div>
+              <div class="a11y-section">
+                <h3>Modifier Keys</h3>
+                <div class="a11y-control">
+                  <label class="a11y-label">Caps Lock Key</label>
+                  <select class="a11y-select" id="kbCapsLock" onchange="updateKbModifier('capslock', this.value)">
+                    <option value="none">No Action</option>
+                    <option value="Control">Control</option>
+                    <option value="Option">Option</option>
+                    <option value="Command">Command</option>
+                  </select>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Control Key</label>
+                  <select class="a11y-select" id="kbControl" onchange="updateKbModifier('control', this.value)">
+                    <option value="control">Control</option>
+                    <option value="none">No Action</option>
+                    <option value="Option">Option</option>
+                    <option value="Command">Command</option>
+                  </select>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Option Key</label>
+                  <select class="a11y-select" id="kbOption" onchange="updateKbModifier('option', this.value)">
+                    <option value="option">Option</option>
+                    <option value="none">No Action</option>
+                    <option value="Control">Control</option>
+                    <option value="Command">Command</option>
+                  </select>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Command Key</label>
+                  <select class="a11y-select" id="kbCommand" onchange="updateKbModifier('command', this.value)">
+                    <option value="command">Command</option>
+                    <option value="none">No Action</option>
+                    <option value="Control">Control</option>
+                    <option value="Option">Option</option>
+                  </select>
+                </div>
+              </div>
+              <div class="a11y-section">
+                <h3>Keyboard Options</h3>
+                <div class="a11y-control">
+                  <label class="a11y-label">Use F1, F2, etc. as standard function keys</label>
+                  <div class="toggle-switch" id="kbFnKeys" onclick="toggleKbFnKeys(this)"></div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Full Keyboard Access</label>
+                  <div class="toggle-switch" id="kbFullAccess" onclick="toggleKbFullAccess(this)"></div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Show keyboard and emoji viewers in menu bar</label>
+                  <div class="toggle-switch" id="kbEmojiMenu" onclick="toggleKbEmojiMenu(this)"></div>
+                </div>
+              </div>
             </div>
             <!-- Network -->
             <div class="settings-panel" id="settings-network" style="display:none;">

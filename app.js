@@ -2767,6 +2767,7 @@ function switchSettingsPanel(panel) {
   if (panel === 'desktop-dock') applyDockAppearance();
   if (panel === 'login-items') renderLoginItems();
   if (panel === 'notifications') renderNotificationsPanel();
+  if (panel === 'keyboard') initKbPanel();
 }
 
 // ---- Desktop & Dock Settings ----
@@ -5580,6 +5581,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') { e.preventDefault(); adjustBrightness(5); return; }
     if (e.key === 'ArrowLeft') { e.preventDefault(); adjustBrightness(-5); return; }
   }
+  if (kbSettings.useFnKeys) return;
   switch (e.key) {
     case 'F1': e.preventDefault(); adjustBrightness(-10); break;
     case 'F2': e.preventDefault(); adjustBrightness(10); break;
@@ -5589,6 +5591,61 @@ document.addEventListener('keydown', e => {
   }
 });
 syncSystemSliders();
+
+// ---- Keyboard Settings ----
+const kbSettings = {
+  keyRepeat: 3,
+  repeatDelay: 3,
+  capslock: 'none',
+  control: 'control',
+  option: 'option',
+  command: 'command',
+  useFnKeys: false,
+  fullKbdAccess: false,
+  emojiMenuBar: false
+};
+try { const savedKb = JSON.parse(localStorage.getItem('threados_kb_settings') || '{}'); Object.assign(kbSettings, savedKb); } catch (e) {}
+
+function saveKbSettings() { localStorage.setItem('threados_kb_settings', JSON.stringify(kbSettings)); }
+
+function updateKbRepeat(v) { kbSettings.keyRepeat = parseInt(v); document.getElementById('kbRepeatVal').textContent = v; saveKbSettings(); }
+function updateKbDelay(v) { kbSettings.repeatDelay = parseInt(v); document.getElementById('kbDelayVal').textContent = v; saveKbSettings(); }
+function updateKbModifier(key, val) { kbSettings[key] = val; saveKbSettings(); }
+function toggleKbFnKeys(el) { kbSettings.useFnKeys = el.classList.toggle('on'); saveKbSettings(); }
+function toggleKbFullAccess(el) { kbSettings.fullKbdAccess = el.classList.toggle('on'); saveKbSettings(); }
+function toggleKbEmojiMenu(el) { kbSettings.emojiMenuBar = el.classList.toggle('on'); saveKbSettings(); }
+
+function applyModifierRemap(e) {
+  const mapping = { Control: kbSettings.control, Option: kbSettings.option, Command: kbSettings.command };
+  const physical = { Control: e.ctrlKey, Option: e.altKey, Command: e.metaKey };
+  let ctrl = false, alt = false, meta = false;
+  Object.keys(physical).forEach(pk => {
+    if (!physical[pk]) return;
+    const t = mapping[pk];
+    if (t === 'Control') ctrl = true;
+    else if (t === 'Option') alt = true;
+    else if (t === 'Command') meta = true;
+  });
+  if (kbSettings.capslock !== 'none' && e.getModifierState && e.getModifierState('CapsLock')) {
+    const t = kbSettings.capslock;
+    if (t === 'Control') ctrl = true; else if (t === 'Option') alt = true; else if (t === 'Command') meta = true;
+  }
+  e.ctrlKey = ctrl; e.altKey = alt; e.metaKey = meta;
+}
+
+function initKbPanel() {
+  document.getElementById('kbRepeatRate').value = kbSettings.keyRepeat;
+  document.getElementById('kbRepeatVal').textContent = kbSettings.keyRepeat;
+  document.getElementById('kbDelayUntil').value = kbSettings.repeatDelay;
+  document.getElementById('kbDelayVal').textContent = kbSettings.repeatDelay;
+  document.getElementById('kbCapsLock').value = kbSettings.capslock;
+  document.getElementById('kbControl').value = kbSettings.control;
+  document.getElementById('kbOption').value = kbSettings.option;
+  document.getElementById('kbCommand').value = kbSettings.command;
+  document.getElementById('kbFnKeys').classList.toggle('on', kbSettings.useFnKeys);
+  document.getElementById('kbFullAccess').classList.toggle('on', kbSettings.fullKbdAccess);
+  document.getElementById('kbEmojiMenu').classList.toggle('on', kbSettings.emojiMenuBar);
+}
 
 // Force Quit dialog
 document.getElementById('forcequitCancel').addEventListener('click', closeForceQuit);
@@ -5709,6 +5766,7 @@ document.querySelectorAll('.activity-tab').forEach(el => {
 
 // Global keyboard shortcuts
 document.addEventListener('keydown', e => {
+  applyModifierRemap(e);
   if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); closeDiskEraseDialog(); }
   // Cmd+F or Ctrl+F -> focus search
   if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
