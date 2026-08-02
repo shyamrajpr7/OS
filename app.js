@@ -963,9 +963,10 @@ function minimizeWindow(winId) {
   const scaleY = 30 / origH;
   const translateX = (dockX - origLeft - origW / 2);
   const translateY = (dockY - origTop - origH / 2);
+  const squashY = dockMinimizeEffect === 'genie' ? 0.25 : 1;
   win.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease';
   win.style.transformOrigin = 'center center';
-  win.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
+  win.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY * squashY})`;
   win.style.opacity = '0';
   setTimeout(() => {
     win.classList.add('minimized');
@@ -2576,7 +2577,75 @@ function switchSettingsPanel(panel) {
   const target = document.getElementById('settings-' + panel);
   if (target) target.style.display = '';
   if (panel === 'privacy') refreshPermBadges();
+  if (panel === 'desktop-dock') applyDockAppearance();
 }
+
+// ---- Desktop & Dock Settings ----
+const dockSettings = { size: 1, magnification: 1, position: 'bottom', autoHide: false, menuBarAutoHide: false };
+let dockMinimizeEffect = 'genie';
+
+function applyDockAppearance() {
+  const d = dockSettings;
+  document.documentElement.style.setProperty('--dock-scale', d.size);
+  document.documentElement.style.setProperty('--dock-hover-scale', d.magnification > 1 ? 1.15 * d.magnification : 1.15);
+  const wrapper = document.querySelector('.dock-wrapper');
+  if (wrapper) {
+    wrapper.classList.toggle('dock-left', d.position === 'left');
+    wrapper.classList.toggle('dock-right', d.position === 'right');
+    wrapper.classList.toggle('dock-hidden', d.autoHide);
+    wrapper.classList.toggle('dock-revealed', false);
+  }
+  document.body.classList.toggle('menubar-hidden', d.menuBarAutoHide);
+  document.body.classList.remove('menubar-revealed');
+  const autoHideT = document.getElementById('ddAutoHide');
+  if (autoHideT) autoHideT.classList.toggle('on', d.autoHide);
+  const menuBarT = document.getElementById('ddMenuBarHide');
+  if (menuBarT) menuBarT.classList.toggle('on', d.menuBarAutoHide);
+  const effectSel = document.getElementById('ddMinimizeEffect');
+  if (effectSel) effectSel.value = dockMinimizeEffect;
+  document.querySelectorAll('.dd-pos-btn').forEach(b => b.classList.toggle('active', b.dataset.pos === d.position));
+}
+
+function updateDockSetting(name, val) {
+  if (name === 'size') {
+    dockSettings.size = parseFloat(val);
+    const lbl = document.getElementById('ddSizeVal');
+    if (lbl) lbl.textContent = val < 0.85 ? 'Small' : val > 1.25 ? 'Large' : 'Medium';
+  }
+  if (name === 'magnification') {
+    dockSettings.magnification = parseFloat(val);
+    const lbl = document.getElementById('ddMagVal');
+    if (lbl) lbl.textContent = val == 1 ? 'Off' : 'On';
+  }
+  applyDockAppearance();
+}
+
+function setDockPosition(pos) { dockSettings.position = pos; applyDockAppearance(); }
+
+function toggleDockAutoHide(el) { el.classList.toggle('on'); dockSettings.autoHide = el.classList.contains('on'); applyDockAppearance(); }
+
+function setDockMinimizeEffect(val) { dockMinimizeEffect = val; }
+
+function toggleMenuBarAutoHide(el) { el.classList.toggle('on'); dockSettings.menuBarAutoHide = el.classList.contains('on'); applyDockAppearance(); }
+
+// Reveal hidden dock / menu bar when cursor approaches screen edges
+document.addEventListener('mousemove', e => {
+  if (dockSettings.autoHide) {
+    const wrapper = document.querySelector('.dock-wrapper');
+    if (!wrapper) return;
+    const nearBottom = e.clientY > window.innerHeight - 8;
+    const nearLeft = e.clientX < 8;
+    const nearRight = e.clientX > window.innerWidth - 8;
+    let hover = false;
+    if (dockSettings.position === 'left') hover = nearLeft;
+    else if (dockSettings.position === 'right') hover = nearRight;
+    else hover = nearBottom;
+    wrapper.classList.toggle('dock-revealed', hover);
+  }
+  if (dockSettings.menuBarAutoHide) {
+    document.body.classList.toggle('menubar-revealed', e.clientY < 8);
+  }
+});
 
 // ---- Software Update ----
 const suState = {
@@ -3047,6 +3116,7 @@ function spotlightSearch(query) {
   const settings = [
     { name: 'General', panel: 'general', icon: 'ri-settings-3-line', kind: 'Settings' },
     { name: 'Appearance', panel: 'appearance', icon: 'ri-palette-line', kind: 'Settings' },
+    { name: 'Desktop & Dock', panel: 'desktop-dock', icon: 'ri-layout-bottom-line', kind: 'Settings' },
     { name: 'Displays', panel: 'display', icon: 'ri-computer-line', kind: 'Settings' },
     { name: 'Sound', panel: 'sound', icon: 'ri-volume-up-line', kind: 'Settings' },
     { name: 'Network', panel: 'network', icon: 'ri-wifi-line', kind: 'Settings' },

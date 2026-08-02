@@ -562,6 +562,7 @@
           <aside class="settings-sidebar">
             <div class="settings-nav-item active" data-panel="general"><i class="ri-settings-3-line"></i><span>General</span></div>
             <div class="settings-nav-item" data-panel="appearance"><i class="ri-palette-line"></i><span>Appearance</span></div>
+            <div class="settings-nav-item" data-panel="desktop-dock"><i class="ri-layout-bottom-line"></i><span>Desktop & Dock</span></div>
             <div class="settings-nav-item" data-panel="display"><i class="ri-computer-line"></i><span>Displays</span></div>
             <div class="settings-nav-item" data-panel="sound"><i class="ri-volume-up-line"></i><span>Sound</span></div>
             <div class="settings-nav-item" data-panel="network"><i class="ri-wifi-line"></i><span>Network</span></div>
@@ -629,6 +630,53 @@
               <div class="setting-row"><span>Accent Color</span><span class="setting-desc">Blue</span></div>
               <div class="setting-row"><span>Highlight Color</span><span class="setting-desc">Blue</span></div>
               <div class="setting-row"><span>Sidebar Icon Size</span><span class="setting-desc">Medium</span></div>
+            </div>
+            <!-- Desktop & Dock -->
+            <div class="settings-panel" id="settings-desktop-dock" style="display:none;">
+              <h2>Desktop & Dock</h2>
+              <div class="dd-section">
+                <h3>Dock</h3>
+                <div class="a11y-control">
+                  <label class="a11y-label">Size</label>
+                  <div class="a11y-slider-row">
+                    <span class="a11y-slider-val" id="ddSizeVal">Medium</span>
+                    <input type="range" class="a11y-slider" id="ddSize" min="0.7" max="1.6" step="0.05" value="1" oninput="updateDockSetting('size', this.value)">
+                  </div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Magnification</label>
+                  <div class="a11y-slider-row">
+                    <span class="a11y-slider-val" id="ddMagVal">Off</span>
+                    <input type="range" class="a11y-slider" id="ddMagnification" min="1" max="1.6" step="0.05" value="1" oninput="updateDockSetting('magnification', this.value)">
+                  </div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Position on screen</label>
+                  <div class="dd-position-row">
+                    <button class="dd-pos-btn" data-pos="left" onclick="setDockPosition('left')"><i class="ri-align-left"></i></button>
+                    <button class="dd-pos-btn active" data-pos="bottom" onclick="setDockPosition('bottom')"><i class="ri-align-bottom"></i></button>
+                    <button class="dd-pos-btn" data-pos="right" onclick="setDockPosition('right')"><i class="ri-align-right"></i></button>
+                  </div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Automatically hide and show the Dock</label>
+                  <div class="toggle-switch" id="ddAutoHide" onclick="toggleDockAutoHide(this)"></div>
+                </div>
+                <div class="a11y-control">
+                  <label class="a11y-label">Minimize windows using</label>
+                  <select class="a11y-select" id="ddMinimizeEffect" onchange="setDockMinimizeEffect(this.value)">
+                    <option value="genie">Genie Effect</option>
+                    <option value="scale">Scale Effect</option>
+                  </select>
+                </div>
+              </div>
+              <div class="dd-section">
+                <h3>Menu Bar</h3>
+                <div class="a11y-control">
+                  <label class="a11y-label">Automatically hide and show the menu bar</label>
+                  <div class="toggle-switch" id="ddMenuBarHide" onclick="toggleMenuBarAutoHide(this)"></div>
+                </div>
+              </div>
             </div>
             <!-- Display -->
             <div class="settings-panel" id="settings-display" style="display:none;">
