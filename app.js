@@ -5179,6 +5179,12 @@ document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'a' && finderIsActive()) { e.preventDefault(); selectAllItems(); }
   // Cmd+Shift+S -> Siri
   if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 's') { e.preventDefault(); if (siriIsOpen()) siriClose(); else siriOpen(); }
+  // Cmd+P -> Print (TextEdit / Preview / Notes)
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
+    if (['textedit-window', 'preview-window', 'notes-window'].includes(focusedApp)) {
+      e.preventDefault(); openPrintDialog();
+    }
+  }
   // Delete / Backspace -> move to Trash in Finder
   if ((e.key === 'Delete' || e.key === 'Backspace') && finderIsActive() && selectedItems.length > 0 && !isTypingInInput(e)) { e.preventDefault(); trashSelectedItems(); }
 });
@@ -6330,6 +6336,71 @@ function mailComposeSend() {
   document.querySelectorAll('.mail-mailbox').forEach(i => i.classList.toggle('active', i.dataset.mailbox === 'sent'));
   mailState.selectedId = null;
   mailRender();
+}
+
+// ---- Print Dialog ----
+let printCopies = 1;
+let printOrientation = 'portrait';
+
+function openPrintDialog() {
+  printCopies = 1;
+  printOrientation = 'portrait';
+  document.getElementById('printCopiesVal').textContent = '1';
+  document.querySelectorAll('.print-ori-btn').forEach(b => b.classList.toggle('active', b.dataset.ori === 'portrait'));
+  const p = document.getElementById('printProgress');
+  p.style.display = 'none';
+  const btn = document.getElementById('printBtn');
+  btn.style.display = '';
+  btn.disabled = false;
+  document.getElementById('printOverlay').style.display = 'flex';
+  renderPrintPreview();
+}
+
+function closePrintDialog() {
+  document.getElementById('printOverlay').style.display = 'none';
+}
+
+function printAdjustCopies(d) {
+  printCopies = Math.max(1, Math.min(99, printCopies + d));
+  document.getElementById('printCopiesVal').textContent = printCopies;
+}
+
+function printSetOrientation(ori) {
+  printOrientation = ori;
+  document.querySelectorAll('.print-ori-btn').forEach(b => b.classList.toggle('active', b.dataset.ori === ori));
+  renderPrintPreview();
+}
+
+function renderPrintPreview() {
+  const preview = document.getElementById('printPreview');
+  preview.classList.toggle('landscape', printOrientation === 'landscape');
+  const lines = document.getElementById('printPreviewLines');
+  const n = printOrientation === 'landscape' ? 13 : 19;
+  let html = '<div class="pp-line pp-line-title" style="width:55%"></div>';
+  for (let i = 0; i < n; i++) html += '<div class="pp-line" style="width:' + (38 + ((i * 7) % 52)) + '%"></div>';
+  lines.innerHTML = html;
+}
+
+function printDocument() {
+  const btn = document.getElementById('printBtn');
+  btn.disabled = true;
+  btn.style.display = 'none';
+  document.getElementById('printProgress').style.display = 'block';
+  const fill = document.getElementById('printProgressFill');
+  const text = document.getElementById('printProgressText');
+  const steps = ['Sending to printer…', 'Rendering page 1 of ' + printCopies, 'Printing…', 'Finishing…'];
+  let pct = 0;
+  const iv = setInterval(() => {
+    pct += 16 + Math.random() * 22;
+    if (pct >= 100) pct = 100;
+    fill.style.width = pct + '%';
+    text.textContent = steps[Math.min(3, Math.floor(pct / 26))];
+    if (pct >= 100) {
+      clearInterval(iv);
+      closePrintDialog();
+      showNotifToast('Print', 'Document printed successfully', 'Preview.app');
+    }
+  }, 320);
 }
 
 function mailVisible() {
