@@ -161,6 +161,7 @@ setInterval(updateClock, 10000);
 
 // ---- Finder ----
 function navigateTo(path, pushHistory = true) {
+  if (path === '/AirDrop') { openApp('AirDrop.app'); return; }
   const node = getNode(path);
   if (!node || node.type !== 'folder') return;
   currentPath = path;
@@ -830,6 +831,7 @@ const appIdMap = {
   'Reminders.app': 'reminders-window',
   'Console.app': 'logs-window',
   'Downloads.app': 'downloads-window',
+  'AirDrop.app': 'airdrop-window',
   'Time Machine.app': 'backup-window',
   'Screen Recording.app': 'screenrecording-window',
   'Weather.app': 'weather-window',
@@ -878,6 +880,7 @@ function openApp(appName) {
   if (winId === 'activity-window') initActivityMonitor();
   if (winId === 'logs-window') { initLogsViewer(); setupLogsEvents(); }
   if (winId === 'downloads-window') initDownloadManager();
+  if (winId === 'airdrop-window') initAirDrop();
   if (winId === 'chrome-window') chromeGreeting();
   if (winId === 'backup-window') initBackupApp();
   if (winId === 'weather-window') initWeatherApp();
@@ -2071,6 +2074,93 @@ function initDownloadManager() {
   document.getElementById('dlAddBtn').addEventListener('click', addDownload);
   document.getElementById('dlClearBtn').addEventListener('click', clearCompleted);
 }
+
+// ---- AirDrop ----
+const airdropDevices = [
+  { name: "Shyam's iPhone", icon: 'ri-iphone-line', color: '#1C1C1E' },
+  { name: "Shyam's iPad", icon: 'ri-tablet-line', color: '#5856D6' },
+  { name: 'MacBook Pro', icon: 'ri-macbook-line', color: '#48484A' },
+  { name: "Ava's MacBook Air", icon: 'ri-macbook-line', color: '#FF9500' }
+];
+let airdropInitialized = false;
+let airdropSearchTimer = null;
+let airdropSendFileName = '';
+
+function initAirDrop() {
+  if (airdropInitialized) return;
+  airdropInitialized = true;
+  const grid = document.getElementById('airdropDevices');
+  const search = document.getElementById('airdropSearch');
+  search.style.display = 'flex';
+  document.getElementById('airdropSearchText').textContent = 'Looking for devices…';
+  grid.innerHTML = '';
+  let i = 0;
+  airdropSearchTimer = setInterval(() => {
+    if (i >= airdropDevices.length) { clearInterval(airdropSearchTimer); search.style.display = 'none'; return; }
+    const device = airdropDevices[i++];
+    const card = document.createElement('div');
+    card.className = 'airdrop-device';
+    card.innerHTML = '<div class="airdrop-device-icon" style="background:' + device.color + '"><i class="' + device.icon + '"></i></div><span class="airdrop-device-name">' + device.name + '</span><span class="airdrop-device-state">Available</span>';
+    card.addEventListener('click', () => openAirDropSend('(drag a file here)'));
+    grid.appendChild(card);
+    document.getElementById('airdropSearchText').textContent = 'Searching…';
+  }, 650);
+}
+
+function openAirDropSend(fileName) {
+  airdropSendFileName = fileName;
+  document.getElementById('airdropSendOverlay').style.display = 'flex';
+  document.getElementById('airdropSendTitle').textContent = 'AirDrop';
+  document.getElementById('airdropSendFile').innerHTML = '<i class="ri-file-line"></i><span>' + fileName + '</span>';
+  document.getElementById('airdropSendDevices').innerHTML = airdropDevices.map(d =>
+    '<div class="airdrop-send-device" onclick="airdropSendTo(\'' + d.name.replace(/'/g, "\\'") + '\')">' +
+      '<div class="airdrop-send-device-icon" style="background:' + d.color + '"><i class="' + d.icon + '"></i></div>' +
+      '<span>' + d.name + '</span>' +
+    '</div>'
+  ).join('');
+  document.getElementById('airdropSendDevices').style.display = '';
+  document.getElementById('airdropSendProgress').style.display = 'none';
+  document.getElementById('airdropSendCancel').style.display = '';
+}
+
+function airdropSendTo(name) {
+  const devices = document.getElementById('airdropSendDevices');
+  devices.style.display = 'none';
+  const progress = document.getElementById('airdropSendProgress');
+  progress.style.display = 'block';
+  const status = document.getElementById('airdropSendStatus');
+  const fill = document.getElementById('airdropProgressFill');
+  document.getElementById('airdropSendTitle').textContent = 'AirDrop — Sending';
+  const phases = [
+    { t: 'Waiting for ' + name + '…', w: 0 },
+    { t: 'Sending to ' + name + '…', w: 35 },
+    { t: 'Sending to ' + name + '…', w: 72 },
+    { t: 'Sent', w: 100 }
+  ];
+  let phase = 0;
+  const iv = setInterval(() => {
+    phase = Math.min(3, phase + 1);
+    status.textContent = phases[phase].t;
+    fill.style.width = phases[phase].w + '%';
+    if (phase === 3) {
+      clearInterval(iv);
+      setTimeout(() => {
+        closeAirDropSend();
+        showNotifToast('AirDrop', 'Shared "' + airdropSendFileName + '" with ' + name, 'AirDrop.app');
+      }, 900);
+    }
+  }, 850);
+}
+
+function closeAirDropSend() {
+  document.getElementById('airdropSendOverlay').style.display = 'none';
+  const devices = document.getElementById('airdropSendDevices');
+  if (devices) devices.style.display = '';
+  const btn = document.getElementById('airdropSendCancel');
+  if (btn) btn.style.display = '';
+}
+document.getElementById('airdropSendCancel').addEventListener('click', closeAirDropSend);
+document.getElementById('airdropSendOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeAirDropSend(); });
 
 function addDownload() {
   const sample = dlSamples[Math.floor(Math.random() * dlSamples.length)];
@@ -3290,6 +3380,7 @@ function showContextMenu(e, target) {
   } else {
     menu.innerHTML = `
       <div class="context-menu-item" data-action="open"><i class="ri-folder-open-line"></i>Open</div>
+      <div class="context-menu-item" data-action="airdrop"><i class="ri-send-plane-line"></i>Share via AirDrop…</div>
       <div class="context-menu-separator"></div>
       <div class="context-menu-item" data-action="getInfo"><i class="ri-information-line"></i>Get Info</div>
       <div class="context-menu-item" data-action="rename"><i class="ri-edit-line"></i>Rename</div>
@@ -3342,6 +3433,9 @@ function handleContextAction(action) {
         if (contextTarget.type === 'folder') navigateTo(contextTarget.path);
         else if (contextTarget.type === 'app') openApp(contextTarget.name);
       }
+      break;
+    case 'airdrop':
+      if (contextTarget) openAirDropSend(contextTarget.name);
       break;
     case 'getInfo':
       if (contextTarget) showInfoDialog(contextTarget.name, contextTarget.kind, contextTarget.size, contextTarget.date, contextTarget.path);

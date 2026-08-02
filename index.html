@@ -254,6 +254,7 @@
               <div class="sidebar-item" data-path="/Users/shyamraj/Documents"><i class="ri-file-text-line"></i><span>Documents</span></div>
               <div class="sidebar-item" data-path="/Users/shyamraj/Downloads"><i class="ri-download-line"></i><span>Downloads</span></div>
               <div class="sidebar-item" data-path="/Applications"><i class="ri-apps-2-line"></i><span>Applications</span></div>
+              <div class="sidebar-item" data-path="/AirDrop"><i class="ri-wifi-line" style="color:#0A84FF;"></i><span>AirDrop</span></div>
               <div class="sidebar-item" data-path="/Users/shyamraj/Music"><i class="ri-music-line"></i><span>Music</span></div>
               <div class="sidebar-item" data-path="/Users/shyamraj/Pictures"><i class="ri-image-line"></i><span>Pictures</span></div>
             </div>
@@ -512,6 +513,52 @@
               <div style="font-size:11px;color:var(--mac-text-muted);margin-top:4px;">Click "New Download" to start</div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- ========== AIRDROP ========== -->
+      <div class="mac-window app-window" id="airdrop-window" style="width:720px;height:460px;top:60px;left:180px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">AirDrop</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body airdrop-body">
+          <div class="airdrop-toolbar">
+            <div class="airdrop-discoverability">
+              <span>Allow me to be discovered by:</span>
+              <select id="airdropDiscoverable">
+                <option>Contacts Only</option>
+                <option>Everyone</option>
+                <option>No One</option>
+              </select>
+            </div>
+            <div class="airdrop-radio-status"><i class="ri-wifi-line"></i> Wi-Fi On</div>
+          </div>
+          <div class="airdrop-search" id="airdropSearch">
+            <i class="ri-wifi-line"></i>
+            <span id="airdropSearchText">Looking for devices…</span>
+          </div>
+          <div class="airdrop-devices" id="airdropDevices"></div>
+          <div class="airdrop-note">AirDrop uses Bluetooth and Wi-Fi to share files with people nearby.</div>
+        </div>
+      </div>
+
+      <!-- AIRDROP SEND SHEET -->
+      <div class="airdrop-send-overlay" id="airdropSendOverlay" style="display:none;">
+        <div class="airdrop-send-sheet">
+          <div class="airdrop-send-title" id="airdropSendTitle">AirDrop</div>
+          <div class="airdrop-send-file" id="airdropSendFile"></div>
+          <div class="airdrop-send-devices" id="airdropSendDevices"></div>
+          <div class="airdrop-send-progress" id="airdropSendProgress" style="display:none;">
+            <div class="airdrop-send-status" id="airdropSendStatus">Waiting for device…</div>
+            <div class="airdrop-progress-bar"><div class="airdrop-progress-fill" id="airdropProgressFill"></div></div>
+          </div>
+          <button class="airdrop-send-cancel" id="airdropSendCancel">Cancel</button>
         </div>
       </div>
 

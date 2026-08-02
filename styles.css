@@ -3208,6 +3208,45 @@ body.a11y-increase-contrast .menu-bar { border-bottom: 1px solid rgba(255,255,25
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   height: 100%; text-align: center;
 }
+
+/* ---- AirDrop ---- */
+.airdrop-body { display: flex; flex-direction: column; height: 100%; padding: 0 !important; }
+.airdrop-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--mac-border); }
+.airdrop-discoverability { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--mac-text-muted); }
+.airdrop-discoverability select { background: rgba(255,255,255,0.06); border: 1px solid var(--mac-border); color: var(--mac-text); border-radius: 6px; padding: 3px 8px; font-size: 11.5px; }
+.airdrop-discoverability select option { background: #2a2a2e; }
+.airdrop-radio-status { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #30D158; }
+.airdrop-search { display: none; align-items: center; justify-content: center; gap: 8px; padding: 30px 0 10px; font-size: 13px; color: var(--mac-text-muted); }
+.airdrop-search i { font-size: 20px; color: #0A84FF; animation: airdropPulse 1s ease infinite; }
+@keyframes airdropPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.airdrop-devices { flex: 1; display: flex; flex-wrap: wrap; gap: 16px; align-content: flex-start; padding: 14px 18px; }
+.airdrop-device { width: 110px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px; border-radius: 12px; cursor: pointer; transition: all 0.15s ease; }
+.airdrop-device:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+.airdrop-device-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.35); }
+.airdrop-device-name { font-size: 12.5px; font-weight: 600; color: var(--mac-text); text-align: center; }
+.airdrop-device-state { font-size: 11px; color: #30D158; }
+.airdrop-note { padding: 10px 12px; font-size: 11px; color: var(--mac-text-muted); border-top: 1px solid var(--mac-border); }
+
+/* AirDrop send sheet */
+.airdrop-send-overlay {
+  position: fixed; inset: 0; z-index: 10010; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+}
+.airdrop-send-sheet { width: 420px; background: rgba(30,30,46,0.98); border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 18px; box-shadow: 0 20px 60px rgba(0,0,0,0.55); animation: mailComposeIn 0.22s ease; }
+.airdrop-send-title { font-size: 15px; font-weight: 700; color: var(--mac-text); }
+.airdrop-send-file { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--mac-text-secondary); margin: 10px 0 14px; }
+.airdrop-send-file i { font-size: 18px; color: #0A84FF; }
+.airdrop-send-devices { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+.airdrop-send-device { width: 88px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px; border-radius: 10px; cursor: pointer; transition: all 0.15s ease; }
+.airdrop-send-device:hover { background: rgba(255,255,255,0.08); }
+.airdrop-send-device-icon { width: 44px; height: 44px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; }
+.airdrop-send-device span { font-size: 11.5px; color: var(--mac-text); text-align: center; }
+.airdrop-send-progress { margin-bottom: 14px; }
+.airdrop-send-status { font-size: 12.5px; color: var(--mac-text); margin-bottom: 8px; }
+.airdrop-progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+.airdrop-progress-fill { height: 100%; background: #0A84FF; width: 0; transition: width 0.4s ease; }
+.airdrop-send-cancel { width: 100%; padding: 7px 0; border: 1px solid var(--mac-border); background: transparent; color: var(--mac-text); border-radius: 7px; font-size: 12.5px; cursor: pointer; }
+.airdrop-send-cancel:hover { background: rgba(255,255,255,0.08); }
 .dl-item {
   display: flex; align-items: center; gap: 10px; padding: 8px 12px;
   border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.1s ease;
