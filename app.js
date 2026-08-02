@@ -4698,6 +4698,13 @@ function renderDiskUtil() {
   ).join('') + `<div class="diskutil-legend-item"><span class="diskutil-legend-dot" style="background:rgba(255,255,255,0.1);"></span><span class="diskutil-legend-label">Available</span><span class="diskutil-legend-value">${free} GB</span></div>`;
 
   // Bind events
+  list.querySelectorAll('.diskutil-partition-item').forEach(item => {
+    item.classList.toggle('selected', parseInt(item.dataset.id) === selectedPartId);
+    item.addEventListener('click', () => {
+      selectedPartId = parseInt(item.dataset.id);
+      renderDiskUtil();
+    });
+  });
   list.querySelectorAll('.diskutil-part-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
@@ -4763,7 +4770,67 @@ document.addEventListener('DOMContentLoaded', () => {
   renderDiskUtil();
   const addBtn = document.getElementById('diskutilAddPart');
   if (addBtn) addBtn.addEventListener('click', addPartition);
+  const eraseBtn = document.getElementById('diskutilErase');
+  if (eraseBtn) eraseBtn.addEventListener('click', openEraseDialog);
+  document.getElementById('duEraseConfirm').addEventListener('click', startErase);
+  document.getElementById('duEraseCancel').addEventListener('click', closeDiskEraseDialog);
 });
+
+// ---- Disk Utility Erase ----
+let selectedPartId = 1;
+let eraseTargetId = null;
+
+function openEraseDialog() {
+  const part = partitions.find(p => p.id === selectedPartId) || partitions[0];
+  if (!part) return;
+  eraseTargetId = part.id;
+  document.getElementById('duEraseName').value = part.name;
+  document.getElementById('duEraseFormat').value = part.format === 'HFS+' ? 'Mac OS Extended (Journaled)' : 'APFS';
+  document.getElementById('duEraseOverlay').style.display = 'flex';
+  document.getElementById('duEraseProgress').style.display = 'none';
+  document.getElementById('duEraseResult').style.display = 'none';
+  document.getElementById('duEraseConfirm').style.display = 'flex';
+  document.getElementById('duEraseProgressFill').style.width = '0%';
+}
+
+function closeDiskEraseDialog() {
+  const overlay = document.getElementById('duEraseOverlay');
+  if (overlay) overlay.style.display = 'none';
+  eraseTargetId = null;
+}
+
+function startErase() {
+  const part = partitions.find(p => p.id === eraseTargetId);
+  if (!part) return;
+  document.getElementById('duEraseConfirm').style.display = 'none';
+  const progress = document.getElementById('duEraseProgress');
+  const result = document.getElementById('duEraseResult');
+  progress.style.display = 'block';
+  const fill = document.getElementById('duEraseProgressFill');
+  const status = document.getElementById('duEraseProgressStatus');
+  let pct = 0;
+  const step = () => {
+    pct += Math.random() * 18 + 6;
+    if (pct >= 100) {
+      fill.style.width = '100%';
+      status.textContent = 'Finalizing…';
+      setTimeout(() => {
+        part.name = document.getElementById('duEraseName').value.trim() || 'Untitled';
+        part.format = document.getElementById('duEraseFormat').value;
+        part.mounted = true;
+        renderDiskUtil();
+        progress.style.display = 'none';
+        result.style.display = 'flex';
+        showNotifToast('Disk Utility', 'Volume "' + part.name + '" erased successfully', 'Disk Utility.app');
+      }, 400);
+      return;
+    }
+    fill.style.width = pct + '%';
+    status.textContent = 'Erasing… ' + Math.round(pct) + '%';
+    setTimeout(step, 140);
+  };
+  step();
+}
 
 // ---- Clipboard Manager ----
 const clipboardHistory = [];
@@ -5414,7 +5481,7 @@ document.querySelectorAll('.activity-tab').forEach(el => {
 
 // Global keyboard shortcuts
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); }
+  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); closeDiskEraseDialog(); }
   // Cmd+F or Ctrl+F -> focus search
   if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
   // Cmd+Shift+3 -> full screenshot

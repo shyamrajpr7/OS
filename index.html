@@ -1150,12 +1150,55 @@
               </div>
             </div>
             <div class="diskutil-actions">
+              <button class="diskutil-action-btn" id="diskutilErase" title="Erase Selected Volume"><i class="ri-delete-bin-line"></i> Erase</button>
               <button class="diskutil-action-btn" id="diskutilAddPart" title="Add Partition"><i class="ri-add-line"></i> Add</button>
             </div>
           </div>
           <div class="diskutil-partition-bar" id="diskutilPartitionBar"></div>
           <div class="diskutil-partition-list" id="diskutilPartitionList"></div>
           <div class="diskutil-legend" id="diskutilLegend"></div>
+        </div>
+      </div>
+
+      <!-- ========== DISK UTILITY ERASE DIALOG ========== -->
+      <div class="overlay" id="diskutilEraseOverlay" style="display:none;">
+        <div class="diskutil-erase-dialog">
+          <div class="du-erase-icon"><i class="ri-delete-bin-2-line"></i></div>
+          <h3 class="du-erase-title">Erase "Macintosh HD"</h3>
+          <p class="du-erase-subtitle">Erasing will permanently delete all data and reformat the volume.</p>
+          <div class="du-erase-row">
+            <label class="du-erase-label">Name:</label>
+            <input type="text" class="du-erase-input" id="duEraseName" value="Macintosh HD">
+          </div>
+          <div class="du-erase-row">
+            <label class="du-erase-label">Format:</label>
+            <select class="du-erase-select" id="duEraseFormat">
+              <option>APFS</option>
+              <option>APFS (Encrypted)</option>
+              <option>Mac OS Extended (Journaled)</option>
+              <option>MS-DOS (FAT)</option>
+              <option>ExFAT</option>
+            </select>
+          </div>
+          <div class="du-erase-row">
+            <label class="du-erase-label">Scheme:</label>
+            <select class="du-erase-select" id="duEraseScheme">
+              <option>GUID Partition Map</option>
+              <option>Apple Partition Map</option>
+              <option>Master Boot Record</option>
+            </select>
+          </div>
+          <div class="du-erase-progress" id="duEraseProgress" style="display:none;">
+            <div class="du-erase-progress-bar"><div class="du-erase-progress-fill" id="duEraseProgressFill"></div></div>
+            <div class="du-erase-progress-status" id="duEraseProgressStatus">Erasing…</div>
+          </div>
+          <div class="du-erase-result" id="duEraseResult" style="display:none;">
+            <i class="ri-checkbox-circle-fill"></i> Erase complete
+          </div>
+          <div class="du-erase-actions">
+            <button class="du-erase-btn du-erase-cancel" id="duEraseCancel">Cancel</button>
+            <button class="du-erase-btn du-erase-confirm" id="duEraseConfirm"><i class="ri-delete-bin-line"></i> Erase</button>
+          </div>
         </div>
       </div>
 

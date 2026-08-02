@@ -2619,6 +2619,42 @@ kbd {
 .diskutil-legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 .diskutil-legend-label { color: var(--mac-text-muted); flex: 1; }
 .diskutil-legend-value { color: var(--mac-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.diskutil-partition-item.selected { border-color: var(--mac-accent); background: rgba(10,132,255,0.1); }
+
+/* Disk Utility erase dialog */
+#diskutilEraseOverlay {
+  position: fixed; inset: 0; z-index: 10020; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+}
+.diskutil-erase-dialog {
+  width: 420px; background: rgba(30,30,46,0.98); border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+  padding: 22px; animation: mailComposeIn 0.22s ease;
+}
+.du-erase-icon { font-size: 40px; color: #FF3B30; text-align: center; margin-bottom: 8px; }
+.du-erase-title { font-size: 16px; font-weight: 600; color: var(--mac-text); text-align: center; margin: 0 0 4px; }
+.du-erase-subtitle { font-size: 12.5px; color: var(--mac-text-muted); text-align: center; margin: 0 0 16px; line-height: 1.5; }
+.du-erase-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.du-erase-label { width: 60px; font-size: 12.5px; color: var(--mac-text-secondary); flex-shrink: 0; }
+.du-erase-input, .du-erase-select {
+  flex: 1; background: rgba(255,255,255,0.07); border: 1px solid var(--mac-border);
+  color: var(--mac-text); border-radius: 7px; padding: 6px 10px; font-size: 12.5px; outline: none;
+}
+.du-erase-input:focus { border-color: var(--mac-accent); }
+.du-erase-progress { margin: 6px 0 2px; }
+.du-erase-progress-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.1); overflow: hidden; }
+.du-erase-progress-fill { height: 100%; width: 0%; border-radius: 3px; background: var(--mac-accent); transition: width 0.2s ease; }
+.du-erase-progress-status { font-size: 11px; color: var(--mac-text-muted); text-align: center; margin-top: 6px; }
+.du-erase-result { font-size: 13px; color: #28C840; text-align: center; margin: 8px 0; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.du-erase-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.du-erase-btn {
+  padding: 6px 16px; border-radius: 7px; border: 1px solid var(--mac-border);
+  background: rgba(255,255,255,0.07); color: var(--mac-text); font-size: 12.5px;
+  cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s ease;
+}
+.du-erase-btn:hover { background: rgba(255,255,255,0.13); }
+.du-erase-confirm { background: #FF3B30; border-color: #FF3B30; color: #fff; }
+.du-erase-confirm:hover { background: #FF6B61; }
 
 /* ===================== CLIPBOARD MANAGER ===================== */
 .clipboard-tray { cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background 0.12s; position: relative; }
