@@ -2669,6 +2669,7 @@ function switchSettingsPanel(panel) {
   if (panel === 'privacy') refreshPermBadges();
   if (panel === 'desktop-dock') applyDockAppearance();
   if (panel === 'login-items') renderLoginItems();
+  if (panel === 'notifications') renderNotificationsPanel();
 }
 
 // ---- Desktop & Dock Settings ----
@@ -5079,6 +5080,76 @@ renderReminders();
 
 // ---- Notification Badges System ----
 const notifState = { badges: {}, history: [] };
+let notifSettings = {};
+try { notifSettings = JSON.parse(localStorage.getItem('threados_notif_settings') || '{}'); } catch (e) { notifSettings = {}; }
+
+function saveNotifSettings() { localStorage.setItem('threados_notif_settings', JSON.stringify(notifSettings)); }
+
+let notifAudioCtx = null;
+function playNotifSound() {
+  try {
+    notifAudioCtx = notifAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const osc = notifAudioCtx.createOscillator();
+    const gain = notifAudioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.04, notifAudioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, notifAudioCtx.currentTime + 0.35);
+    osc.connect(gain).connect(notifAudioCtx.destination);
+    osc.start();
+    osc.stop(notifAudioCtx.currentTime + 0.35);
+  } catch (e) {}
+}
+
+const notifKnownApps = ['Mail.app', 'Messages.app', 'Calendar.app', 'Reminders.app', 'Notes.app', 'Music.app', 'Finder.app', 'System Settings.app', 'Disk Utility.app'];
+
+function getNotifApps() {
+  const set = new Set(notifKnownApps);
+  notifState.history.forEach(n => { if (n.app) set.add(n.app); });
+  Object.keys(notifSettings).forEach(a => set.add(a));
+  return [...set];
+}
+
+function renderNotificationsPanel() {
+  const list = document.getElementById('notifAppList');
+  if (!list) return;
+  const master = document.getElementById('notifMaster');
+  if (master) master.classList.toggle('on', notifSettings.__master !== false);
+  list.innerHTML = getNotifApps().map(app => {
+    const s = notifSettings[app] || {};
+    const allow = s.allow !== false;
+    const banner = s.banner !== false;
+    const badge = s.badge !== false;
+    const sound = s.sound === true;
+    const display = app.replace('.app', '');
+    return '<div class="nt-item">' +
+      '<div class="nt-item-header">' +
+        '<span class="nt-item-name">' + display + '</span>' +
+        '<div class="toggle-switch ' + (allow ? 'on' : '') + '" data-app="' + app + '" data-key="allow" onclick="toggleNotifSetting(this)"></div>' +
+      '</div>' +
+      (allow ? '<div class="nt-item-options">' +
+        '<div class="nt-opt"><span>Banner</span><div class="toggle-switch ' + (banner ? 'on' : '') + '" data-app="' + app + '" data-key="banner" onclick="toggleNotifSetting(this)"></div></div>' +
+        '<div class="nt-opt"><span>Badge</span><div class="toggle-switch ' + (badge ? 'on' : '') + '" data-app="' + app + '" data-key="badge" onclick="toggleNotifSetting(this)"></div></div>' +
+        '<div class="nt-opt"><span>Sound</span><div class="toggle-switch ' + (sound ? 'on' : '') + '" data-app="' + app + '" data-key="sound" onclick="toggleNotifSetting(this)"></div></div>' +
+      '</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function toggleNotifSetting(el) {
+  const app = el.dataset.app;
+  const key = el.dataset.key;
+  if (!notifSettings[app]) notifSettings[app] = {};
+  const cur = notifSettings[app][key];
+  notifSettings[app][key] = key === 'allow' ? (cur === false ? true : false) : (cur === true ? false : true);
+  saveNotifSettings();
+  renderNotificationsPanel();
+}
+
+function toggleNotifMaster(el) {
+  notifSettings.__master = el.classList.toggle('on');
+  saveNotifSettings();
+}
 
 function setDockBadge(appName, count) {
   const dockItem = document.querySelector(`.dock-item[data-app="${appName}"]`);
@@ -5090,14 +5161,21 @@ function setDockBadge(appName, count) {
 }
 
 function showNotifToast(title, body, app) {
-  const toast = document.createElement('div');
-  toast.className = 'notif-toast';
-  toast.innerHTML = `<div class="notif-toast-title">${title}</div><div class="notif-toast-body">${body}</div>`;
-  document.body.appendChild(toast);
-  requestAnimationFrame(() => toast.classList.add('visible'));
-  setTimeout(() => { toast.classList.remove('visible'); setTimeout(() => toast.remove(), 400); }, 4000);
+  if (notifSettings.__master === false) return;
+  if (app && notifSettings[app] && notifSettings[app].allow === false) return;
+  const showBanner = !app || notifSettings[app]?.banner !== false;
+  if (showBanner) {
+    const toast = document.createElement('div');
+    toast.className = 'notif-toast';
+    toast.innerHTML = `<div class="notif-toast-title">${title}</div><div class="notif-toast-body">${body}</div>`;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('visible'));
+    setTimeout(() => { toast.classList.remove('visible'); setTimeout(() => toast.remove(), 400); }, 4000);
+  }
   notifState.history.unshift({ title, body, app, time: new Date() });
   if (notifState.history.length > 50) notifState.history.pop();
+  if (app && notifSettings[app]?.sound) playNotifSound();
+  if (app && notifSettings[app]?.badge === false) return;
   if (app) { notifState.badges[app] = (notifState.badges[app] || 0) + 1; setDockBadge(app, notifState.badges[app]); }
 }
 

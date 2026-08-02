@@ -616,6 +616,7 @@
             <div class="settings-nav-item" data-panel="sound"><i class="ri-volume-up-line"></i><span>Sound</span></div>
             <div class="settings-nav-item" data-panel="network"><i class="ri-wifi-line"></i><span>Network</span></div>
             <div class="settings-nav-item" data-panel="battery"><i class="ri-battery-2-charge-line"></i><span>Battery</span></div>
+            <div class="settings-nav-item" data-panel="notifications"><i class="ri-notification-3-line"></i><span>Notifications</span></div>
             <div class="settings-nav-item" data-panel="privacy"><i class="ri-shield-check-line"></i><span>Privacy & Security</span></div>
             <div class="settings-nav-item" data-panel="software-update"><i class="ri-download-cloud-line"></i><span>Software Update</span></div>
             <div class="settings-nav-item" data-panel="accessibility"><i class="ri-universal-access-line"></i><span>Accessibility</span></div>
@@ -628,6 +629,7 @@
               <div class="setting-row clickable" onclick="switchSettingsPanel('software-update')"><span>Software Update</span><span class="setting-desc" id="generalUpdateStatus">Up to date</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>
               <div class="setting-row"><span>Storage</span><span class="setting-desc">234 GB available of 512 GB</span></div>
               <div class="setting-row clickable" onclick="switchSettingsPanel('login-items')"><span>Login Items</span><span class="setting-desc" id="generalLoginItemsCount">2 items</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>
+              <div class="setting-row clickable" onclick="switchSettingsPanel('notifications')"><span>Notifications</span><span class="setting-desc">Manage app alerts</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>
             </div>
             <!-- Login Items -->
             <div class="settings-panel" id="settings-login-items" style="display:none;">
@@ -638,6 +640,14 @@
               <button class="li-add-btn" id="liAddBtn"><i class="ri-add-line"></i> Add Item…</button>
               <h3 class="li-section-label" style="margin-top:22px;">Allow in the Background</h3>
               <div class="li-list" id="liBgList"></div>
+            </div>
+            <!-- Notifications -->
+            <div class="settings-panel" id="settings-notifications" style="display:none;">
+              <h2>Notifications</h2>
+              <div class="setting-row"><span>Allow Notifications</span><div class="toggle-switch on" id="notifMaster" onclick="toggleNotifMaster(this)"></div></div>
+              <div class="setting-row"><span>Show notifications on lock screen</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+              <h3 class="li-section-label" style="margin-top:22px;">Notification Style</h3>
+              <div class="nt-list" id="notifAppList"></div>
             </div>
             <!-- Software Update -->
             <div class="settings-panel" id="settings-software-update" style="display:none;">
