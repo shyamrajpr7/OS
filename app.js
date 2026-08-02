@@ -6278,12 +6278,7 @@ function initMail() {
     mailState.query = e.target.value.toLowerCase();
     mailRender();
   });
-  document.getElementById('mailComposeBtn').addEventListener('click', () => {
-    mailState.mailbox = 'drafts';
-    document.querySelectorAll('.mail-mailbox').forEach(i => i.classList.toggle('active', i.dataset.mailbox === 'drafts'));
-    mailState.selectedId = 8;
-    mailRender();
-  });
+  document.getElementById('mailComposeBtn').addEventListener('click', mailOpenCompose);
   document.getElementById('mailArchiveBtn').addEventListener('click', mailMoveCurrent);
   document.getElementById('mailDeleteBtn').addEventListener('click', () => mailDeleteCurrent(true));
   document.getElementById('mailFlagBtn').addEventListener('click', () => {
@@ -6292,6 +6287,48 @@ function initMail() {
     msg.flagged = !msg.flagged;
     mailRender();
   });
+  mailRender();
+}
+
+// ---- Mail Compose ----
+function mailOpenCompose() {
+  document.getElementById('mailComposeOverlay').style.display = 'flex';
+  document.getElementById('mailComposeTo').value = '';
+  document.getElementById('mailComposeSubject').value = '';
+  document.getElementById('mailComposeBody').value = '';
+  document.getElementById('mailComposeTo').focus();
+}
+
+function mailComposeCancel() {
+  const to = document.getElementById('mailComposeTo').value.trim();
+  const subject = document.getElementById('mailComposeSubject').value.trim();
+  const body = document.getElementById('mailComposeBody').value.trim();
+  if ((to || subject || body) && confirm('Save this message as a draft?')) mailComposeSaveDraft();
+  document.getElementById('mailComposeOverlay').style.display = 'none';
+}
+
+function mailComposeSaveDraft() {
+  const subject = document.getElementById('mailComposeSubject').value.trim() || 'No Subject';
+  const body = document.getElementById('mailComposeBody').value.trim();
+  const id = Math.max(...mailEmails.map(e => e.id)) + 1;
+  mailEmails.push({ id, mailbox: 'drafts', from: 'Draft', subject, preview: body.slice(0, 60) || '(no content)', date: 'Draft', read: true, flagged: false, color: '#8E8E93', body });
+  document.getElementById('mailComposeOverlay').style.display = 'none';
+  showNotifToast('Mail', 'Draft saved to Drafts', 'Mail.app');
+  mailRender();
+}
+
+function mailComposeSend() {
+  const to = document.getElementById('mailComposeTo').value.trim();
+  const subject = document.getElementById('mailComposeSubject').value.trim() || 'No Subject';
+  const body = document.getElementById('mailComposeBody').value.trim();
+  if (!to) { showNotifToast('Mail', 'Please enter a recipient address.', 'Mail.app'); return; }
+  const id = Math.max(...mailEmails.map(e => e.id)) + 1;
+  mailEmails.push({ id, mailbox: 'sent', from: 'You', subject, preview: body.slice(0, 60) || '(no content)', date: 'Just now', read: true, flagged: false, color: '#0A84FF', body });
+  document.getElementById('mailComposeOverlay').style.display = 'none';
+  showNotifToast('Mail', 'Message sent to ' + to.split(',')[0].trim(), 'Mail.app');
+  mailState.mailbox = 'sent';
+  document.querySelectorAll('.mail-mailbox').forEach(i => i.classList.toggle('active', i.dataset.mailbox === 'sent'));
+  mailState.selectedId = null;
   mailRender();
 }
 

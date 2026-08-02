@@ -1470,6 +1470,24 @@
         </div>
       </div>
 
+      <!-- ========== MAIL COMPOSE ========== -->
+      <div class="mail-compose-overlay" id="mailComposeOverlay" style="display:none;">
+        <div class="mail-compose-window">
+          <div class="mail-compose-titlebar">
+            <span>New Message</span>
+            <button class="mail-compose-close" onclick="mailComposeCancel()" title="Close"><i class="ri-close-line"></i></button>
+          </div>
+          <div class="mail-compose-field"><span>To:</span><input type="text" id="mailComposeTo" placeholder="To:"></div>
+          <div class="mail-compose-field"><span>Subject:</span><input type="text" id="mailComposeSubject" placeholder="Subject:"></div>
+          <div class="mail-compose-attach" id="mailComposeAttach"><i class="ri-attachment-line"></i><span>Attach files</span></div>
+          <textarea class="mail-compose-body" id="mailComposeBody" placeholder="Write your message..."></textarea>
+          <div class="mail-compose-footer">
+            <button class="mail-compose-draft" onclick="mailComposeSaveDraft()">Save as Draft</button>
+            <button class="mail-compose-send" onclick="mailComposeSend()"><i class="ri-send-plane-line"></i> Send</button>
+          </div>
+        </div>
+      </div>
+
       <!-- ========== CONTACTS ========== -->
       <div class="mac-window app-window" id="contacts-window" style="width:760px;height:480px;top:60px;left:120px;display:none;">
         <div class="window-titlebar">
