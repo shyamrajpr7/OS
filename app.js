@@ -5084,7 +5084,7 @@ document.querySelectorAll('.activity-tab').forEach(el => {
 
 // Global keyboard shortcuts
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { hideContextMenu(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); }
+  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); }
   // Cmd+F or Ctrl+F -> focus search
   if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
   // Cmd+Shift+3 -> full screenshot
@@ -5155,25 +5155,89 @@ document.querySelectorAll('.launchpad-item').forEach(el => {
 // Calendar - clock click toggles calendar
 document.getElementById('menuClock').addEventListener('click', toggleCalendar);
 
-// Window menu dropdown
-document.getElementById('menuWindow').addEventListener('click', e => {
-  e.stopPropagation();
-  document.getElementById('windowDropdown').classList.toggle('visible');
-});
-document.querySelectorAll('#windowDropdown .menu-dropdown-item').forEach(el => {
-  el.addEventListener('click', () => {
-    const action = el.dataset.action;
-    if (action === 'cascade') cascadeWindows();
-    else if (action === 'tileLeft') tileWindow('left');
-    else if (action === 'tileRight') tileWindow('right');
-    else if (action === 'minimizeAll') getOpenWindows().forEach(w => minimizeWindow(w.id));
-    document.getElementById('windowDropdown').classList.remove('visible');
+// Menu bar dropdowns (File / Edit / View / Go / Window / Help)
+function closeAllMenuDropdowns() {
+  document.querySelectorAll('.menu-dropdown').forEach(d => d.classList.remove('visible'));
+}
+function toggleMenuDropdown(name, triggerEl) {
+  const dd = document.querySelector('.menu-dropdown[data-menu="' + name + '"]');
+  if (!dd) return;
+  const willShow = !dd.classList.contains('visible');
+  closeAllMenuDropdowns();
+  if (willShow) {
+    const barRect = document.querySelector('.menu-bar-left').getBoundingClientRect();
+    const itemRect = triggerEl.getBoundingClientRect();
+    dd.style.left = (itemRect.left - barRect.left) + 'px';
+    dd.classList.add('visible');
+  }
+}
+document.querySelectorAll('.menu-item[data-menu]').forEach(item => {
+  item.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleMenuDropdown(item.dataset.menu, item);
   });
 });
-document.addEventListener('click', () => {
-  const dd = document.getElementById('windowDropdown');
-  if (dd) dd.classList.remove('visible');
+document.querySelectorAll('.menu-dropdown .menu-dropdown-item[data-action]').forEach(el => {
+  el.addEventListener('click', () => handleMenuAction(el.dataset.action));
 });
+document.addEventListener('click', () => closeAllMenuDropdowns());
+
+function handleMenuAction(action) {
+  switch (action) {
+    case 'newFolder':
+      contextTarget = null; handleContextAction('newFolder'); break;
+    case 'newTextDoc': {
+      const node = getNode(currentPath);
+      if (node && node.type === 'folder') {
+        let n = 1; let name = 'Untitled.txt';
+        while (node.children.some(c => (typeof c === 'string' ? c : c.name) === name)) { name = 'Untitled ' + n + '.txt'; n++; }
+        node.children.push({ name, type: 'file', icon: 'doc', size: '0 KB', kind: 'Plain Text', date: 'Just now' });
+        updateFinder();
+      }
+      break;
+    }
+    case 'closeWindow':
+      if (focusedApp && focusedApp !== 'finder-window') closeWindow(focusedApp);
+      break;
+    case 'minimizeWindow':
+      if (focusedApp && focusedApp !== 'finder-window') minimizeWindow(focusedApp);
+      break;
+    case 'undo': showNotifToast('TextEdit', 'Undo', 'TextEdit.app'); break;
+    case 'redo': showNotifToast('TextEdit', 'Redo', 'TextEdit.app'); break;
+    case 'cut': showNotifToast('TextEdit', 'Cut to Clipboard', 'TextEdit.app'); break;
+    case 'copy': {
+      const children = getChildren(currentPath);
+      const sorted = sortItems(children);
+      if (selectedItems.length > 0 && sorted[selectedItems[0]]) { contextTarget = sorted[selectedItems[0]]; handleContextAction('copy'); showNotifToast('Finder', 'Copied "' + contextTarget.name + '"', 'Finder'); }
+      break;
+    }
+    case 'paste': handleContextAction('paste'); break;
+    case 'selectAll': if (finderIsActive()) selectAllItems(); break;
+    case 'asIcons': viewMode = 'grid'; updateFinder(); break;
+    case 'asList': viewMode = 'list'; updateFinder(); break;
+    case 'useStacks': toggleDesktopStacks(); break;
+    case 'toggleToolbar': {
+      const tb = document.querySelector('.finder-toolbar');
+      if (tb) tb.style.display = tb.style.display === 'none' ? '' : 'none';
+      break;
+    }
+    case 'goRecents': navigateTo('/Users/shyamraj/Desktop'); break;
+    case 'goDesktop': navigateTo('/Users/shyamraj/Desktop'); break;
+    case 'goDocuments': navigateTo('/Users/shyamraj/Documents'); break;
+    case 'goDownloads': navigateTo('/Users/shyamraj/Downloads'); break;
+    case 'goApplications': navigateTo('/Applications'); break;
+    case 'goHome': navigateTo('/Users/shyamraj'); break;
+    case 'goiCloud': navigateTo('/Users/shyamraj/iCloud Drive'); break;
+    case 'cascade': cascadeWindows(); break;
+    case 'tileLeft': tileWindow('left'); break;
+    case 'tileRight': tileWindow('right'); break;
+    case 'minimizeAll': getOpenWindows().forEach(w => minimizeWindow(w.id)); break;
+    case 'helpShortcuts': toggleShortcuts(); break;
+    case 'helpAbout': openAboutMac(); break;
+    case 'helpSystemSettings': openApp('System Settings.app'); break;
+  }
+  closeAllMenuDropdowns();
+}
 document.getElementById('calPrev').addEventListener('click', e => { e.stopPropagation(); calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
 document.getElementById('calNext').addEventListener('click', e => { e.stopPropagation(); calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
 initCalendar();

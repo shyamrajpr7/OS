@@ -30,14 +30,53 @@
       </div>
       <div class="menu-app-name" id="menuAppName"><strong>Finder</strong></div>
       <div class="menu-items" id="menuItems">
-        <span class="menu-item">File</span><span class="menu-item">Edit</span><span class="menu-item">View</span><span class="menu-item">Go</span><span class="menu-item" id="menuWindow">Window</span><span class="menu-item">Help</span>
+        <span class="menu-item" data-menu="file">File</span><span class="menu-item" data-menu="edit">Edit</span><span class="menu-item" data-menu="view">View</span><span class="menu-item" data-menu="go">Go</span><span class="menu-item" data-menu="window" id="menuWindow">Window</span><span class="menu-item" data-menu="help">Help</span>
       </div>
-      <div class="window-dropdown" id="windowDropdown">
+      <div class="menu-dropdown" id="fileDropdown" data-menu="file">
+        <div class="menu-dropdown-item" data-action="newFolder">New Folder</div>
+        <div class="menu-dropdown-item" data-action="newTextDoc">New Text Document</div>
+        <div class="menu-separator"></div>
+        <div class="menu-dropdown-item" data-action="closeWindow">Close Window</div>
+        <div class="menu-dropdown-item" data-action="minimizeWindow">Minimize</div>
+      </div>
+      <div class="menu-dropdown" id="editDropdown" data-menu="edit">
+        <div class="menu-dropdown-item" data-action="undo">Undo</div>
+        <div class="menu-dropdown-item" data-action="redo">Redo</div>
+        <div class="menu-separator"></div>
+        <div class="menu-dropdown-item" data-action="cut">Cut</div>
+        <div class="menu-dropdown-item" data-action="copy">Copy</div>
+        <div class="menu-dropdown-item" data-action="paste">Paste</div>
+        <div class="menu-dropdown-item" data-action="selectAll">Select All</div>
+      </div>
+      <div class="menu-dropdown" id="viewDropdown" data-menu="view">
+        <div class="menu-dropdown-item" data-action="asIcons">as Icons</div>
+        <div class="menu-dropdown-item" data-action="asList">as List</div>
+        <div class="menu-separator"></div>
+        <div class="menu-dropdown-item" data-action="useStacks">Use Stacks</div>
+        <div class="menu-dropdown-item" data-action="toggleToolbar">Show/Hide Toolbar</div>
+      </div>
+      <div class="menu-dropdown" id="goDropdown" data-menu="go">
+        <div class="menu-dropdown-item" data-action="goRecents">Recents</div>
+        <div class="menu-separator"></div>
+        <div class="menu-dropdown-item" data-action="goDesktop">Desktop</div>
+        <div class="menu-dropdown-item" data-action="goDocuments">Documents</div>
+        <div class="menu-dropdown-item" data-action="goDownloads">Downloads</div>
+        <div class="menu-dropdown-item" data-action="goApplications">Applications</div>
+        <div class="menu-dropdown-item" data-action="goHome">Home</div>
+        <div class="menu-dropdown-item" data-action="goiCloud">iCloud Drive</div>
+      </div>
+      <div class="menu-dropdown" id="windowDropdown" data-menu="window">
         <div class="menu-dropdown-item" data-action="cascade">Cascade Windows</div>
         <div class="menu-dropdown-item" data-action="tileLeft">Tile Window to Left of Screen</div>
         <div class="menu-dropdown-item" data-action="tileRight">Tile Window to Right of Screen</div>
         <div class="menu-separator"></div>
         <div class="menu-dropdown-item" data-action="minimizeAll">Minimize All</div>
+      </div>
+      <div class="menu-dropdown" id="helpDropdown" data-menu="help">
+        <div class="menu-dropdown-item" data-action="helpShortcuts">Keyboard Shortcuts</div>
+        <div class="menu-dropdown-item" data-action="helpAbout">About Thread OS</div>
+        <div class="menu-separator"></div>
+        <div class="menu-dropdown-item" data-action="helpSystemSettings">System Settings…</div>
       </div>
     </div>
     <div class="menu-bar-right">
