@@ -1408,6 +1408,7 @@ body.menubar-hidden.menubar-revealed .menu-bar { transform: translateY(0); }
 .context-menu-danger { color: var(--mac-red); }
 .context-menu-danger:hover { background: var(--mac-red); color: white; }
 .context-menu-separator { height: 1px; background: var(--mac-border); margin: 4px 8px; }
+.context-menu-subitem { padding-left: 30px; font-size: 12.5px; }
 
 /* ===================== WALLPAPER PICKER ===================== */
 .wallpaper-picker-overlay {

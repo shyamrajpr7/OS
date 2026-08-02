@@ -5525,6 +5525,74 @@ document.querySelectorAll('.dock-item').forEach(el => {
 document.getElementById('desktop').addEventListener('contextmenu', e => showContextMenu(e, null));
 document.addEventListener('click', e => { if (!e.target.closest('.context-menu')) hideContextMenu(); });
 
+// ---- Dock Icon Context Menu ----
+let dockOpts = {};
+try { dockOpts = JSON.parse(localStorage.getItem('threados_dock_opts') || '{}'); } catch (e) { dockOpts = {}; }
+function saveDockOpts() { localStorage.setItem('threados_dock_opts', JSON.stringify(dockOpts)); }
+
+document.querySelectorAll('.dock-item').forEach(el => {
+  el.addEventListener('contextmenu', e => showDockContextMenu(e, el));
+});
+
+function showDockContextMenu(e, el) {
+  e.preventDefault();
+  e.stopPropagation();
+  const appName = el.dataset.app;
+  if (!appName || appName === 'trash' || appName === 'launchpad') return;
+  contextTarget = { app: appName };
+  const menu = document.getElementById('contextMenu');
+  menu.style.left = e.clientX + 'px';
+  menu.style.top = e.clientY + 'px';
+  const keepIn = dockOpts[appName]?.keepInDock !== false;
+  const atLogin = loginItems.some(i => i.name === appName);
+  const check = '<i class="ri-check-line"></i>';
+  const ghost = '<i class="ri-check-line" style="visibility:hidden;"></i>';
+  menu.innerHTML = `
+    <div class="context-menu-item" data-action="open"><i class="ri-folder-open-line"></i>Open</div>
+    <div class="context-menu-item" data-action="showAll"><i class="ri-apps-2-line"></i>Show All Windows</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="options"><i class="ri-settings-3-line"></i>Options</div>
+    <div class="context-menu-item context-menu-subitem" data-action="keepInDock">${keepIn ? check : ghost}Keep in Dock</div>
+    <div class="context-menu-item context-menu-subitem" data-action="openAtLogin">${atLogin ? check : ghost}Open at Login</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="quit"><i class="ri-close-line"></i>Quit</div>
+  `;
+  menu.classList.add('visible');
+  menu.querySelectorAll('.context-menu-item[data-action]').forEach(it => {
+    it.addEventListener('click', () => handleDockMenuAction(it.dataset.action, appName));
+  });
+}
+
+function handleDockMenuAction(action, appName) {
+  const winId = appIdMap[appName];
+  switch (action) {
+    case 'open': openApp(appName); break;
+    case 'showAll': {
+      if (winId) {
+        const w = document.getElementById(winId);
+        if (w && w.style.display !== 'none') focusWindow(winId); else openApp(appName);
+      }
+      break;
+    }
+    case 'keepInDock':
+      dockOpts[appName] = dockOpts[appName] || {};
+      dockOpts[appName].keepInDock = dockOpts[appName].keepInDock === false;
+      saveDockOpts();
+      break;
+    case 'openAtLogin':
+      if (loginItems.some(i => i.name === appName)) {
+        loginItems.splice(loginItems.findIndex(i => i.name === appName), 1);
+      } else {
+        loginItems.push({ name: appName, icon: 'ri-apps-2-line', color: '#AF52DE', enabled: true, kind: 'login' });
+        showNotifToast('System Settings', appName + ' will open at login', 'System Settings.app');
+      }
+      renderLoginItems();
+      break;
+    case 'quit': if (winId) closeWindow(winId); break;
+  }
+  hideContextMenu();
+}
+
 // Wallpaper picker
 document.getElementById('wallpaperPickerClose').addEventListener('click', closeWallpaperPicker);
 document.getElementById('wallpaperPickerOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeWallpaperPicker(); });
