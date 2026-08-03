@@ -853,6 +853,63 @@ const appIdMap = {
   'Screen Time.app': 'screentime-window'
 };
 
+const dockIconMap = {
+  'Finder': `<svg width="32" height="32" viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="34" rx="4" fill="#47A3FF"/><rect x="4" y="8" width="40" height="10" rx="4" fill="#1E6FD9"/><circle cx="14" cy="13" r="2" fill="#FF5F57"/><circle cx="20" cy="13" r="2" fill="#FEBC2E"/><circle cx="26" cy="13" r="2" fill="#28C840"/></svg>`,
+  'Safari.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#006CFF"/><circle cx="24" cy="24" r="16" fill="none" stroke="white" stroke-width="1.5"/><polygon points="24,8 28,22 24,24 20,22" fill="white"/><polygon points="24,40 20,26 24,24 28,26" fill="rgba(255,255,255,0.5)"/><polygon points="8,24 22,20 24,24 22,28" fill="rgba(255,255,255,0.5)"/><polygon points="40,24 26,28 24,24 26,20" fill="white"/></svg>`,
+  'Google Chrome.app': `<svg width="32" height="32" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#fff"/><circle cx="24" cy="24" r="8" fill="#4285F4"/><path d="M24,4 A20,20 0 0,1 41.3,14 L28,14 A8,8 0 0,0 16.5,20 Z" fill="#EA4335"/><path d="M41.3,14 A20,20 0 0,1 24,44 L24,32 A8,8 0 0,0 31.5,20 Z" fill="#FBBC05"/><path d="M24,44 A20,20 0 0,1 6.7,14 L20,24 A8,8 0 0,0 24,32 Z" fill="#34A853"/><circle cx="24" cy="24" r="8" fill="#4285F4"/><circle cx="24" cy="24" r="5" fill="white"/></svg>`,
+  'YouTube.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#FF0000"/><polygon points="19,14 19,34 35,24" fill="white"/></svg>`,
+  'Notes.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FFCC02"/><rect x="8" y="6" width="32" height="36" rx="3" fill="#fff"/><g stroke="#e0d8b0" stroke-width="1.2"><line x1="12" y1="14" x2="36" y2="14"/><line x1="12" y1="20" x2="36" y2="20"/><line x1="12" y1="26" x2="36" y2="26"/><line x1="12" y1="32" x2="30" y2="32"/></g></svg>`,
+  'Music.app': `<svg width="32" height="32" viewBox="0 0 48 48"><defs><linearGradient id="mg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FC5C7D"/><stop offset="100%" stop-color="#6A82FB"/></linearGradient></defs><rect width="48" height="48" rx="10" fill="url(#mg)"/><circle cx="20" cy="30" r="5" fill="none" stroke="white" stroke-width="2.5"/><path d="M25,30 V12 L36,9 V27" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  'Disk Utility.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1A1A2E"/><rect x="12" y="10" width="24" height="28" rx="3" fill="none" stroke="#4FC3F7" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="none" stroke="#4FC3F7" stroke-width="2"/><circle cx="24" cy="24" r="2" fill="#4FC3F7"/></svg>`,
+  'Clock.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="16" fill="none" stroke="#FF9500" stroke-width="2.5"/><line x1="24" y1="24" x2="24" y2="14" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="24" x2="31" y2="24" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="24" r="2" fill="#FF9500"/></svg>`,
+  'Reminders.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="18" cy="18" r="5" fill="none" stroke="#FF453A" stroke-width="2.5"/><circle cx="30" cy="18" r="5" fill="none" stroke="#FF9500" stroke-width="2.5"/><circle cx="18" cy="30" r="5" fill="none" stroke="#30D158" stroke-width="2.5"/><circle cx="30" cy="30" r="5" fill="none" stroke="#007AFF" stroke-width="2.5"/></svg>`,
+  'Calculator.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="6" width="32" height="10" rx="3" fill="#505050"/><g fill="#333"><rect x="8" y="20" width="7" height="7" rx="2"/><rect x="17" y="20" width="7" height="7" rx="2"/><rect x="26" y="20" width="7" height="7" rx="2"/><rect x="35" y="20" width="7" height="7" rx="2"/><rect x="8" y="29" width="7" height="7" rx="2"/><rect x="17" y="29" width="7" height="7" rx="2"/><rect x="26" y="29" width="7" height="7" rx="2"/><rect x="35" y="29" width="7" height="7" rx="2"/><rect x="8" y="38" width="16" height="7" rx="2"/><rect x="26" y="38" width="16" height="7" rx="2"/></g><g fill="#FF9500"><rect x="35" y="20" width="7" height="7" rx="2"/><rect x="35" y="29" width="7" height="7" rx="2"/><rect x="35" y="38" width="7" height="7" rx="2"/></g></svg>`,
+  'Terminal.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1E1E1E"/><rect x="4" y="4" width="40" height="40" rx="6" fill="#0D1117"/><polyline points="12,18 20,26 12,34" stroke="#28C840" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="24" y1="34" x2="36" y2="34" stroke="#C9D1D9" stroke-width="3" stroke-linecap="round"/></svg>`,
+  'Activity Monitor.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1A1A2E"/><polyline points="6,30 14,18 22,26 30,12 38,20 42,14" stroke="#28C840" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  'System Settings.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#6B6B7B"/><circle cx="24" cy="24" r="10" fill="none" stroke="white" stroke-width="3"/><circle cx="24" cy="24" r="4" fill="white"/><line x1="24" y1="6" x2="24" y2="12" stroke="white" stroke-width="3" stroke-linecap="round"/><line x1="24" y1="36" x2="24" y2="42" stroke="white" stroke-width="3" stroke-linecap="round"/><line x1="6" y1="24" x2="12" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/><line x1="36" y1="24" x2="42" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>`,
+  'Preview.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#4A90D9"/><circle cx="20" cy="18" r="5" fill="white"/><path d="M10 34l10-10 6 6 8-8 8 8" stroke="white" stroke-width="2.5" fill="none" stroke-linejoin="round"/></svg>`,
+  'TextEdit.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#4A90D9"/><rect x="10" y="8" width="28" height="32" rx="3" fill="white"/><g stroke="#ccc" stroke-width="1"><line x1="14" y1="16" x2="34" y2="16"/><line x1="14" y1="21" x2="34" y2="21"/><line x1="14" y1="26" x2="34" y2="26"/><line x1="14" y1="31" x2="28" y2="31"/></g></svg>`,
+  'Console.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="8" width="36" height="32" rx="4" fill="#0D1117"/><text x="12" y="22" font-family="monospace" font-size="10" fill="#28C840">&gt;_</text><line x1="12" y1="28" x2="36" y2="28" stroke="#FF453A" stroke-width="1.5" opacity="0.5"/><line x1="12" y1="32" x2="30" y2="32" stroke="#FF9500" stroke-width="1.5" opacity="0.4"/><line x1="12" y1="36" x2="34" y2="36" stroke="#5AC8FA" stroke-width="1.5" opacity="0.3"/></svg>`,
+  'Downloads.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#0A84FF"/><path d="M24 8v20m0 0l-8-8m8 8l8-8" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 36h28" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>`,
+  'AirDrop.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><path d="M14 34a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="24" cy="20" r="4" fill="white"/><circle cx="24" cy="28" r="2" fill="white"/></svg>`,
+  'Time Machine.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="14" fill="none" stroke="#007AFF" stroke-width="2.5"/><path d="M24 14v12l8 5" stroke="#007AFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 24 A10 10 0 0 1 24 14" stroke="#5AC8FA" stroke-width="2" stroke-linecap="round" fill="none"/></svg>`,
+  'Screen Recording.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF3B30"/><circle cx="24" cy="24" r="14" fill="none" stroke="white" stroke-width="2.5"/><circle cx="24" cy="24" r="5" fill="white"/><rect x="16" y="30" width="16" height="4" rx="2" fill="white" opacity="0.5"/></svg>`,
+  'Weather.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><circle cx="24" cy="16" r="6" fill="#FFD60A"/><path d="M14 30a8 8 0 0 1 0-16c.6 0 1.2.1 1.8.2a10 10 0 0 1 19.2 2.8A6 6 0 0 1 34 34H14z" fill="white"/></svg>`,
+  'App Store.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><path d="M14 16h4l6 12 6-12h4l-8 16v6h-4v-6l-8-16z" fill="white"/><circle cx="24" cy="12" r="3" fill="white"/></svg>`,
+  'Dictionary.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5856D6"/><rect x="8" y="6" width="32" height="36" rx="3" fill="white"/><g stroke="#5856D6" stroke-width="1.2"><line x1="14" y1="16" x2="34" y2="16"/><line x1="14" y1="22" x2="34" y2="22"/><line x1="14" y1="28" x2="34" y2="28"/><line x1="14" y1="34" x2="28" y2="34"/></g><text x="24" y="13" text-anchor="middle" font-family="serif" font-size="9" fill="#5856D6" font-weight="bold">A</text></svg>`,
+  'Voice Memos.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9500"/><path d="M24 14v10a6 6 0 0 0 6-6v-4a6 6 0 0 0-12 0v4a6 6 0 0 0 6 6m-8-6a8 8 0 0 0 16 0M16 28h4v6h8v-6h4l-8 12z" fill="white"/></svg>`,
+  'Stickies.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FFCC02"/><rect x="8" y="6" width="32" height="32" rx="3" fill="#FFF9C4"/><text x="24" y="22" text-anchor="middle" font-size="16" fill="#FF9500">📝</text></svg>`,
+  'System Report.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="8" width="32" height="32" rx="4" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><text x="24" y="27" text-anchor="middle" font-family="monospace" font-size="10" fill="#5AC8FA">SYS</text></svg>`,
+  'Network Utility.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#30D158"/><path d="M14 24l6-8 8 10 6-6 6 8" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="16" r="3" fill="white"/></svg>`,
+  'Font Book.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><text x="24" y="30" text-anchor="middle" font-family="Georgia" font-size="24" fill="white" font-weight="bold">Aa</text></svg>`,
+  'Mail.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#007AFF"/><rect x="6" y="14" width="36" height="24" rx="4" fill="white"/><path d="M6 16l18 12 18-12" stroke="#4DA6FF" stroke-width="2.5" fill="none" stroke-linejoin="round"/></svg>`,
+  'Contacts.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 20a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm-8 4h16l3 16H13l3-16z" fill="white"/></svg>`,
+  'Photos.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF6B9D"/><circle cx="19" cy="19" r="4" fill="white"/><path d="M10 12a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V12z" fill="none" stroke="white" stroke-width="2.5"/><path d="M12 36l10-10 6 6 8-8 8 8" stroke="white" stroke-width="2.5" fill="none" stroke-linejoin="round"/></svg>`,
+  'Maps.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#00A84F"/><path d="M24 8c-7 0-12 5.2-12 11.6 0 8.6 12 20.4 12 20.4s12-11.8 12-20.4C36 13.2 31 8 24 8z" fill="white"/><circle cx="24" cy="19" r="4.5" fill="#00A84F"/></svg>`,
+  'FaceTime.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#34C759"/><path d="M16 18l12-6v24l-12-6V18z" fill="white"/><path d="M30 21l8-4v14l-8-4V21z" fill="white" opacity="0.85"/></svg>`,
+  'QuickTime Player.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#333"/><path d="M20 20v10l9-5-9-5z" fill="white"/><rect x="6" y="14" width="36" height="22" rx="3" fill="#1C1C1E" stroke="#FF6B9D" stroke-width="1.5"/></svg>`,
+  'Screen Time.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5E5CE6"/><path d="M8 20h32v6H8z" fill="white"/><path d="M8 32h32v6H8z" fill="white" opacity="0.75"/><path d="M24 8v6" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="8" r="2" fill="#FFD60A"/></svg>`
+};
+
+const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
+
+function renderRunningDock() {
+  const container = document.getElementById('dockRunning');
+  if (!container) return;
+  container.innerHTML = '';
+  Object.entries(appIdMap).forEach(([app, winId]) => {
+    if (dockPinned.includes(app)) return;
+    const win = document.getElementById(winId);
+    if (!win || win.classList.contains('minimized')) return;
+    const item = document.createElement('div');
+    item.className = 'dock-item';
+    item.dataset.app = app;
+    item.dataset.tooltip = app.replace('.app', '');
+    item.innerHTML = `<div class="dock-item-img">${dockIconMap[app] || dockIconMap.Finder}</div><div class="dock-indicator active"></div>`;
+    container.appendChild(item);
+  });
+}
+
 function openApp(appName) {
   const winId = appIdMap[appName];
   if (!winId) return;
@@ -877,6 +934,7 @@ function openApp(appName) {
   }
 
   if (dockItem) { const ind = dockItem.querySelector('.dock-indicator'); if (ind) ind.classList.add('active'); }
+  renderRunningDock();
 
   if (winId === 'terminal-window') initTerminal();
   if (winId === 'activity-window') initActivityMonitor();
@@ -942,6 +1000,7 @@ function doCloseWindow(winId) {
   if (winId === 'activity-window') stopActivityMonitor();
   const entry = Object.entries(appIdMap).find(([, v]) => v === winId);
   if (entry) { const dockItem = document.querySelector(`.dock-item[data-app="${entry[0]}"]`); if (dockItem) { const ind = dockItem.querySelector('.dock-indicator'); if (ind) ind.classList.remove('active'); } }
+  renderRunningDock();
 }
 
 function minimizeWindow(winId) {
@@ -979,6 +1038,7 @@ function minimizeWindow(winId) {
     win.style.transform = '';
     win.style.opacity = '';
     win.style.transformOrigin = '';
+    renderRunningDock();
   }, 400);
 }
 
@@ -5294,14 +5354,6 @@ function renderNotifCenter() {
   });
 }
 
-// Clear badge when dock item clicked
-document.querySelectorAll('.dock-item').forEach(el => {
-  el.addEventListener('click', () => {
-    const appName = el.dataset.app;
-    clearNotifBadge(appName);
-  });
-});
-
 // Simulate periodic notifications
 const notifMessages = [
   { title: 'Mail', body: 'New message from Team Lead', app: 'Finder' },
@@ -5495,30 +5547,31 @@ function renderStacks() {
 }
 
 // Dock clicks
-document.querySelectorAll('.dock-item').forEach(el => {
-  el.addEventListener('click', () => {
-    const appName = el.dataset.app;
-    // Clear badge on click
-    const badge = el.querySelector('.dock-badge');
-    if (badge) badge.remove();
-    if (appName === 'trash') { showEmptyTrashDialog(); return; }
-    if (appName === 'launchpad') { toggleLaunchpad(); return; }
-    if (appName === 'Finder' || appName === 'finder') {
-      // Finder: toggle visibility
-      const finderWin = document.getElementById('finder-window');
-      if (finderWin.classList.contains('minimized')) { finderWin.classList.remove('minimized'); focusWindow('finder-window'); }
-      else if (finderWin.classList.contains('focused')) { finderWin.classList.add('minimized'); }
-      else focusWindow('finder-window');
-      return;
-    }
-    // Check if the app window is already open
-    const winId = appIdMap[appName];
-    if (winId) {
-      const win = document.getElementById(winId);
-      if (win && !win.classList.contains('minimized') && win.classList.contains('focused')) { minimizeWindow(winId); return; }
-      openApp(appName);
-    }
-  });
+document.getElementById('dock').addEventListener('click', e => {
+  const el = e.target.closest('.dock-item');
+  if (!el) return;
+  const appName = el.dataset.app;
+  // Clear badge on click
+  const badge = el.querySelector('.dock-badge');
+  if (badge) badge.remove();
+  clearNotifBadge(appName);
+  if (appName === 'trash') { showEmptyTrashDialog(); return; }
+  if (appName === 'launchpad') { toggleLaunchpad(); return; }
+  if (appName === 'Finder' || appName === 'finder') {
+    // Finder: toggle visibility
+    const finderWin = document.getElementById('finder-window');
+    if (finderWin.classList.contains('minimized')) { finderWin.classList.remove('minimized'); focusWindow('finder-window'); }
+    else if (finderWin.classList.contains('focused')) { finderWin.classList.add('minimized'); }
+    else focusWindow('finder-window');
+    return;
+  }
+  // Check if the app window is already open
+  const winId = appIdMap[appName];
+  if (winId) {
+    const win = document.getElementById(winId);
+    if (win && !win.classList.contains('minimized') && win.classList.contains('focused')) { minimizeWindow(winId); return; }
+    openApp(appName);
+  }
 });
 
 // Desktop right-click context menu
@@ -5530,9 +5583,13 @@ let dockOpts = {};
 try { dockOpts = JSON.parse(localStorage.getItem('threados_dock_opts') || '{}'); } catch (e) { dockOpts = {}; }
 function saveDockOpts() { localStorage.setItem('threados_dock_opts', JSON.stringify(dockOpts)); }
 
-document.querySelectorAll('.dock-item').forEach(el => {
-  el.addEventListener('contextmenu', e => showDockContextMenu(e, el));
+document.getElementById('dock').addEventListener('contextmenu', e => {
+  const el = e.target.closest('.dock-item');
+  if (!el) return;
+  showDockContextMenu(e, el);
 });
+
+renderRunningDock();
 
 function showDockContextMenu(e, el) {
   e.preventDefault();
