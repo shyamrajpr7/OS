@@ -1336,15 +1336,15 @@ body.menubar-hidden.menubar-revealed .menu-bar { transform: translateY(0); }
   right: -360px;
   width: 340px;
   bottom: 0;
-  background: rgba(30, 30, 42, 0.92);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border-left: 1px solid var(--mac-border);
+  background: rgba(28, 28, 40, 0.8);
+  backdrop-filter: blur(60px) saturate(180%);
+  -webkit-backdrop-filter: blur(60px) saturate(180%);
+  border-left: 1px solid rgba(255,255,255,0.08);
   z-index: 9500;
   display: flex;
   flex-direction: column;
-  transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: -8px 0 32px rgba(0,0,0,0.3);
+  transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: -12px 0 40px rgba(0,0,0,0.35);
 }
 .notification-center.open {
   right: 0;
@@ -1353,13 +1353,14 @@ body.menubar-hidden.menubar-revealed .menu-bar { transform: translateY(0); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px 10px;
-  border-bottom: 1px solid var(--mac-border);
+  padding: 16px 16px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 .notif-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--mac-text);
+  letter-spacing: -0.2px;
 }
 .notif-clear-btn {
   background: none;
@@ -1368,12 +1369,12 @@ body.menubar-hidden.menubar-revealed .menu-bar { transform: translateY(0); }
   font-size: 12px;
   font-family: var(--font-system);
   cursor: pointer;
-  padding: 2px 8px;
-  border-radius: 4px;
-  transition: background 0.12s;
+  padding: 3px 10px;
+  border-radius: 5px;
+  transition: all 0.15s;
 }
 .notif-clear-btn:hover {
-  background: rgba(0,122,255,0.15);
+  background: rgba(99,102,241,0.15);
 }
 .notif-list {
   flex: 1;
@@ -1384,19 +1385,21 @@ body.menubar-hidden.menubar-revealed .menu-bar { transform: translateY(0); }
   gap: 8px;
 }
 .notif-card {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid var(--mac-border);
-  border-radius: 10px;
-  padding: 10px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 12px 14px;
   cursor: default;
-  transition: background 0.15s, transform 0.2s;
-  animation: notifSlideIn 0.3s cubic-bezier(0.16,1,0.3,1);
+  transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+  animation: notifSlideIn 0.35s cubic-bezier(0.16,1,0.3,1);
 }
 .notif-card:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.08);
+  transform: scale(1.01);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 @keyframes notifSlideIn {
-  from { opacity: 0; transform: translateX(20px); }
+  from { opacity: 0; transform: translateX(30px); }
   to { opacity: 1; transform: translateX(0); }
 }
 .notif-card-header {
@@ -1421,7 +1424,7 @@ body.menubar-hidden.menubar-revealed .menu-bar { transform: translateY(0); }
 .notif-card-body {
   font-size: 13px;
   color: var(--mac-text);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 .notif-empty {
   display: flex;
@@ -1442,14 +1445,14 @@ body.menubar-hidden.menubar-revealed .menu-bar { transform: translateY(0); }
 }
 
 /* CONTEXT MENU */
-.context-menu { position: fixed; background: var(--mac-window-bg); backdrop-filter: blur(40px); border: 1px solid var(--mac-border); border-radius: 8px; padding: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 10001; min-width: 200px; display: none; }
-.context-menu.visible { display: block; }
-.context-menu-item { display: flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 4px; font-size: 13px; color: var(--mac-text); cursor: pointer; transition: background 0.1s; }
+.context-menu { position: fixed; background: rgba(28, 28, 40, 0.92); backdrop-filter: blur(60px) saturate(180%); -webkit-backdrop-filter: blur(60px) saturate(180%); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 5px; box-shadow: 0 12px 48px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(0,0,0,0.15); z-index: 10001; min-width: 200px; display: none; }
+.context-menu.visible { display: block; animation: dropdownSlide 0.12s cubic-bezier(0.16,1,0.3,1); }
+.context-menu-item { display: flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 6px; font-size: 13px; color: var(--mac-text); cursor: pointer; transition: background 0.1s; }
 .context-menu-item:hover { background: var(--mac-accent); color: white; }
 .context-menu-item i { width: 14px; height: 14px; opacity: 0.7; }
 .context-menu-danger { color: var(--mac-red); }
 .context-menu-danger:hover { background: var(--mac-red); color: white; }
-.context-menu-separator { height: 1px; background: var(--mac-border); margin: 4px 8px; }
+.context-menu-separator { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 8px; }
 .context-menu-subitem { padding-left: 30px; font-size: 12.5px; }
 
 /* ===================== WALLPAPER PICKER ===================== */
