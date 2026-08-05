@@ -974,6 +974,7 @@ function openApp(appName) {
   if (winId === 'screentime-window') initScreenTime();
   if (winId === 'colormeter-window') initColorMeter();
   if (winId === 'printqueue-window') initPrintQueue();
+  if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
     requestPermission(appName, 'camera').then(ok => { if (!ok) showNotifToast('FaceTime', 'Camera access denied', 'FaceTime.app'); });
@@ -2890,6 +2891,7 @@ function switchSettingsPanel(panel) {
   if (panel === 'login-items') renderLoginItems();
   if (panel === 'notifications') renderNotificationsPanel();
   if (panel === 'keyboard') initKbPanel();
+  if (panel === 'general') renderStorage();
 }
 
 // ---- Desktop & Dock Settings ----
@@ -8935,6 +8937,106 @@ function pqRefreshJobs() {
     }
   });
   renderPrintQueue();
+}
+
+// ---- Storage Management ----
+const stgTotal = 512;
+let stgCategories = [
+  { key: 'apps', name: 'Applications', size: 92.6, color: '#0A84FF', icon: 'ri-apps-2-line',
+    items: [ { name: 'Final Cut Pro', size: 18.2, sub: 'Video Editing' }, { name: 'Xcode', size: 15.4, sub: 'Developer Tools' }, { name: 'Logic Pro', size: 8.9, sub: 'Music' }, { name: 'Photoshop', size: 5.6, sub: 'Graphics' }, { name: 'GarageBand', size: 2.1, sub: 'Music' } ] },
+  { key: 'docs', name: 'Documents', size: 61.2, color: '#64D2FF', icon: 'ri-file-text-line',
+    items: [ { name: 'Design Portfolio.pdf', size: 24.8, sub: 'Documents' }, { name: 'Company Deck.key', size: 14.3, sub: 'Presentations' }, { name: 'Research Notes.txt', size: 0.2, sub: 'Text' } ] },
+  { key: 'system', name: 'System', size: 48.1, color: '#FF9F0A', icon: 'ri-computer-line',
+    items: [ { name: 'macOS Recovery', size: 20.1, sub: 'System' }, { name: 'System Data', size: 16.4, sub: 'System' }, { name: 'Local Snapshots', size: 11.6, sub: 'Backups' } ] },
+  { key: 'photos', name: 'Photos', size: 38.4, color: '#BF5AF2', icon: 'ri-image-line',
+    items: [ { name: 'Photo Library', size: 31.2, sub: 'Libraries' }, { name: 'Videos', size: 7.2, sub: 'Photos' } ] },
+  { key: 'mail', name: 'Mail', size: 21.7, color: '#30D158', icon: 'ri-mail-line',
+    items: [ { name: 'Inbox Attachments', size: 14.9, sub: 'Mail' }, { name: 'Sent Attachments', size: 6.8, sub: 'Mail' } ] },
+  { key: 'media', name: 'Movies & TV', size: 12.9, color: '#FF375F', icon: 'ri-movie-line',
+    items: [ { name: 'Vacation.mov', size: 8.4, sub: 'Movies' }, { name: 'Trailers', size: 4.5, sub: 'TV Shows' } ] },
+  { key: 'other', name: 'Other', size: 3.1, color: '#8E8E93', icon: 'ri-more-2-fill',
+    items: [ { name: 'Caches', size: 2.4, sub: 'System' }, { name: 'Temp Files', size: 0.7, sub: 'System' } ] }
+];
+
+function stgUsed() { return stgCategories.reduce((a, c) => a + c.size, 0); }
+function stgFree() { return Math.max(0, stgTotal - stgUsed()); }
+
+function renderStorage() {
+  const bar = document.getElementById('stgBar');
+  const legend = document.getElementById('stgLegend');
+  const freeEl = document.getElementById('stgFree');
+  if (!bar || !legend || !freeEl) return;
+  const used = stgUsed();
+  const free = stgFree();
+  freeEl.textContent = Math.round(free) + ' GB';
+  bar.innerHTML = stgCategories.map(c =>
+    '<div class="stg-seg" style="width:' + (c.size / stgTotal * 100) + '%;background:' + c.color + ';" data-cat="' + c.key + '" onclick="stgToggleDetail(\'' + c.key + '\')" title="' + c.name + ': ' + c.size.toFixed(1) + ' GB"></div>'
+  ).join('');
+  const usedPct = (used / stgTotal * 100);
+  bar.style.setProperty('--used', usedPct + '%');
+  legend.innerHTML = stgCategories.map(c =>
+    '<div class="stg-legend-item' + (c._open ? ' stg-open' : '') + '" onclick="stgToggleDetail(\'' + c.key + '\')">'
+    + '<span class="stg-dot" style="background:' + c.color + ';"></span>'
+    + '<span class="stg-name">' + c.name + '</span>'
+    + '<span class="stg-size">' + c.size.toFixed(1) + ' GB</span>'
+    + '<span class="stg-pct">' + (c.size / used * 100).toFixed(0) + '%</span>'
+    + '</div>'
+  ).join('');
+  renderStgDetail();
+}
+
+function stgToggleDetail(key) {
+  stgCategories.forEach(c => c._open = c.key === key ? !c._open : false);
+  renderStorage();
+}
+
+function renderStgDetail() {
+  const det = document.getElementById('stgDetail');
+  if (!det) return;
+  const open = stgCategories.find(c => c._open);
+  if (!open) { det.style.display = 'none'; det.innerHTML = ''; return; }
+  det.style.display = 'block';
+  det.innerHTML = '<div class="stg-detail-head"><i class="' + open.icon + '" style="color:' + open.color + ';"></i>'
+    + '<span>' + open.name + '</span><button class="stg-close" onclick="stgToggleDetail(\'' + open.key + '\')">&times;</button></div>'
+    + open.items.map((it, i) =>
+      '<div class="stg-file">'
+      + '<i class="ri-file-line"></i>'
+      + '<div class="stg-file-info"><div class="stg-file-name">' + it.name + '</div><div class="stg-file-sub">' + it.sub + '</div></div>'
+      + '<span class="stg-file-size">' + it.size + ' GB</span>'
+      + '<button class="stg-delete" onclick="stgDeleteFile(\'' + open.key + '\',' + i + ')" title="Delete">' + (open.key === 'system' ? '' : '<i class="ri-delete-bin-line"></i>') + '</button>'
+      + '</div>'
+    ).join('');
+}
+
+function stgDeleteFile(key, idx) {
+  const cat = stgCategories.find(c => c.key === key);
+  if (!cat || key === 'system') return;
+  const it = cat.items[idx];
+  if (!it) return;
+  cat.size = Math.max(0, +(cat.size - it.size).toFixed(1));
+  cat.items.splice(idx, 1);
+  if (!cat.items.length) stgCategories = stgCategories.filter(c => c.key !== key);
+  renderStorage();
+  showNotifToast('Storage', 'Freed ' + it.size + ' GB by deleting "' + it.name + '"', 'System Settings.app');
+}
+
+function stgToggleManage() {
+  const det = document.getElementById('stgDetail');
+  if (!det) return;
+  if (stgCategories.some(c => c._open)) { stgCategories.forEach(c => c._open = false); renderStorage(); return; }
+  const used = stgUsed();
+  stgCategories.forEach(c => c._open = false);
+  det.style.display = 'block';
+  det.innerHTML = '<div class="stg-detail-head"><i class="ri-macbook-line" style="color:#0A84FF;"></i>'
+    + '<span>Storage Overview</span><button class="stg-close" onclick="stgToggleManage()">&times;</button></div>'
+    + '<div class="stg-ov-row"><span>Used</span><strong>' + used.toFixed(1) + ' GB</strong></div>'
+    + '<div class="stg-ov-row"><span>Available</span><strong>' + stgFree().toFixed(1) + ' GB</strong></div>'
+    + '<div class="stg-ov-row"><span>Total Capacity</span><strong>' + stgTotal + ' GB</strong></div>'
+    + '<div class="stg-ov-tip"><i class="ri-information-line"></i> Tip: Empty Trash and remove caches to reclaim space instantly.</div>';
+}
+
+function initStorageSettings() {
+  renderStorage();
 }
 
 

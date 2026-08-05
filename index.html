@@ -629,9 +629,22 @@
               <h2>General</h2>
               <div class="setting-row"><span>About This Mac</span><span class="setting-desc">Thread OS 1.0.0</span></div>
               <div class="setting-row clickable" onclick="switchSettingsPanel('software-update')"><span>Software Update</span><span class="setting-desc" id="generalUpdateStatus">Up to date</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>
-              <div class="setting-row"><span>Storage</span><span class="setting-desc">234 GB available of 512 GB</span></div>
               <div class="setting-row clickable" onclick="switchSettingsPanel('login-items')"><span>Login Items</span><span class="setting-desc" id="generalLoginItemsCount">2 items</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>
               <div class="setting-row clickable" onclick="switchSettingsPanel('notifications')"><span>Notifications</span><span class="setting-desc">Manage app alerts</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>
+
+              <h3 class="li-section-label" style="margin-top:22px;">Storage</h3>
+              <div class="stg-card" id="stgCard">
+                <div class="stg-card-head">
+                  <div class="stg-capacity">
+                    <span class="stg-capacity-big" id="stgFree">234 GB</span>
+                    <span class="stg-capacity-sub">available of <span id="stgTotal">512 GB</span></span>
+                  </div>
+                  <div class="stg-manage" onclick="stgToggleManage()"><i class="ri-macbook-line"></i></div>
+                </div>
+                <div class="stg-bar" id="stgBar"></div>
+                <div class="stg-legend" id="stgLegend"></div>
+                <div class="stg-detail" id="stgDetail" style="display:none;"></div>
+              </div>
             </div>
             <!-- Login Items -->
             <div class="settings-panel" id="settings-login-items" style="display:none;">
