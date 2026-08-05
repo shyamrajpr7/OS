@@ -4796,3 +4796,76 @@ body.cm-picking { cursor: crosshair !important; }
 .desktop-icon { position: relative; }
 .desktop-icon:hover { background: rgba(255,255,255,0.1); box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset; backdrop-filter: blur(6px); }
 .desktop-icon span { letter-spacing: 0.1px; }
+
+/* ===================== POLISH: WINDOW CHROME & ANIMATIONS ===================== */
+.mac-window {
+  animation: windowIn 0.45s var(--ease-spring);
+  background: linear-gradient(180deg, rgba(36, 36, 52, 0.97), rgba(28, 28, 42, 0.95));
+  backdrop-filter: blur(60px) saturate(180%);
+  -webkit-backdrop-filter: blur(60px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 22px 70px rgba(0,0,0,0.5), 0 4px 18px rgba(0,0,0,0.3), 0 0 0 0.5px rgba(0,0,0,0.2);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+@keyframes windowIn {
+  0% { opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+.mac-window::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent 18%);
+  opacity: 0.6;
+}
+.mac-window.focused {
+  border-color: rgba(255,255,255,0.16);
+  box-shadow: 0 28px 80px rgba(0,0,0,0.6), 0 6px 24px rgba(0,0,0,0.35), 0 0 0 0.5px rgba(255,255,255,0.08);
+}
+.mac-window:not(.focused) { background: linear-gradient(180deg, rgba(34,34,48,0.94), rgba(26,26,40,0.92)); }
+
+/* Titlebar — glassy, with inner highlight and refined text */
+.window-titlebar {
+  height: 40px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
+}
+.mac-window:not(.focused) .window-titlebar {
+  background: rgba(255,255,255,0.02);
+}
+.window-title { font-weight: 600; letter-spacing: -0.2px; color: rgba(245,245,247,0.92); }
+.mac-window:not(.focused) .window-title { color: rgba(245,245,247,0.6); }
+
+/* Traffic lights — softer glow, hover reveals glyph with gentle spring */
+.tl-btn { box-shadow: 0 0 0 0.5px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.25), inset 0 0 3px rgba(255,255,255,0.18); }
+.tl-btn:hover { transform: scale(1.2); filter: brightness(1.12); box-shadow: 0 0 8px rgba(255,255,255,0.16), 0 0 0 0.5px rgba(0,0,0,0.2); }
+.traffic-lights:hover .tl-close::after,
+.traffic-lights:hover .tl-minimize::after,
+.traffic-lights:hover .tl-maximize::after { animation: tlGlyph 0.18s var(--ease-spring); }
+@keyframes tlGlyph { 0% { transform: scale(0.4); } 100% { transform: scale(1); } }
+
+/* Titlebar buttons — rounded pill on hover */
+.tb-nav-btn { border-radius: 6px; }
+.tb-nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
+
+/* Resize handle — larger hit area with visible grip */
+.window-resize-handle { width: 18px; height: 18px; }
+.window-resize-handle::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid rgba(255,255,255,0.35);
+  border-bottom: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: 0 0 2px 0;
+}
+
+/* Focused window lifts slightly above others */
+.mac-window.focused { will-change: transform; }
