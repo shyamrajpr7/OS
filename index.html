@@ -1923,6 +1923,61 @@
         </div>
       </div>
 
+      <!-- ========== DIGITAL COLOR METER ========== -->
+      <div class="mac-window app-window" id="colormeter-window" style="width:620px;height:460px;top:70px;left:220px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Digital Color Meter</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body cm-body">
+          <div class="cm-toolbar">
+            <button class="cm-pick-btn" id="cmPickBtn"><i class="ri-eyedropper-line"></i> Pick Color</button>
+            <div class="cm-format">
+              <span>Format</span>
+              <select id="cmFormat" onchange="cmSetFormat(this.value)">
+                <option value="hex">Hex</option>
+                <option value="rgb">RGB</option>
+                <option value="hsl">HSL</option>
+              </select>
+            </div>
+            <div class="cm-size">
+              <span>Loupe</span>
+              <select id="cmSize" onchange="cmSetSize(this.value)">
+                <option value="small">Small</option>
+                <option value="medium" selected>Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+            <button class="cm-clear-btn" id="cmClearBtn"><i class="ri-delete-bin-line"></i></button>
+          </div>
+          <div class="cm-main">
+            <div class="cm-current">
+              <div class="cm-swatch" id="cmSwatch" style="background:#0A84FF;"></div>
+              <div class="cm-values">
+                <div class="cm-value-big" id="cmValueBig">#0A84FF</div>
+                <div class="cm-value-secondary" id="cmValueRgb">rgb(10, 132, 255)</div>
+                <div class="cm-value-secondary" id="cmValueHsl">hsl(210, 100%, 52%)</div>
+                <button class="cm-copy-btn" id="cmCopyBtn"><i class="ri-file-copy-line"></i> Copy Value</button>
+              </div>
+            </div>
+            <div class="cm-history">
+              <div class="cm-history-head">
+                <span>History</span>
+                <span class="cm-history-count" id="cmHistoryCount">0 colors</span>
+              </div>
+              <div class="cm-history-grid" id="cmHistoryGrid">
+                <div class="cm-history-empty">Pick colors to build your palette</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2115,6 +2170,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5E5CE6"/><path d="M8 26h32v6H8z" fill="#fff" opacity="0.35"/><path d="M8 32h32v6H8z" fill="#fff" opacity="0.75"/><path d="M8 20h32v6H8z" fill="#fff"/><path d="M24 8v6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="8" r="2" fill="#FFD60A"/></svg>
           </div>
           <span class="launchpad-label">Screen Time</span>
+        </div>
+        <div class="launchpad-item" data-app="Digital Color Meter.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="url(#cmg)"/><defs><radialGradient id="cmg" cx="35%" cy="35%" r="75%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="40%" stop-color="#FF2D55"/><stop offset="100%" stop-color="#BF5AF2"/></radialGradient></defs></svg>
+          </div>
+          <span class="launchpad-label">Color Meter</span>
         </div>
       </div>
     </div>
@@ -2682,6 +2743,15 @@
       <span>Language: English (US)</span>
       <span id="kbViewerCaps" class="kb-caps-indicator"><i class="ri-capsule-line"></i> Caps Lock</span>
     </div>
+  </div>
+
+  <!-- DIGITAL COLOR METER LOUPE -->
+  <div class="cm-loupe" id="cmLoupe" style="display:none;">
+    <div class="cm-loupe-ring" id="cmLoupeRing">
+      <div class="cm-loupe-grid"></div>
+      <div class="cm-loupe-cross"></div>
+    </div>
+    <div class="cm-loupe-label" id="cmLoupeLabel">#0A84FF</div>
   </div>
 
   <script src="app.js"></script>

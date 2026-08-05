@@ -860,7 +860,8 @@ const appIdMap = {
   'Maps.app': 'maps-window',
   'FaceTime.app': 'facetime-window',
   'QuickTime Player.app': 'quicktime-window',
-  'Screen Time.app': 'screentime-window'
+  'Screen Time.app': 'screentime-window',
+  'Digital Color Meter.app': 'colormeter-window'
 };
 
 const dockIconMap = {
@@ -898,7 +899,8 @@ const dockIconMap = {
   'Maps.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#00A84F"/><path d="M24 8c-7 0-12 5.2-12 11.6 0 8.6 12 20.4 12 20.4s12-11.8 12-20.4C36 13.2 31 8 24 8z" fill="white"/><circle cx="24" cy="19" r="4.5" fill="#00A84F"/></svg>`,
   'FaceTime.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#34C759"/><path d="M16 18l12-6v24l-12-6V18z" fill="white"/><path d="M30 21l8-4v14l-8-4V21z" fill="white" opacity="0.85"/></svg>`,
   'QuickTime Player.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#333"/><path d="M20 20v10l9-5-9-5z" fill="white"/><rect x="6" y="14" width="36" height="22" rx="3" fill="#1C1C1E" stroke="#FF6B9D" stroke-width="1.5"/></svg>`,
-  'Screen Time.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5E5CE6"/><path d="M8 20h32v6H8z" fill="white"/><path d="M8 32h32v6H8z" fill="white" opacity="0.75"/><path d="M24 8v6" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="8" r="2" fill="#FFD60A"/></svg>`
+  'Screen Time.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5E5CE6"/><path d="M8 20h32v6H8z" fill="white"/><path d="M8 32h32v6H8z" fill="white" opacity="0.75"/><path d="M24 8v6" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="8" r="2" fill="#FFD60A"/></svg>`,
+  'Digital Color Meter.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="url(#cmGrad)"/><defs><radialGradient id="cmGrad" cx="35%" cy="35%" r="75%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="40%" stop-color="#FF2D55"/><stop offset="100%" stop-color="#BF5AF2"/></radialGradient></defs></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -968,7 +970,7 @@ function openApp(appName) {
   if (winId === 'facetime-window') initFaceTime();
   if (winId === 'quicktime-window') initQT();
   if (winId === 'screentime-window') initScreenTime();
-
+  if (winId === 'colormeter-window') initColorMeter();
   // Privacy permissions
   if (winId === 'facetime-window') {
     requestPermission(appName, 'camera').then(ok => { if (!ok) showNotifToast('FaceTime', 'Camera access denied', 'FaceTime.app'); });
@@ -3462,7 +3464,8 @@ function spotlightSearch(query) {
     { name: 'Activity Monitor', app: 'Activity Monitor.app', icon: 'ri-pulse-line', kind: 'Application' },
     { name: 'Console', app: 'Console.app', icon: 'ri-terminal-box-line', kind: 'Application' },
     { name: 'System Settings', app: 'System Settings.app', icon: 'ri-settings-3-line', kind: 'Application' },
-    { name: 'Preview', app: 'Preview.app', icon: 'ri-image-line', kind: 'Application' }
+    { name: 'Preview', app: 'Preview.app', icon: 'ri-image-line', kind: 'Application' },
+    { name: 'Digital Color Meter', app: 'Digital Color Meter.app', icon: 'ri-eyedropper-line', kind: 'Application' }
   ];
   apps.forEach(a => { if (a.name.toLowerCase().includes(q)) matches.push({ ...a, action: () => openApp(a.app) }); });
 
@@ -8576,6 +8579,155 @@ function initTextReplacements() {
   renderTextReplacements();
 }
 document.addEventListener('DOMContentLoaded', initTextReplacements);
+
+// ---- Digital Color Meter ----
+let cmState = { format: 'hex', size: 'medium', picking: false, color: { hex: '#0A84FF', rgb: [10, 132, 255] }, history: [] };
+
+function initColorMeter() {
+  const btn = document.getElementById('cmPickBtn');
+  if (!btn || btn.dataset.cmInit) return;
+  btn.dataset.cmInit = '1';
+  btn.addEventListener('click', () => {
+    if (cmState.picking) cmStopPicking();
+    else cmStartPicking();
+  });
+  document.getElementById('cmClearBtn').addEventListener('click', () => {
+    cmState.history = [];
+    cmRenderHistory();
+  });
+  document.getElementById('cmCopyBtn').addEventListener('click', () => {
+    try { navigator.clipboard.writeText(cmState.color.hex); showNotifToast('Digital Color Meter', 'Copied ' + cmState.color.hex, 'Digital Color Meter.app'); } catch (e) { /* ignore */ }
+  });
+  cmRenderHistory();
+}
+
+function cmStartPicking() {
+  cmState.picking = true;
+  document.getElementById('cmPickBtn').classList.add('active');
+  document.getElementById('cmPickBtn').innerHTML = '<i class="ri-eyedropper-line"></i> Click to Pick';
+  const loupe = document.getElementById('cmLoupe');
+  loupe.style.display = '';
+  document.body.classList.add('cm-picking');
+  document.addEventListener('mousemove', cmLoupeMove);
+  document.addEventListener('click', cmLoupeClick);
+  document.addEventListener('keydown', cmPickEsc);
+}
+
+function cmStopPicking() {
+  cmState.picking = false;
+  document.body.classList.remove('cm-picking');
+  document.getElementById('cmPickBtn').classList.remove('active');
+  document.getElementById('cmPickBtn').innerHTML = '<i class="ri-eyedropper-line"></i> Pick Color';
+  document.getElementById('cmLoupe').style.display = 'none';
+  document.removeEventListener('mousemove', cmLoupeMove);
+  document.removeEventListener('click', cmLoupeClick);
+  document.removeEventListener('keydown', cmPickEsc);
+}
+
+function cmPickEsc(e) {
+  if (e.key === 'Escape') cmStopPicking();
+}
+
+function cmSampleAt(x, y) {
+  const el = document.elementFromPoint(x, y);
+  const fallback = [[10,132,255],[255,69,58],[255,214,10],[48,209,88],[191,90,242],[255,149,0],[100,210,255],[0,0,0]];
+  if (!el) return { hex: '#0A84FF', rgb: [10,132,255] };
+  let node = el;
+  while (node && node !== document.body) {
+    const cs = getComputedStyle(node);
+    const bg = cs.backgroundColor;
+    const m = bg.match(/rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/);
+    if (m && (parseInt(m[1]) > 0 || parseInt(m[2]) > 0 || parseInt(m[3]) > 0)) {
+      return { hex: cmRgbToHex([parseInt(m[1]), parseInt(m[2]), parseInt(m[3])]), rgb: [parseInt(m[1]), parseInt(m[2]), parseInt(m[3])] };
+    }
+    node = node.parentElement;
+  }
+  const n = (x * 7 + y * 13) % fallback.length;
+  return { hex: cmRgbToHex(fallback[n]), rgb: fallback[n] };
+}
+
+function cmRgbToHex(rgb) {
+  return '#' + rgb.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+}
+
+function cmHslFromRgb(rgb) {
+  const r = rgb[0] / 255, g = rgb[1] / 255, b = rgb[2] / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) * 60;
+    else if (max === g) h = ((b - r) / d + 2) * 60;
+    else h = ((r - g) / d + 4) * 60;
+  }
+  return 'hsl(' + Math.round(h) + ', ' + Math.round(s * 100) + '%, ' + Math.round(l * 100) + '%)';
+}
+
+function cmLoupeMove(e) {
+  const loupe = document.getElementById('cmLoupe');
+  const sizeMap = { small: 96, medium: 128, large: 160 };
+  const d = sizeMap[cmState.size] || 128;
+  loupe.style.width = d + 'px';
+  loupe.style.height = d + 'px';
+  const color = cmSampleAt(e.clientX, e.clientY);
+  cmState.color = color;
+  const ring = document.getElementById('cmLoupeRing');
+  ring.style.background = 'radial-gradient(circle at 50% 42%, ' + color.hex + ' 0%, ' + color.hex + ' 32%, rgba(0,0,0,0.92) 78%)';
+  document.getElementById('cmLoupeLabel').textContent = color.hex;
+  loupe.style.left = (e.clientX + 22) + 'px';
+  loupe.style.top = (e.clientY - d - 14) + 'px';
+  if (e.clientY - d < 8) loupe.style.top = (e.clientY + 22) + 'px';
+  cmRenderValues();
+}
+
+function cmLoupeClick(e) {
+  const color = cmSampleAt(e.clientX, e.clientY);
+  cmState.color = color;
+  cmState.history.unshift(color.hex);
+  cmState.history = cmState.history.slice(0, 18);
+  cmRenderValues();
+  cmRenderHistory();
+  cmStopPicking();
+}
+
+function cmRenderValues() {
+  const c = cmState.color;
+  document.getElementById('cmSwatch').style.background = c.hex;
+  if (cmState.format === 'hex') {
+    document.getElementById('cmValueBig').textContent = c.hex;
+    document.getElementById('cmValueRgb').textContent = 'rgb(' + c.rgb.join(', ') + ')';
+    document.getElementById('cmValueHsl').textContent = cmHslFromRgb(c.rgb);
+  } else if (cmState.format === 'rgb') {
+    document.getElementById('cmValueBig').textContent = 'rgb(' + c.rgb.join(', ') + ')';
+    document.getElementById('cmValueRgb').textContent = c.hex;
+    document.getElementById('cmValueHsl').textContent = cmHslFromRgb(c.rgb);
+  } else {
+    document.getElementById('cmValueBig').textContent = cmHslFromRgb(c.rgb);
+    document.getElementById('cmValueRgb').textContent = 'rgb(' + c.rgb.join(', ') + ')';
+    document.getElementById('cmValueHsl').textContent = c.hex;
+  }
+}
+
+function cmSetFormat(fmt) { cmState.format = fmt; cmRenderValues(); }
+function cmSetSize(size) { cmState.size = size; }
+
+function cmRenderHistory() {
+  const grid = document.getElementById('cmHistoryGrid');
+  document.getElementById('cmHistoryCount').textContent = cmState.history.length + ' color' + (cmState.history.length === 1 ? '' : 's');
+  if (!cmState.history.length) {
+    grid.innerHTML = '<div class="cm-history-empty">Pick colors to build your palette</div>';
+    return;
+  }
+  grid.innerHTML = cmState.history.map((hex, i) =>
+    '<div class="cm-history-swatch" style="background:' + hex + ';" title="' + hex + '" onclick="cmCopyHex(\'' + hex + '\')"><span>' + hex + '</span></div>'
+  ).join('');
+}
+
+function cmCopyHex(hex) {
+  try { navigator.clipboard.writeText(hex); showNotifToast('Digital Color Meter', 'Copied ' + hex, 'Digital Color Meter.app'); } catch (e) { /* ignore */ }
+}
 
 
 
