@@ -8460,4 +8460,122 @@ function initKbViewer() {
 }
 document.addEventListener('DOMContentLoaded', initKbViewer);
 
+// ---- Text Replacements ----
+const defaultTextReplacements = [
+  { s: 'omw', p: 'On my way!' },
+  { s: 'brb', p: 'Be right back' },
+  { s: 'idk', p: 'I don\u2019t know' },
+  { s: 'lol', p: 'laughing out loud' },
+  { s: 'ttyl', p: 'talk to you later' },
+  { s: 'gg', p: 'good game' },
+  { s: 'omg', p: 'Oh my god' },
+  { s: 'btw', p: 'by the way' }
+];
+
+let textReplacements = loadTr();
+
+function loadTr() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('threados.tr') || 'null');
+    if (Array.isArray(saved)) return saved;
+  } catch (e) { /* ignore */ }
+  return defaultTextReplacements.slice();
+}
+
+function saveTr() {
+  try { localStorage.setItem('threados.tr', JSON.stringify(textReplacements)); } catch (e) { /* ignore */ }
+}
+
+function renderTextReplacements() {
+  const list = document.getElementById('trList');
+  if (!list) return;
+  if (!textReplacements.length) {
+    list.innerHTML = '<div class="tr-empty">No replacements yet</div>';
+    return;
+  }
+  list.innerHTML = textReplacements.map((r, i) =>
+    '<div class="tr-item">' +
+      '<span class="tr-shortcut">' + escapeHtml(r.s) + '</span>' +
+      '<i class="ri-arrow-right-line tr-arrow"></i>' +
+      '<span class="tr-phrase">' + escapeHtml(r.p) + '</span>' +
+      '<button class="tr-remove-btn" onclick="removeTextReplacement(' + i + ')"><i class="ri-close-line"></i></button>' +
+    '</div>'
+  ).join('');
+}
+
+function openTrForm() {
+  document.getElementById('trForm').style.display = 'flex';
+  document.getElementById('trShortcut').focus();
+}
+
+function closeTrForm() {
+  document.getElementById('trForm').style.display = 'none';
+  document.getElementById('trShortcut').value = '';
+  document.getElementById('trPhrase').value = '';
+}
+
+function addTextReplacement() {
+  const s = document.getElementById('trShortcut').value.trim();
+  const p = document.getElementById('trPhrase').value.trim();
+  if (!s || !p) { showNotifToast('Keyboard', 'Enter both a shortcut and phrase', 'System Settings.app'); return; }
+  const idx = textReplacements.findIndex(r => r.s.toLowerCase() === s.toLowerCase());
+  if (idx >= 0) textReplacements[idx] = { s, p };
+  else textReplacements.push({ s, p });
+  saveTr();
+  renderTextReplacements();
+  closeTrForm();
+  showNotifToast('Keyboard', 'Replacement added: ' + s, 'System Settings.app');
+}
+
+function removeTextReplacement(i) {
+  textReplacements.splice(i, 1);
+  saveTr();
+  renderTextReplacements();
+}
+
+function initTextReplacements() {
+  const addBtn = document.getElementById('trAddBtn');
+  if (!addBtn || addBtn.dataset.trInit) return;
+  addBtn.dataset.trInit = '1';
+  addBtn.addEventListener('click', openTrForm);
+  document.getElementById('trSaveBtn').addEventListener('click', addTextReplacement);
+  document.getElementById('trCancelBtn').addEventListener('click', closeTrForm);
+  document.getElementById('trShortcut').addEventListener('keydown', e => { if (e.key === 'Enter') addTextReplacement(); });
+  document.getElementById('trPhrase').addEventListener('keydown', e => { if (e.key === 'Enter') addTextReplacement(); });
+  document.addEventListener('input', e => {
+    const el = e.target;
+    if (!el || !el.isContentEditable && !/^(INPUT|TEXTAREA)$/.test(el.tagName)) return;
+    if (!textReplacements.length) return;
+    const isCE = el.isContentEditable;
+    let value, selStart, selEnd, setVal;
+    if (isCE) {
+      const sel = window.getSelection();
+      if (!sel.rangeCount) return;
+      const range = sel.getRangeAt(0);
+      value = el.innerText;
+      selStart = selEnd = range.startOffset;
+      setVal = v => { el.innerText = v; const nr = document.createRange(); nr.selectNodeContents(el); nr.collapse(false); sel.removeAllRanges(); sel.addRange(nr); };
+    } else {
+      value = el.value || '';
+      selStart = el.selectionStart;
+      selEnd = el.selectionEnd;
+      setVal = v => { el.value = v; try { el.setSelectionRange(v.length, v.length); } catch (err) { /* ignore */ } };
+    }
+    const beforeCaret = value.slice(0, selStart);
+    const m = beforeCaret.match(/(\s*)([A-Za-z0-9_!?.,:'"@#%&+-]*)$/);
+    if (!m) return;
+    const token = m[2];
+    if (!token) return;
+    const hit = textReplacements.find(r => r.s.toLowerCase() === token.toLowerCase());
+    if (!hit) return;
+    const start = selStart - token.length;
+    const newVal = value.slice(0, start) + hit.p + value.slice(selEnd);
+    setVal(newVal);
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  renderTextReplacements();
+}
+document.addEventListener('DOMContentLoaded', initTextReplacements);
+
+
 

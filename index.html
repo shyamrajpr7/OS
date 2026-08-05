@@ -839,6 +839,18 @@
                   <div class="toggle-switch" id="kbEmojiMenu" onclick="toggleKbEmojiMenu(this)"></div>
                 </div>
               </div>
+              <div class="a11y-section">
+                <h3>Text</h3>
+                <div class="tr-desc">Replace text automatically as you type. Shortcuts are replaced with the phrase in most apps.</div>
+                <div class="tr-list" id="trList"></div>
+                <button class="tr-add-btn" id="trAddBtn"><i class="ri-add-line"></i> Add Replacement…</button>
+                <div class="tr-form" id="trForm" style="display:none;">
+                  <input type="text" id="trShortcut" placeholder="Shortcut (e.g. omw)" maxlength="20" spellcheck="false">
+                  <input type="text" id="trPhrase" placeholder="Phrase (e.g. On my way!)" maxlength="120">
+                  <button class="tr-save-btn" id="trSaveBtn">Add</button>
+                  <button class="tr-cancel-btn" id="trCancelBtn">Cancel</button>
+                </div>
+              </div>
             </div>
             <!-- Network -->
             <div class="settings-panel" id="settings-network" style="display:none;">

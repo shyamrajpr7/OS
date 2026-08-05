@@ -4406,3 +4406,25 @@ body.a11y-increase-contrast .menu-bar { border-bottom: 1px solid rgba(255,255,25
 .kb-w2\.4 { flex: 2.4; }
 .kb-w2\.6 { flex: 2.6; }
 .kb-w6\.4 { flex: 6.4; }
+
+/* ===================== TEXT REPLACEMENTS ===================== */
+.tr-desc { font-size: 12px; color: var(--mac-text-muted); margin-bottom: 12px; line-height: 1.5; }
+.tr-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; max-height: 180px; overflow-y: auto; }
+.tr-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 8px 10px; transition: all 0.15s; }
+.tr-item:hover { background: rgba(255,255,255,0.07); }
+.tr-shortcut { font-size: 12px; font-weight: 600; color: #30D158; font-family: var(--font-system); padding: 2px 8px; background: rgba(48,209,88,0.12); border-radius: 5px; }
+.tr-arrow { color: var(--mac-text-muted); font-size: 13px; }
+.tr-phrase { flex: 1; font-size: 12px; color: var(--mac-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tr-remove-btn { width: 22px; height: 22px; border: none; background: transparent; color: var(--mac-text-muted); border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.tr-remove-btn:hover { background: var(--mac-red); color: white; }
+.tr-empty { font-size: 12px; color: var(--mac-text-muted); padding: 10px 0; }
+.tr-add-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; background: var(--mac-accent); color: white; border: none; border-radius: 7px; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+.tr-add-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+.tr-form { display: flex; gap: 8px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
+.tr-form input { flex: 1; min-width: 120px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; padding: 7px 10px; color: var(--mac-text); font-size: 12px; font-family: var(--font-system); outline: none; transition: border-color 0.15s; }
+.tr-form input:focus { border-color: var(--mac-accent); }
+.tr-save-btn, .tr-cancel-btn { padding: 7px 14px; border-radius: 7px; font-size: 12px; cursor: pointer; border: none; transition: all 0.15s; }
+.tr-save-btn { background: var(--mac-accent); color: white; }
+.tr-save-btn:hover { filter: brightness(1.15); }
+.tr-cancel-btn { background: rgba(255,255,255,0.1); color: var(--mac-text); }
+.tr-cancel-btn:hover { background: rgba(255,255,255,0.18); }
