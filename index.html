@@ -164,6 +164,7 @@
           </div>
         </div>
         <i class="ri-search-line tray-icon" id="spotlightTrayBtn" title="Spotlight"></i>
+        <i class="ri-keyboard-box-line tray-icon" id="kbViewerTrayBtn" title="Keyboard Viewer"></i>
         <i class="ri-equalizer-line tray-icon" id="controlCenterTrayBtn" title="Control Center"></i>
         <i class="ri-mic-line tray-icon" id="siriTrayBtn" style="color:#AF52DE;" title="Siri"></i>
       </div>
@@ -2655,6 +2656,20 @@
       <span class="pip-app-label" id="pipAppLabel">QuickTime Player</span>
     </div>
     <div class="pip-resize" id="pipResize" title="Drag to resize"></div>
+  </div>
+
+  <!-- KEYBOARD VIEWER -->
+  <div class="kb-viewer" id="kbViewer" style="display:none;">
+    <div class="kb-viewer-header" id="kbViewerHeader">
+      <div class="kb-viewer-title"><i class="ri-keyboard-box-line"></i> Keyboard</div>
+      <div class="kb-viewer-hint">Press any key on your physical keyboard</div>
+      <button class="kb-viewer-close" id="kbViewerClose"><i class="ri-close-line"></i></button>
+    </div>
+    <div class="kb-viewer-board" id="kbViewerBoard"></div>
+    <div class="kb-viewer-footer">
+      <span>Language: English (US)</span>
+      <span id="kbViewerCaps" class="kb-caps-indicator"><i class="ri-capsule-line"></i> Caps Lock</span>
+    </div>
   </div>
 
   <script src="app.js"></script>

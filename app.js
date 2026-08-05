@@ -5958,7 +5958,7 @@ document.querySelectorAll('.activity-tab').forEach(el => {
 // Global keyboard shortcuts
 document.addEventListener('keydown', e => {
   applyModifierRemap(e);
-  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); closeDiskEraseDialog(); exitAnyFullscreen(); }
+  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); closeDiskEraseDialog(); exitAnyFullscreen(); if (kbViewerOpen) closeKeyboardViewer(); }
   // Ctrl+Cmd+F -> toggle Full-Screen on focused window (like macOS)
   if (e.ctrlKey && e.metaKey && e.key === 'f') { e.preventDefault(); const fsWin = document.querySelector('.mac-window.fullscreen') || document.querySelector('.mac-window.focused'); if (fsWin) toggleFullscreenWindow(fsWin); }
   // Cmd+F or Ctrl+F -> focus search
@@ -8325,4 +8325,139 @@ function stRenderAlways() {
 document.addEventListener('DOMContentLoaded', () => { spaces.init(); initEmojiPicker(); });
 // Fallback if DOMContentLoaded already fired
 if (document.readyState !== 'loading') { spaces.init(); initEmojiPicker(); }
+
+// ---- Keyboard Viewer ----
+const kbViewerRows = [
+  [
+    { k: 'escape', l: 'esc', w: 1 },
+    ...['F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12'].map(l => ({ l, f: true, w: 1 }))
+  ],
+  [
+    { k: '`', l: '`', w: 1 }, { k: '1', l: '1', w: 1 }, { k: '2', l: '2', w: 1 }, { k: '3', l: '3', w: 1 }, { k: '4', l: '4', w: 1 },
+    { k: '5', l: '5', w: 1 }, { k: '6', l: '6', w: 1 }, { k: '7', l: '7', w: 1 }, { k: '8', l: '8', w: 1 }, { k: '9', l: '9', w: 1 },
+    { k: '0', l: '0', w: 1 }, { k: '-', l: '-', w: 1 }, { k: '=', l: '=', w: 1 }, { k: 'backspace', l: '⌫', w: 2 }
+  ],
+  [
+    { k: 'tab', l: 'tab', w: 1.5 },
+    ...'qwertyuiop'.split('').map(c => ({ k: c, l: c, w: 1 })),
+    { k: '[', l: '[', w: 1 }, { k: ']', l: ']', w: 1 }, { k: '\\', l: '\\', w: 1.5 }
+  ],
+  [
+    { k: 'capslock', l: 'caps', w: 1.8 },
+    ...'asdfghjkl'.split('').map(c => ({ k: c, l: c, w: 1 })),
+    { k: ';', l: ';', w: 1 }, { k: "'", l: "'", w: 1 }, { k: 'enter', l: 'return', w: 2.2 }
+  ],
+  [
+    { k: 'shift', l: 'shift', w: 2.4 },
+    ...'zxcvbnm'.split('').map(c => ({ k: c, l: c, w: 1 })),
+    { k: ',', l: ',', w: 1 }, { k: '.', l: '.', w: 1 }, { k: '/', l: '/', w: 1 }, { k: 'shift', l: 'shift', w: 2.6 }
+  ],
+  [
+    { k: 'fn', l: 'fn', w: 1.2 }, { k: 'control', l: 'control', w: 1.4 }, { k: 'alt', l: 'option', w: 1.4 }, { k: 'meta', l: 'command', w: 1.6 },
+    { k: 'space', l: 'space', w: 6.4 },
+    { k: 'meta', l: 'command', w: 1.6 }, { k: 'alt', l: 'option', w: 1.4 },
+    { k: 'arrowleft', l: '←', w: 1 }, { k: 'arrowright', l: '→', w: 1 }
+  ]
+];
+
+let kbViewerOpen = false;
+let kbShiftDown = false;
+
+function renderKbViewer() {
+  const board = document.getElementById('kbViewerBoard');
+  if (!board) return;
+  board.innerHTML = kbViewerRows.map(row =>
+    '<div class="kb-row">' + row.map(key =>
+      '<div class="kb-key' + (key.f ? ' kb-key-fn' : '') + ' kb-w' + key.w + '" data-k="' + (key.k || key.l.toLowerCase()) + '"><span>' + key.l + '</span></div>'
+    ).join('') + '</div>'
+  ).join('');
+}
+
+function openKeyboardViewer() {
+  renderKbViewer();
+  const v = document.getElementById('kbViewer');
+  v.style.display = '';
+  requestAnimationFrame(() => v.classList.add('kb-visible'));
+  kbViewerOpen = true;
+  document.getElementById('kbViewerTrayBtn').classList.add('active');
+}
+
+function closeKeyboardViewer() {
+  const v = document.getElementById('kbViewer');
+  v.classList.remove('kb-visible');
+  kbViewerOpen = false;
+  document.getElementById('kbViewerTrayBtn').classList.remove('active');
+  setTimeout(() => { v.style.display = 'none'; }, 260);
+}
+
+function toggleKeyboardViewer() {
+  if (kbViewerOpen) closeKeyboardViewer();
+  else openKeyboardViewer();
+}
+
+function kbViewerKeyDown(e) {
+  if (!kbViewerOpen) return;
+  let k = e.key.toLowerCase();
+  if (k === 'delete') k = 'backspace';
+  if (k === 'enter') k = 'enter';
+  if (k === 'escape') k = 'escape';
+  if (k === ' ') k = 'space';
+  if (k === 'arrowleft') k = 'arrowleft';
+  if (k === 'arrowright') k = 'arrowright';
+  if (e.key === 'Shift') k = 'shift';
+  if (e.key === 'Control' || e.key === 'Meta' || e.key === 'Alt') k = e.key.toLowerCase();
+  document.querySelectorAll('.kb-key[data-k="' + k + '"]').forEach(el => el.classList.add('kb-active'));
+  if (k === 'shift' && !e.repeat) {
+    kbShiftDown = true;
+    document.querySelectorAll('.kb-key').forEach(el => {
+      const c = el.dataset.k;
+      if (c && /^[a-z]$/.test(c) && !el.classList.contains('kb-key-fn')) el.querySelector('span').textContent = c.toUpperCase();
+    });
+  }
+  if (k === 'capslock') {
+    document.getElementById('kbViewerCaps').classList.toggle('on');
+    document.querySelectorAll('.kb-key[data-k="capslock"]').forEach(el => el.classList.add('kb-caps-on'));
+  }
+}
+
+function kbViewerKeyUp(e) {
+  if (!kbViewerOpen) return;
+  let k = e.key.toLowerCase();
+  if (k === 'delete') k = 'backspace';
+  if (k === ' ') k = 'space';
+  if (e.key === 'Shift') k = 'shift';
+  if (e.key === 'Control' || e.key === 'Meta' || e.key === 'Alt') k = e.key.toLowerCase();
+  document.querySelectorAll('.kb-key[data-k="' + k + '"]').forEach(el => el.classList.remove('kb-active'));
+  if (k === 'shift') {
+    kbShiftDown = false;
+    document.querySelectorAll('.kb-key').forEach(el => {
+      const c = el.dataset.k;
+      if (c && /^[a-z]$/.test(c) && !el.classList.contains('kb-key-fn')) el.querySelector('span').textContent = c;
+    });
+  }
+}
+
+function initKbViewer() {
+  const tray = document.getElementById('kbViewerTrayBtn');
+  if (!tray || tray.dataset.kbInit) return;
+  tray.dataset.kbInit = '1';
+  tray.addEventListener('click', toggleKeyboardViewer);
+  document.getElementById('kbViewerClose').addEventListener('click', closeKeyboardViewer);
+  document.getElementById('kbViewerHeader').addEventListener('mousedown', e => {
+    const v = document.getElementById('kbViewer');
+    const sx = e.clientX, sy = e.clientY, ox = v.offsetLeft, oy = v.offsetTop;
+    const mv = ev => {
+      v.style.left = Math.max(0, Math.min(window.innerWidth - 200, ox + ev.clientX - sx)) + 'px';
+      v.style.top = Math.max(28, Math.min(window.innerHeight - 100, oy + ev.clientY - sy)) + 'px';
+    };
+    const up = () => { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); };
+    document.addEventListener('mousemove', mv);
+    document.addEventListener('mouseup', up);
+    e.preventDefault();
+  });
+  document.addEventListener('keydown', kbViewerKeyDown);
+  document.addEventListener('keyup', kbViewerKeyUp);
+}
+document.addEventListener('DOMContentLoaded', initKbViewer);
+
 
