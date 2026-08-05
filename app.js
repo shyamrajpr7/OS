@@ -995,6 +995,7 @@ function closeWindow(winId) {
 function doCloseWindow(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
+  if (win.classList.contains('fullscreen')) exitFullscreenWindow(win);
   win.classList.add('minimized');
   win.classList.remove('focused');
   if (winId === 'activity-window') stopActivityMonitor();
@@ -1006,6 +1007,7 @@ function doCloseWindow(winId) {
 function minimizeWindow(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
+  if (win.classList.contains('fullscreen')) exitFullscreenWindow(win);
   // Find the dock icon position for this app
   const entry = Object.entries(appIdMap).find(([, v]) => v === winId);
   let dockX = window.innerWidth / 2;
@@ -1189,14 +1191,59 @@ function initWindowDrag(winId) {
 
   titlebar.addEventListener('dblclick', e => {
     if (e.target.closest('.tl-btn') || e.target.closest('button') || e.target.closest('input')) return;
-    toggleMaximizeWindow(win);
+    if (e.altKey) toggleFullscreenWindow(win);
+    else toggleMaximizeWindow(win);
   });
 
   win.addEventListener('mousedown', () => focusWindow(winId));
 }
 
+function toggleFullscreenWindow(win) {
+  if (!win) return;
+  const isFS = win.classList.contains('fullscreen');
+  if (isFS) exitFullscreenWindow(win);
+  else enterFullscreenWindow(win);
+}
+
+function enterFullscreenWindow(win) {
+  if (!win.dataset.fsOrigW) {
+    win.dataset.fsOrigW = win.style.width || win.offsetWidth + 'px';
+    win.dataset.fsOrigH = win.style.height || win.offsetHeight + 'px';
+    win.dataset.fsOrigT = win.style.top || win.offsetTop + 'px';
+    win.dataset.fsOrigL = win.style.left || win.offsetLeft + 'px';
+  }
+  const rect = win.getBoundingClientRect();
+  win.style.transform = `translate(${window.innerWidth / 2 - rect.left - rect.width / 2}px, ${window.innerHeight / 2 - rect.top - rect.height / 2}px) scale(${Math.min(0.92, 1080 / Math.max(rect.width, 1))})`;
+  win.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
+  requestAnimationFrame(() => {
+    win.style.transition = 'transform 0.55s cubic-bezier(0.16, 1, 0.3, 1)';
+    win.style.transform = 'scale(1)';
+    win.classList.add('fullscreen');
+    document.body.classList.add('fs-mode');
+    win.dataset.fsPrevZ = win.style.zIndex;
+    win.style.zIndex = '2147483000';
+  });
+  if (win.querySelector('.tl-maximize')) win.querySelector('.tl-maximize').classList.add('tl-fs-active');
+}
+
+function exitFullscreenWindow(win) {
+  win.classList.remove('fullscreen');
+  document.body.classList.remove('fs-mode');
+  if (win.dataset.fsPrevZ) win.style.zIndex = win.dataset.fsPrevZ;
+  win.style.transform = '';
+  win.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease';
+  if (win.querySelector('.tl-maximize')) win.querySelector('.tl-maximize').classList.remove('tl-fs-active');
+  setTimeout(() => { win.style.transition = ''; }, 420);
+}
+
+function exitAnyFullscreen() {
+  const fsWin = document.querySelector('.mac-window.fullscreen');
+  if (fsWin) exitFullscreenWindow(fsWin);
+}
+
 function toggleMaximizeWindow(win) {
   if (!win) return;
+  if (win.classList.contains('fullscreen')) { exitFullscreenWindow(win); return; }
   if (win.style.width === '100vw') {
     win.style.width = win.dataset.origW || '640px';
     win.style.height = win.dataset.origH || '420px';
@@ -4211,7 +4258,8 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (action === 'minimize') minimizeWindow(win.id);
       else if (action === 'maximize') {
         if (e.detail >= 2) return;
-        toggleMaximizeWindow(win);
+        if (e.altKey) toggleMaximizeWindow(win);
+        else toggleFullscreenWindow(win);
       }
     }
   });
@@ -5892,7 +5940,9 @@ document.querySelectorAll('.activity-tab').forEach(el => {
 // Global keyboard shortcuts
 document.addEventListener('keydown', e => {
   applyModifierRemap(e);
-  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); closeDiskEraseDialog(); }
+  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); closeDiskEraseDialog(); exitAnyFullscreen(); }
+  // Ctrl+Cmd+F -> toggle Full-Screen on focused window (like macOS)
+  if (e.ctrlKey && e.metaKey && e.key === 'f') { e.preventDefault(); const fsWin = document.querySelector('.mac-window.fullscreen') || document.querySelector('.mac-window.focused'); if (fsWin) toggleFullscreenWindow(fsWin); }
   // Cmd+F or Ctrl+F -> focus search
   if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); document.getElementById('finderSearchInput').focus(); }
   // Cmd+Shift+3 -> full screenshot

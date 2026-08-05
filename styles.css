@@ -552,6 +552,25 @@ button { font-family: var(--font-system); }
 .mac-window { position: absolute; background: rgba(30, 30, 42, 0.92); backdrop-filter: blur(50px) saturate(180%); -webkit-backdrop-filter: blur(50px) saturate(180%); border-radius: var(--radius-window); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 12px 48px rgba(0,0,0,0.35), 0 0 0 0.5px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; z-index: 100; animation: fadeIn 0.3s cubic-bezier(0.16,1,0.3,1); }
 .mac-window.focused { box-shadow: 0 16px 56px rgba(0,0,0,0.45), 0 0 0 0.5px rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.12); }
 .mac-window.minimized { display: none !important; }
+
+/* FULL-SCREEN MODE */
+body.fs-mode .menu-bar, body.fs-mode .dock-wrapper, body.fs-mode .desktop-icons { display: none !important; }
+.mac-window.fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+  border: none !important;
+  z-index: 2147483000 !important;
+  box-shadow: none !important;
+}
+.mac-window.fullscreen .window-titlebar { padding-left: 84px; }
+.tl-maximize.tl-fs-active::after { content: '\21F9'; font-size: 9px; font-weight: 700; color: rgba(0,60,0,0.85); position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.94) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 .snap-preview {
   position: fixed;
