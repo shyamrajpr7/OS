@@ -626,6 +626,7 @@
             <div class="settings-nav-item" data-panel="battery"><i class="ri-battery-2-charge-line"></i><span>Battery</span></div>
             <div class="settings-nav-item" data-panel="notifications"><i class="ri-notification-3-line"></i><span>Notifications</span></div>
             <div class="settings-nav-item" data-panel="users"><i class="ri-group-line"></i><span>Users & Groups</span></div>
+            <div class="settings-nav-item" data-panel="lock-screen"><i class="ri-lock-line"></i><span>Lock Screen</span></div>
             <div class="settings-nav-item" data-panel="privacy"><i class="ri-shield-check-line"></i><span>Privacy & Security</span></div>
             <div class="settings-nav-item" data-panel="software-update"><i class="ri-download-cloud-line"></i><span>Software Update</span></div>
             <div class="settings-nav-item" data-panel="accessibility"><i class="ri-universal-access-line"></i><span>Accessibility</span></div>
@@ -708,6 +709,69 @@
                   <div class="ug-option-row"><span>Show fast user switching as menu</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
                 </div>
               </div>
+            </div>
+            <!-- Lock Screen -->
+            <div class="settings-panel" id="settings-lock-screen" style="display:none;">
+              <h2>Lock Screen</h2>
+              <div class="ls-desc">Choose what happens when your display sleeps or the screen saver starts.</div>
+              <div class="ls-row">
+                <span>Require password after screen saver begins or display is turned off</span>
+                <select class="a11y-select" id="lsPasswordDelay" onchange="setLockSetting('passwordDelay', this.value)">
+                  <option value="immediately">Immediately</option>
+                  <option value="1s">1 second</option>
+                  <option value="1m">1 minute</option>
+                  <option value="5m" selected>5 minutes</option>
+                  <option value="1h">1 hour</option>
+                  <option value="4h">4 hours</option>
+                  <option value="never">Never</option>
+                </select>
+              </div>
+              <h3 class="li-section-label" style="margin-top:20px;">Display Sleep</h3>
+              <div class="ls-row">
+                <span>Turn display off on battery when inactive</span>
+                <select class="a11y-select" id="lsBatteryOff" onchange="setLockSetting('batteryOff', this.value)">
+                  <option value="1m">For 1 minute</option>
+                  <option value="2m">For 2 minutes</option>
+                  <option value="5m" selected>For 5 minutes</option>
+                  <option value="10m">For 10 minutes</option>
+                  <option value="30m">For 30 minutes</option>
+                  <option value="1h">For 1 hour</option>
+                  <option value="never">Never</option>
+                </select>
+              </div>
+              <div class="ls-row">
+                <span>Turn display off on power adapter when inactive</span>
+                <select class="a11y-select" id="lsAcOff" onchange="setLockSetting('acOff', this.value)">
+                  <option value="2m">For 2 minutes</option>
+                  <option value="5m">For 5 minutes</option>
+                  <option value="10m" selected>For 10 minutes</option>
+                  <option value="30m">For 30 minutes</option>
+                  <option value="1h">For 1 hour</option>
+                  <option value="2h">For 2 hours</option>
+                  <option value="never">Never</option>
+                </select>
+              </div>
+              <h3 class="li-section-label" style="margin-top:20px;">Screen Saver</h3>
+              <div class="ls-row">
+                <span>Turn screen saver on when inactive</span>
+                <select class="a11y-select" id="lsScreensaverOn" onchange="setLockSetting('screensaverOn', this.value)">
+                  <option value="1m">For 1 minute</option>
+                  <option value="2m">For 2 minutes</option>
+                  <option value="5m" selected>For 5 minutes</option>
+                  <option value="10m">For 10 minutes</option>
+                  <option value="30m">For 30 minutes</option>
+                  <option value="never">Never</option>
+                </select>
+              </div>
+              <div class="ls-row">
+                <span>Show date and time on lock screen</span>
+                <div class="toggle-switch on" onclick="toggleSetting(this)"></div>
+              </div>
+              <div class="ls-row">
+                <span>Show user name on lock screen</span>
+                <div class="toggle-switch on" onclick="toggleSetting(this)"></div>
+              </div>
+              <button class="ls-lock-now" onclick="lockScreen()"><i class="ri-lock-2-line"></i> Lock Now</button>
             </div>
             <!-- Software Update -->
             <div class="settings-panel" id="settings-software-update" style="display:none;">

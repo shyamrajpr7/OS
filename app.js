@@ -2891,6 +2891,7 @@ const settingsSearchKeywords = {
   battery: 'power energy charger battery usage',
   notifications: 'alerts banners notifications focus',
   users: 'accounts users groups password login guest admin',
+  'lock-screen': 'lock screen password sleep display screensaver lock auto lock time user name',
   privacy: 'security permissions camera microphone location privacy',
   'software-update': 'update os software version install',
   accessibility: 'vision display zoom voiceover reduce motion text'
@@ -2941,6 +2942,7 @@ function switchSettingsPanel(panel) {
   if (panel === 'general') renderStorage();
   if (panel === 'users') initUsers();
   if (panel === 'sound') sndInit();
+  if (panel === 'lock-screen') renderLockSettings();
 }
 
 // ---- Desktop & Dock Settings ----
@@ -3944,7 +3946,9 @@ function stopScreensaver() {
 
 function resetScreensaverTimer() {
   clearTimeout(screensaverTimeout);
-  screensaverTimeout = setTimeout(startScreensaver, SCREENSAVER_DELAY);
+  const mins = alMinValue(lockSettings.screensaverOn);
+  if (!isFinite(mins) || isLocked || screensaverActive) return;
+  screensaverTimeout = setTimeout(startScreensaver, mins * 60000);
 }
 
 // ---- App Switcher (Cmd+Tab) ----
@@ -4303,6 +4307,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFinderDragDrop();
   sndInit();
   initHotCorners();
+  initAutoLock();
 
   // Traffic light buttons (event delegation)
   document.addEventListener('click', e => {
@@ -5887,7 +5892,6 @@ document.getElementById('lockPassword').addEventListener('keydown', e => { if (e
 document.getElementById('screensaver').addEventListener('mousemove', stopScreensaver);
 document.getElementById('screensaver').addEventListener('click', stopScreensaver);
 document.addEventListener('keydown', e => { if (screensaverActive) stopScreensaver(); });
-resetScreensaverTimer();
 
 // Keyboard shortcuts overlay
 document.getElementById('shortcutsClose').addEventListener('click', closeShortcuts);
@@ -9542,6 +9546,86 @@ function openQuickNote() {
   const ta = ov.querySelector('.qn-body');
   if (ta) { ta.focus(); ta.oninput = () => { const c = document.getElementById('qnCharCount'); if (c) c.textContent = ta.value.length + ' characters'; }; }
   playSystemSound('pop');
+}
+
+// ---- Auto-Lock & Display Sleep ----
+const lockSettings = { passwordDelay: '5m', batteryOff: '5m', acOff: '10m', screensaverOn: '5m' };
+let alLastActivity = Date.now();
+let alInterval = null;
+let alSuspended = false;
+
+function alMinValue(v) {
+  if (v === 'never') return Infinity;
+  const n = parseInt(v, 10);
+  if (v.endsWith('s')) return n / 60;
+  if (v.endsWith('h')) return n * 60;
+  return n; // minutes
+}
+
+function alPwdSeconds() {
+  const v = lockSettings.passwordDelay;
+  if (v === 'never') return Infinity;
+  if (v === 'immediately') return 0;
+  if (v === '1s') return 1;
+  const n = parseInt(v, 10);
+  if (v.endsWith('h')) return n * 3600;
+  return n * 60;
+}
+
+function alDisplayOffMin() {
+  return alMinValue(lockSettings.acOff);
+}
+
+function renderLockSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('thread_lock_settings') || '{}');
+    Object.keys(lockSettings).forEach(k => { if (saved[k]) lockSettings[k] = saved[k]; });
+  } catch (e) { /* ignore */ }
+  const map = { passwordDelay: 'lsPasswordDelay', batteryOff: 'lsBatteryOff', acOff: 'lsAcOff', screensaverOn: 'lsScreensaverOn' };
+  Object.keys(map).forEach(k => {
+    const el = document.getElementById(map[k]);
+    if (el) el.value = lockSettings[k];
+  });
+  resetScreensaverTimer();
+}
+
+function setLockSetting(key, value) {
+  lockSettings[key] = value;
+  try { localStorage.setItem('thread_lock_settings', JSON.stringify(lockSettings)); } catch (e) { /* ignore */ }
+  alResetIdle();
+  resetScreensaverTimer();
+  if (key === 'screensaverOn' || key === 'passwordDelay') {
+    showNotifToast('Lock Screen', 'Setting updated', 'System Settings.app');
+  }
+}
+
+function alResetIdle() { alLastActivity = Date.now(); }
+
+function alActivity() {
+  alLastActivity = Date.now();
+  if (screensaverActive) stopScreensaver();
+  if (isLocked) return;
+}
+
+function alCheck() {
+  if (alSuspended || isLocked) return;
+  if (document.hidden) return;
+  const elapsed = (Date.now() - alLastActivity) / 1000;
+  const ssMin = alMinValue(lockSettings.screensaverOn);
+  const offMin = alDisplayOffMin();
+  const pwd = alPwdSeconds();
+  if (elapsed >= ssMin && !screensaverActive) startScreensaver();
+  if (elapsed >= offMin && !screensaverActive) startScreensaver();
+  if (isFinite(pwd) && elapsed >= offMin * 60 + pwd) lockScreen();
+}
+
+function initAutoLock() {
+  renderLockSettings();
+  const activityEvents = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'wheel'];
+  activityEvents.forEach(ev => document.addEventListener(ev, alActivity, { passive: true }));
+  clearInterval(alInterval);
+  alInterval = setInterval(alCheck, 8000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') alResetIdle(); });
 }
 
 
