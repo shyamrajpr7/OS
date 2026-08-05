@@ -4691,3 +4691,108 @@ body.cm-picking { cursor: crosshair !important; }
 .ls-lock-now { display: inline-flex; align-items: center; gap: 7px; margin-top: 20px; padding: 9px 18px; background: var(--mac-accent); color: white; border: none; border-radius: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1); }
 .ls-lock-now:hover { filter: brightness(1.15); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(10,132,255,0.35); }
 .ls-lock-now i { font-size: 14px; }
+
+/* ===================== POLISH: DESKTOP / MENU BAR / BOOT ===================== */
+/* Boot screen — soft halo behind logo + elegant text + shimmer on the bar */
+.boot-screen { background: radial-gradient(ellipse at 50% 38%, #0d0d22 0%, #05050f 62%, #000 100%); }
+.boot-screen::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 320px;
+  height: 320px;
+  transform: translate(-50%, -56%);
+  background: radial-gradient(circle, rgba(125, 211, 252, 0.14) 0%, rgba(129, 140, 248, 0.08) 38%, transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+  animation: bootHalo 3s ease-in-out infinite;
+}
+@keyframes bootHalo {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1.25; }
+}
+.boot-logo { position: relative; }
+.boot-progress-bar {
+  position: relative;
+  background: linear-gradient(90deg, #7DD3FC 0%, #818CF8 40%, #C084FC 70%, #F0ABFC 100%);
+  background-size: 200% 100%;
+  animation: bootBarShimmer 1.4s linear infinite;
+}
+@keyframes bootBarShimmer {
+  from { background-position: 0% 0; }
+  to { background-position: -200% 0; }
+}
+.boot-text {
+  font-weight: 600;
+  letter-spacing: 6px;
+  color: rgba(255,255,255,0.55);
+  text-shadow: 0 2px 20px rgba(129, 140, 248, 0.35);
+}
+
+/* Menu bar — richer glass, hairline highlight, refined hover */
+.menu-bar {
+  background: linear-gradient(180deg, rgba(34, 34, 52, 0.78), rgba(26, 26, 40, 0.68));
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 24px rgba(0,0,0,0.18);
+}
+.brand-logo { position: relative; }
+.brand-logo::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 6px;
+  background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.35), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.brand-logo:hover::after { opacity: 0.8; }
+.menu-item { position: relative; }
+.menu-item::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 1px;
+  height: 1px;
+  background: var(--mac-accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s cubic-bezier(0.16,1,0.3,1);
+}
+.menu-item:hover::after { transform: scaleX(1); }
+.menu-item.active, .menu-item.open { background: rgba(255,255,255,0.12); color: var(--mac-text); }
+
+/* Desktop — aurora drift, sparkle field, cinematic vignette */
+.desktop {
+  background:
+    radial-gradient(ellipse at 78% 18%, rgba(191, 90, 242, 0.16) 0%, transparent 46%),
+    radial-gradient(ellipse at 18% 82%, rgba(10, 132, 255, 0.18) 0%, transparent 48%),
+    radial-gradient(ellipse at 55% 45%, rgba(48, 209, 88, 0.05) 0%, transparent 40%),
+    var(--mac-desktop-gradient);
+}
+.desktop::before {
+  background:
+    radial-gradient(ellipse at 70% 20%, rgba(99, 102, 241, 0.16) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(10, 132, 255, 0.14) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 75%, rgba(255, 214, 10, 0.06) 0%, transparent 40%);
+  animation: desktopAmbient 22s ease-in-out infinite alternate;
+}
+.desktop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 42%, transparent 55%, rgba(0,0,0,0.42) 100%);
+  animation: desktopVignette 14s ease-in-out infinite alternate;
+}
+@keyframes desktopVignette {
+  from { opacity: 0.7; }
+  to { opacity: 1.05; }
+}
+.desktop-icon { position: relative; }
+.desktop-icon:hover { background: rgba(255,255,255,0.1); box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset; backdrop-filter: blur(6px); }
+.desktop-icon span { letter-spacing: 0.1px; }
