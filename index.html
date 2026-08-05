@@ -619,6 +619,7 @@
             <div class="settings-nav-item" data-panel="network"><i class="ri-wifi-line"></i><span>Network</span></div>
             <div class="settings-nav-item" data-panel="battery"><i class="ri-battery-2-charge-line"></i><span>Battery</span></div>
             <div class="settings-nav-item" data-panel="notifications"><i class="ri-notification-3-line"></i><span>Notifications</span></div>
+            <div class="settings-nav-item" data-panel="users"><i class="ri-group-line"></i><span>Users & Groups</span></div>
             <div class="settings-nav-item" data-panel="privacy"><i class="ri-shield-check-line"></i><span>Privacy & Security</span></div>
             <div class="settings-nav-item" data-panel="software-update"><i class="ri-download-cloud-line"></i><span>Software Update</span></div>
             <div class="settings-nav-item" data-panel="accessibility"><i class="ri-universal-access-line"></i><span>Accessibility</span></div>
@@ -663,6 +664,42 @@
               <div class="setting-row"><span>Show notifications on lock screen</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
               <h3 class="li-section-label" style="margin-top:22px;">Notification Style</h3>
               <div class="nt-list" id="notifAppList"></div>
+            </div>
+            <!-- Users & Groups -->
+            <div class="settings-panel" id="settings-users" style="display:none;">
+              <h2>Users & Groups</h2>
+              <div class="ug-desc">Manage the users who have access to this Mac. Click a user to see their settings.</div>
+              <div class="ug-list" id="ugList"></div>
+              <button class="ug-add-btn" id="ugAddBtn" onclick="ugAddAccount()"><i class="ri-user-add-line"></i> Add Account…</button>
+              <div class="ug-add-row" id="ugAddRow" style="display:none;">
+                <div class="ug-add-fields">
+                  <input type="text" id="ugNewName" placeholder="Full name">
+                  <input type="text" id="ugNewUser" placeholder="Username">
+                  <input type="password" id="ugNewPass" placeholder="Password (optional)">
+                </div>
+                <div class="ug-add-actions">
+                  <label class="ug-admin-check"><input type="checkbox" id="ugNewAdmin"> Administrator</label>
+                  <button class="ug-btn" onclick="ugConfirmAdd()">Add</button>
+                  <button class="ug-btn ug-btn-ghost" onclick="ugAddAccount()">Cancel</button>
+                </div>
+              </div>
+              <div class="ug-detail" id="ugDetail"></div>
+              <div class="ug-options">
+                <div class="ug-option-row"><span>Guest User</span><div class="toggle-switch on" id="ugGuestToggle" onclick="ugToggleGuest(this)"></div></div>
+                <div class="ug-option-row"><span>Automatic Login</span>
+                  <div class="ug-auto-login" id="ugAutoLogin" data-state="off" onclick="ugToggleAutoLogin()">Off<div class="ug-caret"></div></div>
+                </div>
+              </div>
+              <div class="ug-advanced">
+                <div class="ug-section-title">Advanced</div>
+                <div class="ug-option-row"><span>Users allowed to administer this computer</span><span class="ug-count" id="ugAdminCount">2 users</span></div>
+                <div class="ug-option-row clickable" onclick="ugOpenLoginOptions()"><span>Login Options…</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>
+                <div class="ug-login-options" id="ugLoginOptions" style="display:none;">
+                  <div class="ug-option-row"><span>Display login window as list of users</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+                  <div class="ug-option-row"><span>Show password hints</span><div class="toggle-switch" onclick="toggleSetting(this)"></div></div>
+                  <div class="ug-option-row"><span>Show fast user switching as menu</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+                </div>
+              </div>
             </div>
             <!-- Software Update -->
             <div class="settings-panel" id="settings-software-update" style="display:none;">

@@ -4558,3 +4558,50 @@ body.cm-picking { cursor: crosshair !important; }
 .stg-ov-row strong { color: var(--mac-text); }
 .stg-ov-tip { display: flex; align-items: flex-start; gap: 7px; margin-top: 10px; padding: 9px 11px; background: rgba(10,132,255,0.1); border: 1px solid rgba(10,132,255,0.22); border-radius: 9px; font-size: 11.5px; color: #64D2FF; line-height: 1.45; }
 .stg-ov-tip i { margin-top: 1px; }
+
+/* ===================== USERS & GROUPS ===================== */
+.ug-desc { font-size: 12px; color: var(--mac-text-muted); margin-bottom: 14px; line-height: 1.5; }
+.ug-list { display: flex; flex-direction: column; gap: 6px; }
+.ug-user { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: all 0.15s; }
+.ug-user:hover { background: rgba(255,255,255,0.08); }
+.ug-user.ug-selected { background: rgba(10,132,255,0.14); border-color: rgba(10,132,255,0.4); box-shadow: 0 0 0 1px rgba(10,132,255,0.25) inset; }
+.ug-avatar { width: 34px; height: 34px; border-radius: 50%; color: white; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.ug-avatar-lg { width: 52px; height: 52px; font-size: 20px; }
+.ug-user-info { flex: 1; min-width: 0; }
+.ug-user-name { font-size: 13px; font-weight: 600; color: var(--mac-text); display: flex; align-items: center; gap: 8px; }
+.ug-admin-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #64D2FF; background: rgba(10,132,255,0.16); padding: 2px 7px; border-radius: 20px; }
+.ug-user-sub { font-size: 11px; color: var(--mac-text-muted); margin-top: 1px; }
+.ug-check { color: var(--mac-accent); font-size: 16px; }
+.ug-add-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: 10px; padding: 8px 14px; background: rgba(255,255,255,0.08); color: var(--mac-text); border: none; border-radius: 9px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.ug-add-btn:hover { background: rgba(255,255,255,0.14); }
+.ug-add-row { margin-top: 10px; padding: 12px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; animation: stgFade 0.25s ease; }
+.ug-add-fields { display: flex; gap: 8px; margin-bottom: 10px; }
+.ug-add-fields input { flex: 1; min-width: 0; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: var(--mac-text); border-radius: 8px; padding: 7px 10px; font-size: 12px; font-family: var(--font-system); outline: none; }
+.ug-add-fields input:focus { border-color: var(--mac-accent); box-shadow: 0 0 0 3px rgba(10,132,255,0.2); }
+.ug-add-actions { display: flex; align-items: center; gap: 8px; }
+.ug-admin-check { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--mac-text-secondary); cursor: pointer; margin-right: auto; }
+.ug-admin-check input { accent-color: var(--mac-accent); }
+.ug-btn { padding: 7px 14px; background: var(--mac-accent); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.ug-btn:hover { filter: brightness(1.15); }
+.ug-btn-ghost { background: rgba(255,255,255,0.09); color: var(--mac-text); }
+.ug-btn-ghost:hover { background: rgba(255,255,255,0.16); filter: none; }
+.ug-detail { margin-top: 14px; padding: 14px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; animation: stgFade 0.25s ease; }
+.ug-detail-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.ug-detail-title { font-size: 15px; font-weight: 700; color: var(--mac-text); }
+.ug-detail-sub { font-size: 11.5px; color: var(--mac-text-muted); margin-top: 2px; }
+.ug-detail-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 10px; border-radius: 8px; font-size: 12.5px; color: var(--mac-text); }
+.ug-detail-row:nth-child(odd) { background: rgba(255,255,255,0.03); }
+.ug-detail-row.clickable { cursor: pointer; transition: background 0.15s; }
+.ug-detail-row.clickable:hover { background: rgba(255,255,255,0.09); }
+.ug-remove-text { color: #FF453A; }
+.ug-options { margin-top: 18px; }
+.ug-option-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 9px; font-size: 12.5px; color: var(--mac-text); }
+.ug-option-row.clickable { cursor: pointer; transition: background 0.15s; }
+.ug-option-row.clickable:hover { background: rgba(255,255,255,0.06); }
+.ug-auto-login { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-size: 12px; color: var(--mac-text); cursor: pointer; transition: all 0.15s; }
+.ug-auto-login:hover { background: rgba(255,255,255,0.12); }
+.ug-caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--mac-text-secondary); }
+.ug-count { font-size: 12px; color: var(--mac-text-secondary); }
+.ug-advanced { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); }
+.ug-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--mac-text-muted); margin-bottom: 8px; }
+.ug-login-options { margin-top: 8px; padding: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; animation: stgFade 0.25s ease; }

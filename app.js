@@ -2892,6 +2892,7 @@ function switchSettingsPanel(panel) {
   if (panel === 'notifications') renderNotificationsPanel();
   if (panel === 'keyboard') initKbPanel();
   if (panel === 'general') renderStorage();
+  if (panel === 'users') initUsers();
 }
 
 // ---- Desktop & Dock Settings ----
@@ -9037,6 +9038,153 @@ function stgToggleManage() {
 
 function initStorageSettings() {
   renderStorage();
+}
+
+// ---- Users & Groups ----
+let ugUsers = [
+  { name: 'Alex Rivera', username: 'alex', initial: 'A', color: '#0A84FF', admin: true, full: true, hasPassword: true },
+  { name: 'Maya Chen', username: 'maya', initial: 'M', color: '#BF5AF2', admin: true, full: true, hasPassword: true },
+  { name: 'Guest User', username: 'guest', initial: 'G', color: '#8E8E93', admin: false, full: false, hasPassword: false }
+];
+let ugSelected = 0;
+let ugGuestOn = true;
+
+function initUsers() {
+  renderUsers();
+  const row = document.getElementById('ugAddRow');
+  if (row) row.style.display = 'none';
+  const opts = document.getElementById('ugLoginOptions');
+  if (opts) opts.style.display = 'none';
+}
+
+function renderUsers() {
+  const list = document.getElementById('ugList');
+  if (!list) return;
+  list.innerHTML = ugUsers.map((u, i) =>
+    '<div class="ug-user' + (i === ugSelected ? ' ug-selected' : '') + '" onclick="ugSelect(' + i + ')">'
+    + '<div class="ug-avatar" style="background:' + u.color + ';">' + u.initial + '</div>'
+    + '<div class="ug-user-info">'
+    +   '<div class="ug-user-name">' + u.name + (u.admin ? '<span class="ug-admin-badge">Admin</span>' : '') + '</div>'
+    +   '<div class="ug-user-sub">' + (u.username === 'guest' ? 'Guests can access this Mac without a password.' : 'Account created with a password.') + '</div>'
+    + '</div>'
+    + '<i class="ri-check-line ug-check"></i>'
+    + '</div>'
+  ).join('');
+  renderUgDetail();
+  const adminCount = ugUsers.filter(u => u.admin).length;
+  const el = document.getElementById('ugAdminCount');
+  if (el) el.textContent = adminCount + ' user' + (adminCount === 1 ? '' : 's');
+}
+
+function ugSelect(i) {
+  ugSelected = i;
+  renderUsers();
+}
+
+function renderUgDetail() {
+  const wrap = document.getElementById('ugDetail');
+  if (!wrap) return;
+  const u = ugUsers[ugSelected];
+  if (!u) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  wrap.innerHTML =
+    '<div class="ug-detail-head">'
+    +   '<div class="ug-avatar ug-avatar-lg" style="background:' + u.color + ';">' + u.initial + '</div>'
+    +   '<div class="ug-detail-title">' + u.name + '<div class="ug-detail-sub">' + u.username + ' &middot; ' + (u.admin ? 'Administrator' : 'Standard') + '</div></div>'
+    + '</div>'
+    + (u.username === 'guest'
+      ? '<div class="ug-detail-row"><span>Allow guests to log in</span><div class="toggle-switch' + (ugGuestOn ? ' on' : '') + '" onclick="ugToggleGuest(this)"></div></div>'
+      : '<div class="ug-detail-row"><span>Allow user to administer this computer</span><div class="toggle-switch' + (u.admin ? ' on' : '') + '" onclick="ugToggleAdmin()"></div></div>'
+      +   '<div class="ug-detail-row clickable" onclick="ugChangePassword()"><span>Change Password…</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>'
+      +   (u.username !== 'guest' && u.username !== ugUsers.find(x => x.admin && x.full) ? '' : '')
+      +   (u.username === 'guest' ? '' : '<div class="ug-detail-row clickable" onclick="ugRemoveUser()"><span class="ug-remove-text">Remove User…</span><i class="ri-arrow-right-s-line setting-arrow"></i></div>')
+      )
+    + '';
+}
+
+function ugToggleAdmin() {
+  const u = ugUsers[ugSelected];
+  if (!u || u.username === 'guest') return;
+  if (ugUsers.filter(x => x.admin).length === 1 && u.admin) {
+    showNotifToast('Users & Groups', 'There must be at least one administrator.', 'System Settings.app');
+    return;
+  }
+  u.admin = !u.admin;
+  renderUsers();
+}
+
+function ugToggleGuest(el) {
+  ugGuestOn = !ugGuestOn;
+  if (el) el.classList.toggle('on', ugGuestOn);
+  showNotifToast('Users & Groups', 'Guest access turned ' + (ugGuestOn ? 'on' : 'off'), 'System Settings.app');
+}
+
+function ugChangePassword() {
+  const u = ugUsers[ugSelected];
+  if (!u || u.username === 'guest') return;
+  const newPass = prompt('Enter a new password for ' + u.name + ':');
+  if (newPass === null) return;
+  if (!newPass.trim()) { showNotifToast('Users & Groups', 'Password cannot be empty.', 'System Settings.app'); return; }
+  u.hasPassword = true;
+  u.password = newPass;
+  showNotifToast('Users & Groups', 'Password changed for ' + u.name, 'System Settings.app');
+}
+
+function ugRemoveUser() {
+  const u = ugUsers[ugSelected];
+  if (!u || u.username === 'guest' || (u.admin && ugUsers.filter(x => x.admin).length === 1)) {
+    showNotifToast('Users & Groups', 'This user cannot be removed.', 'System Settings.app');
+    return;
+  }
+  ugUsers = ugUsers.filter((x, i) => i !== ugSelected);
+  if (ugSelected >= ugUsers.length) ugSelected = ugUsers.length - 1;
+  renderUsers();
+}
+
+function ugAddAccount() {
+  const row = document.getElementById('ugAddRow');
+  if (!row) return;
+  const show = row.style.display !== 'block';
+  row.style.display = show ? 'block' : 'none';
+  if (show) {
+    document.getElementById('ugNewName').value = '';
+    document.getElementById('ugNewUser').value = '';
+    document.getElementById('ugNewPass').value = '';
+    document.getElementById('ugNewName').focus();
+  }
+}
+
+function ugConfirmAdd() {
+  const name = document.getElementById('ugNewName').value.trim();
+  const username = document.getElementById('ugNewUser').value.trim();
+  const pass = document.getElementById('ugNewPass').value;
+  if (!name || !username) { showNotifToast('Users & Groups', 'Name and username are required.', 'System Settings.app'); return; }
+  const existing = ugUsers.find(u => u.username === username.toLowerCase());
+  if (existing) { showNotifToast('Users & Groups', 'That username is already taken.', 'System Settings.app'); return; }
+  const admin = document.getElementById('ugNewAdmin').checked;
+  ugUsers.splice(ugUsers.length - 1, 0, {
+    name, username: username.toLowerCase(), initial: name.charAt(0).toUpperCase(),
+    color: '#FF9F0A', admin, full: false, hasPassword: !!pass
+  });
+  ugSelected = ugUsers.findIndex(u => u.username === username.toLowerCase());
+  ugAddAccount();
+  renderUsers();
+  showNotifToast('Users & Groups', 'Added "' + name + '"', 'System Settings.app');
+}
+
+function ugToggleAutoLogin() {
+  const el = document.getElementById('ugAutoLogin');
+  const off = el.dataset.state !== 'on';
+  el.dataset.state = off ? 'on' : 'off';
+  el.innerHTML = (off ? 'Alex Rivera' : 'Off') + '<div class="ug-caret"></div>';
+  showNotifToast('Users & Groups', off ? 'Automatic login set for Alex Rivera' : 'Automatic login turned off', 'System Settings.app');
+}
+
+function ugOpenLoginOptions() {
+  const opts = document.getElementById('ugLoginOptions');
+  if (!opts) return;
+  const show = opts.style.display !== 'block';
+  opts.style.display = show ? 'block' : 'none';
 }
 
 
