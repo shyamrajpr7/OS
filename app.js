@@ -534,6 +534,7 @@ function openPreview(item, type) {
         <div class="preview-video-volume" id="previewVideoVolumeWrap">
           <input type="range" class="preview-video-vol-slider" id="previewVideoVolSlider" min="0" max="100" value="80" oninput="previewVideoSetVolume(this.value)">
         </div>
+        <button class="preview-video-btn preview-video-btn-pip" onclick="previewVideoPip()" title="Picture in Picture"><i class="ri-picture-in-picture-line"></i></button>
         <button class="preview-video-btn preview-video-btn-fullscreen" onclick="previewVideoFullscreen()" title="Fullscreen"><i class="ri-fullscreen-line"></i></button>
       </div>
     </div>`;
@@ -606,8 +607,10 @@ let videoPlaying = false;
 let videoProgress = 0;
 let videoDuration = 180;
 let videoInterval = null;
+let videoPreviewName = 'movie.mov';
 
 function initVideoPreview(item) {
+  videoPreviewName = item.name;
   const nameLower = item.name.toLowerCase();
   if (nameLower.includes('short') || nameLower.includes('clip')) videoDuration = 45;
   else if (nameLower.includes('long')) videoDuration = 600;
@@ -656,6 +659,13 @@ function previewVideoSetVolume(val) {
 function previewVideoFullscreen() {
   const stage = document.getElementById('previewVideoStage');
   if (stage) { if (stage.requestFullscreen) stage.requestFullscreen(); else if (stage.webkitRequestFullscreen) stage.webkitRequestFullscreen(); }
+}
+
+function previewVideoPip() {
+  const grads = [['#0A84FF', '#00C7BE'], ['#AF52DE', '#FF2D55'], ['#FF9500', '#FF3B30'], ['#30D158', '#00663A']];
+  const g = grads[videoProgress % grads.length];
+  openPiP({ title: videoPreviewName, emoji: '🎬', grad: g, app: 'Preview', onExpand: () => openApp('Preview.app') });
+  if (!videoPlaying) previewVideoTogglePlay();
 }
 
 function formatVideoTime(s) {
@@ -4548,7 +4558,10 @@ function playYoutubeVideo(id, title, channel) {
       <div class="youtube-player-back" onclick="youtubeGoHome()"><i class="ri-arrow-left-s-line"></i> Back to Home</div>
       <div class="youtube-player-title">${title}</div>
       <div class="youtube-player-channel">${channel}</div>
-      <button class="youtube-open-btn" onclick="window.open('https://www.youtube.com/watch?v=${id}', '_blank')">Open in YouTube</button>`;
+      <div class="youtube-player-actions">
+        <button class="youtube-pip-btn" onclick="youtubePip('${id}', '${title.replace(/'/g, "\\'")}', '${channel.replace(/'/g, "\\'")}')"><i class="ri-picture-in-picture-line"></i> Picture in Picture</button>
+        <button class="youtube-open-btn" onclick="window.open('https://www.youtube.com/watch?v=${id}', '_blank')">Open in YouTube</button>
+      </div>`;
 
   let fallbackEl = document.getElementById('youtubeFallback');
   if (!fallbackEl) {
@@ -4573,6 +4586,11 @@ function playYoutubeVideo(id, title, channel) {
     clearTimeout(loadTimer);
     embed.style.display = 'none';
   };
+}
+
+function youtubePip(id, title, channel) {
+  const grads = [['#FF0000', '#FF2D55'], ['#1DA1F2', '#0057E7'], ['#4CAF50', '#2E7D32'], ['#FF9800', '#F44336']];
+  openPiP({ title: title + ' · ' + channel, emoji: '▶', grad: grads[Math.abs(id.charCodeAt(0)) % grads.length], app: 'YouTube', onExpand: () => openApp('YouTube.app') });
 }
 
 function youtubeGoHome() {
@@ -7756,6 +7774,7 @@ function initQT() {
     qtState.fullscreen = !qtState.fullscreen;
     document.getElementById('quicktime-window').classList.toggle('qt-fullscreen', qtState.fullscreen);
   });
+  initPip();
   qtRender();
 }
 
@@ -7823,6 +7842,87 @@ function qtTogglePlay() {
     document.getElementById('qtScene').classList.remove('playing');
   }
   qtRenderTimes();
+}
+
+// ---- Picture in Picture ----
+const pipState = { active: false, playing: false, t: 0, timer: null, app: 'QuickTime Player', onExpand: null };
+
+function openPiP(opts) {
+  opts = opts || {};
+  const pip = document.getElementById('pipWindow');
+  pipState.active = true;
+  pipState.app = opts.app || 'QuickTime Player';
+  pipState.onExpand = opts.onExpand || null;
+  pipState.playing = true;
+  pipState.t = 0;
+  document.getElementById('pipTitle').textContent = opts.title || 'Now Playing';
+  document.getElementById('pipAppLabel').textContent = pipState.app;
+  document.getElementById('pipEmoji').textContent = opts.emoji || '🎬';
+  const scene = document.getElementById('pipScene');
+  scene.style.background = 'linear-gradient(135deg,' + (opts.grad || ['#AF52DE', '#FF2D55'])[0] + ',' + (opts.grad || ['#AF52DE', '#FF2D55'])[1] + ')';
+  pip.style.display = '';
+  pip.style.left = (window.innerWidth - 320 - 24) + 'px';
+  pip.style.top = (window.innerHeight - 240 - 44) + 'px';
+  requestAnimationFrame(() => pip.classList.add('pip-in'));
+  document.getElementById('pipPlay').innerHTML = '<i class="ri-pause-fill"></i>';
+  if (pipState.timer) clearInterval(pipState.timer);
+  pipState.timer = setInterval(() => {
+    pipState.t += 1;
+    document.getElementById('pipTimer').textContent = Math.floor(pipState.t / 60) + ':' + String(pipState.t % 60).padStart(2, '0');
+  }, 1000);
+  showNotifToast(pipState.app, 'Picture in Picture', opts.title || '');
+}
+
+function closePiP() {
+  if (pipState.timer) clearInterval(pipState.timer);
+  pipState.timer = null;
+  pipState.active = false;
+  const pip = document.getElementById('pipWindow');
+  pip.classList.remove('pip-in');
+  setTimeout(() => { pip.style.display = 'none'; }, 260);
+}
+
+function togglePipPlay() {
+  const pip = document.getElementById('pipWindow');
+  pipState.playing = !pipState.playing;
+  document.getElementById('pipPlay').innerHTML = pipState.playing ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>';
+  document.getElementById('pipScene').classList.toggle('playing', pipState.playing);
+  document.querySelectorAll('.pip-eq span').forEach(s => s.style.animationPlayState = pipState.playing ? 'running' : 'paused');
+}
+
+function initPip() {
+  const pip = document.getElementById('pipWindow');
+  if (!pip || pip.dataset.pipInit) return;
+  pip.dataset.pipInit = '1';
+  document.getElementById('pipClose').addEventListener('click', closePiP);
+  document.getElementById('pipPlay').addEventListener('click', togglePipPlay);
+  document.getElementById('pipExpand').addEventListener('click', () => {
+    const cb = pipState.onExpand;
+    closePiP();
+    if (cb) cb();
+  });
+  const tb = document.getElementById('pipTitlebar');
+  let drag = null;
+  tb.addEventListener('mousedown', e => { drag = { sx: e.clientX, sy: e.clientY, ox: pip.offsetLeft, oy: pip.offsetTop }; e.preventDefault(); });
+  document.addEventListener('mousemove', e => {
+    if (!drag) return;
+    pip.style.left = Math.max(0, Math.min(window.innerWidth - 80, drag.ox + e.clientX - drag.sx)) + 'px';
+    pip.style.top = Math.max(28, Math.min(window.innerHeight - 60, drag.oy + e.clientY - drag.sy)) + 'px';
+  });
+  document.addEventListener('mouseup', () => { drag = null; });
+  const handle = document.getElementById('pipResize');
+  let rs = null;
+  handle.addEventListener('mousedown', e => { rs = { sx: e.clientX, sy: e.clientY, w: pip.offsetWidth, h: pip.offsetHeight }; e.preventDefault(); e.stopPropagation(); });
+  document.addEventListener('mousemove', e => {
+    if (!rs) return;
+    pip.style.width = Math.max(220, rs.w + e.clientX - rs.sx) + 'px';
+    pip.style.height = Math.max(150, rs.h + e.clientY - rs.sy) + 'px';
+  });
+  document.addEventListener('mouseup', () => { rs = null; });
+  document.getElementById('qtPip').addEventListener('click', () => {
+    const m = qtMovies[qtState.idx];
+    openPiP({ title: m.title, emoji: m.emoji, grad: m.grad, app: 'QuickTime Player', onExpand: () => openApp('QuickTime Player.app') });
+  });
 }
 
 // ---- App Permission Prompts ----

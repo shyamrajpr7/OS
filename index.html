@@ -1855,6 +1855,7 @@
               <span class="qt-time" id="qtTime">00:00 / 00:00</span>
               <button class="qt-btn" id="qtVolumeBtn"><i class="ri-volume-up-line"></i></button>
               <input type="range" class="qt-vol" id="qtVol" min="0" max="100" value="70">
+              <button class="qt-btn" id="qtPip" title="Picture in Picture"><i class="ri-picture-in-picture-line"></i></button>
               <button class="qt-btn" id="qtFullscreen"><i class="ri-fullscreen-line"></i></button>
             </div>
           </div>
@@ -2633,6 +2634,27 @@
       <div class="emoji-cats" id="emojiCats"></div>
       <div class="emoji-grid" id="emojiGrid"></div>
     </div>
+  </div>
+
+  <!-- PICTURE IN PICTURE -->
+  <div class="pip-window" id="pipWindow" style="display:none;">
+    <div class="pip-titlebar" id="pipTitlebar">
+      <div class="pip-title" id="pipTitle">Now Playing</div>
+      <div class="pip-titlebar-actions">
+        <button class="pip-btn" id="pipExpand" title="Return to app"><i class="ri-close-fullscreen-line"></i></button>
+        <button class="pip-btn pip-btn-close" id="pipClose" title="Close"><i class="ri-close-line"></i></button>
+      </div>
+    </div>
+    <div class="pip-video" id="pipVideo">
+      <div class="pip-scene" id="pipScene"><span id="pipEmoji">🎬</span></div>
+      <div class="pip-timer" id="pipTimer">00:00</div>
+    </div>
+    <div class="pip-controls">
+      <button class="pip-btn" id="pipPlay"><i class="ri-pause-fill"></i></button>
+      <div class="pip-eq"><span></span><span></span><span></span><span></span></div>
+      <span class="pip-app-label" id="pipAppLabel">QuickTime Player</span>
+    </div>
+    <div class="pip-resize" id="pipResize" title="Drag to resize"></div>
   </div>
 
   <script src="app.js"></script>
