@@ -806,6 +806,79 @@
                   <div class="toggle-switch" id="ddMenuBarHide" onclick="toggleMenuBarAutoHide(this)"></div>
                 </div>
               </div>
+              <div class="dd-section">
+                <h3>Hot Corners</h3>
+                <div class="hc-grid">
+                  <div class="hc-corner">
+                    <div class="hc-preview">
+                      <div class="hc-window" style="left:26%;top:26%;width:36%;height:30%;"></div>
+                      <div class="hc-window" style="left:50%;top:50%;width:44%;height:38%;"></div>
+                      <div class="hc-spot hc-tl"></div>
+                    </div>
+                    <select class="a11y-select" data-corner="top-left" onchange="setHotCorner('top-left', this.value)">
+                      <option value="">None</option>
+                      <option value="launchpad">Launchpad</option>
+                      <option value="mission">Mission Control</option>
+                      <option value="desktop">Show Desktop</option>
+                      <option value="notifications">Notification Center</option>
+                      <option value="lock">Lock Screen</option>
+                      <option value="quicknote">Quick Note</option>
+                      <option value="screensaver">Screen Saver</option>
+                    </select>
+                  </div>
+                  <div class="hc-corner">
+                    <div class="hc-preview">
+                      <div class="hc-window" style="left:26%;top:26%;width:36%;height:30%;"></div>
+                      <div class="hc-window" style="left:50%;top:50%;width:44%;height:38%;"></div>
+                      <div class="hc-spot hc-tr"></div>
+                    </div>
+                    <select class="a11y-select" data-corner="top-right" onchange="setHotCorner('top-right', this.value)">
+                      <option value="">None</option>
+                      <option value="launchpad">Launchpad</option>
+                      <option value="mission">Mission Control</option>
+                      <option value="desktop">Show Desktop</option>
+                      <option value="notifications">Notification Center</option>
+                      <option value="lock">Lock Screen</option>
+                      <option value="quicknote">Quick Note</option>
+                      <option value="screensaver">Screen Saver</option>
+                    </select>
+                  </div>
+                  <div class="hc-corner">
+                    <div class="hc-preview">
+                      <div class="hc-window" style="left:26%;top:26%;width:36%;height:30%;"></div>
+                      <div class="hc-window" style="left:50%;top:50%;width:44%;height:38%;"></div>
+                      <div class="hc-spot hc-bl"></div>
+                    </div>
+                    <select class="a11y-select" data-corner="bottom-left" onchange="setHotCorner('bottom-left', this.value)">
+                      <option value="">None</option>
+                      <option value="launchpad">Launchpad</option>
+                      <option value="mission">Mission Control</option>
+                      <option value="desktop">Show Desktop</option>
+                      <option value="notifications">Notification Center</option>
+                      <option value="lock">Lock Screen</option>
+                      <option value="quicknote">Quick Note</option>
+                      <option value="screensaver">Screen Saver</option>
+                    </select>
+                  </div>
+                  <div class="hc-corner">
+                    <div class="hc-preview">
+                      <div class="hc-window" style="left:26%;top:26%;width:36%;height:30%;"></div>
+                      <div class="hc-window" style="left:50%;top:50%;width:44%;height:38%;"></div>
+                      <div class="hc-spot hc-br"></div>
+                    </div>
+                    <select class="a11y-select" data-corner="bottom-right" onchange="setHotCorner('bottom-right', this.value)">
+                      <option value="">None</option>
+                      <option value="launchpad">Launchpad</option>
+                      <option value="mission">Mission Control</option>
+                      <option value="desktop">Show Desktop</option>
+                      <option value="notifications">Notification Center</option>
+                      <option value="lock">Lock Screen</option>
+                      <option value="quicknote">Quick Note</option>
+                      <option value="screensaver">Screen Saver</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
             </div>
             <!-- Display -->
             <div class="settings-panel" id="settings-display" style="display:none;">
@@ -2700,6 +2773,30 @@
   <div class="screensaver" id="screensaver">
     <canvas id="screensaverCanvas"></canvas>
     <div class="screensaver-hint">Move mouse or press any key to wake</div>
+  </div>
+
+  <!-- MISSION CONTROL -->
+  <div class="mc-overlay" id="mcOverlay">
+    <div class="mc-head">
+      <input type="text" class="mc-search" placeholder="Search windows" oninput="mcFilter(this.value)">
+      <span class="mc-spaces"><i class="ri-apps-line"></i> Desktop 1</span>
+    </div>
+    <div class="mc-grid" id="mcGrid"></div>
+  </div>
+
+  <!-- QUICK NOTE -->
+  <div class="qn-overlay" id="qnOverlay" style="display:none;">
+    <div class="qn-note">
+      <div class="qn-head">
+        <span class="qn-title"><i class="ri-sticky-note-line"></i> Quick Note</span>
+        <button class="qn-close" onclick="closeQuickNote()"><i class="ri-close-line"></i></button>
+      </div>
+      <textarea class="qn-body" placeholder="Write a quick note…"></textarea>
+      <div class="qn-foot">
+        <span id="qnCharCount">0 characters</span>
+        <button class="qn-save" onclick="closeQuickNote()">Done</button>
+      </div>
+    </div>
   </div>
 
   <!-- UNSAVED CHANGES DIALOG -->

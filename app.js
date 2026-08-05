@@ -2934,7 +2934,7 @@ function switchSettingsPanel(panel) {
   const target = document.getElementById('settings-' + panel);
   if (target) target.style.display = '';
   if (panel === 'privacy') refreshPermBadges();
-  if (panel === 'desktop-dock') applyDockAppearance();
+  if (panel === 'desktop-dock') { applyDockAppearance(); applyHotCornerSelects(); }
   if (panel === 'login-items') renderLoginItems();
   if (panel === 'notifications') renderNotificationsPanel();
   if (panel === 'keyboard') initKbPanel();
@@ -4302,6 +4302,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateFinder();
   initFinderDragDrop();
   sndInit();
+  initHotCorners();
 
   // Traffic light buttons (event delegation)
   document.addEventListener('click', e => {
@@ -5993,7 +5994,7 @@ document.querySelectorAll('.activity-tab').forEach(el => {
 // Global keyboard shortcuts
 document.addEventListener('keydown', e => {
   applyModifierRemap(e);
-  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); closeDiskEraseDialog(); exitAnyFullscreen(); if (kbViewerOpen) closeKeyboardViewer(); }
+  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); closeDiskEraseDialog(); exitAnyFullscreen(); if (kbViewerOpen) closeKeyboardViewer(); closeMissionControl(); closeQuickNote(); }
   // Ctrl+Cmd+F -> toggle Full-Screen on focused window (like macOS)
   if (e.ctrlKey && e.metaKey && e.key === 'f') { e.preventDefault(); const fsWin = document.querySelector('.mac-window.fullscreen') || document.querySelector('.mac-window.focused'); if (fsWin) toggleFullscreenWindow(fsWin); }
   // Cmd+F or Ctrl+F -> focus search
@@ -9399,6 +9400,148 @@ function sndToggleFx(el) {
   sndState.fxEnabled = el.classList.toggle('on');
   try { localStorage.setItem('thread_snd_fxOn', sndState.fxEnabled ? '1' : '0'); } catch (e) { /* ignore */ }
   if (sndState.fxEnabled) playSystemSound('alert');
+}
+
+// ---- Hot Corners ----
+const hotCornersDefault = { 'top-left': '', 'top-right': '', 'bottom-left': '', 'bottom-right': '' };
+let hotCorners = { ...hotCornersDefault };
+let hcTriggered = { 'top-left': false, 'top-right': false, 'bottom-left': false, 'bottom-right': false };
+let hcDesktopHidden = false;
+const HC_MARGIN = 14;
+
+function initHotCorners() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('thread_hot_corners') || '{}');
+    Object.keys(hotCornersDefault).forEach(k => { if (saved[k]) hotCorners[k] = saved[k]; });
+  } catch (e) { /* ignore */ }
+  document.querySelectorAll('.settings-nav-item').forEach(el => {
+    if (el.dataset.panel === 'desktop-dock') applyHotCornerSelects();
+  });
+  document.addEventListener('mousemove', hcDetect);
+}
+
+function applyHotCornerSelects() {
+  document.querySelectorAll('[data-corner]').forEach(sel => {
+    sel.value = hotCorners[sel.dataset.corner] || '';
+  });
+}
+
+function setHotCorner(corner, value) {
+  hotCorners[corner] = value;
+  try { localStorage.setItem('thread_hot_corners', JSON.stringify(hotCorners)); } catch (e) { /* ignore */ }
+}
+
+function hcDetect(e) {
+  const corners = {
+    'top-left': e.clientX <= HC_MARGIN && e.clientY <= HC_MARGIN,
+    'top-right': e.clientX >= innerWidth - HC_MARGIN && e.clientY <= HC_MARGIN,
+    'bottom-left': e.clientX <= HC_MARGIN && e.clientY >= innerHeight - HC_MARGIN,
+    'bottom-right': e.clientX >= innerWidth - HC_MARGIN && e.clientY >= innerHeight - HC_MARGIN
+  };
+  Object.keys(corners).forEach(key => {
+    if (corners[key]) {
+      if (!hcTriggered[key] && hotCorners[key]) {
+        hcTriggered[key] = true;
+        hcFire(hotCorners[key]);
+      }
+    } else if (e.clientX > HC_MARGIN * 3 || e.clientY > HC_MARGIN * 3) {
+      hcTriggered[key] = false;
+    }
+  });
+}
+
+function hcFire(action) {
+  if (!action) return;
+  if (action === 'launchpad') { closeNotifCenter(); if (!document.getElementById('launchpadOverlay').classList.contains('visible')) toggleLaunchpad(); }
+  else if (action === 'mission') { toggleMissionControl(); }
+  else if (action === 'desktop') { hcShowDesktop(); }
+  else if (action === 'notifications') { toggleNotifCenter(); }
+  else if (action === 'lock') { lockScreen(); }
+  else if (action === 'quicknote') { openQuickNote(); }
+  else if (action === 'screensaver') { startScreensaver(); }
+}
+
+function hcShowDesktop() {
+  if (hcDesktopHidden) {
+    document.querySelectorAll('.mac-window[data-hc-hidden="1"]').forEach(w => { w.style.display = ''; w.removeAttribute('data-hc-hidden'); });
+    hcDesktopHidden = false;
+    return;
+  }
+  document.querySelectorAll('.mac-window').forEach(w => {
+    if (w.style.display !== 'none' && !w.classList.contains('fullscreen')) { w.dataset.hcHidden = '1'; w.style.display = 'none'; }
+  });
+  hcDesktopHidden = true;
+  const restore = () => {
+    document.removeEventListener('mousedown', restore);
+    hcShowDesktop();
+  };
+  document.addEventListener('mousedown', restore);
+}
+
+// ---- Mission Control ----
+function toggleMissionControl() {
+  const ov = document.getElementById('mcOverlay');
+  if (!ov) return;
+  const open = ov.classList.contains('visible');
+  ov.classList.toggle('visible');
+  if (!open) {
+    document.body.classList.add('mc-open');
+    renderMissionControl();
+  } else {
+    document.body.classList.remove('mc-open');
+    const search = document.querySelector('.mc-search');
+    if (search) search.value = '';
+  }
+}
+
+function renderMissionControl(q) {
+  const grid = document.getElementById('mcGrid');
+  if (!grid) return;
+  q = (q || '').toLowerCase();
+  const wins = [...document.querySelectorAll('.mac-window')].filter(w => w.style.display !== 'none');
+  grid.innerHTML = wins.map((w, i) => {
+    const title = (w.querySelector('.window-title') || {}).textContent || 'Window';
+    if (q && !title.toLowerCase().includes(q)) return '';
+    return '<div class="mc-window" data-wid="' + w.id + '" onclick="mcRestore(\'' + w.id + '\')" style="animation-delay:' + (i * 0.03) + 's;">'
+      + '<div class="mc-thumb"><div class="mc-thumb-bar"><span class="mc-dot" style="background:#FF5F57;"></span><span class="mc-dot" style="background:#FEBC2E;"></span><span class="mc-dot" style="background:#28C840;"></span></div>'
+      + '<div class="mc-thumb-body"></div></div>'
+      + '<div class="mc-title">' + title + '</div>'
+      + '</div>';
+  }).join('');
+  if (!grid.querySelector('.mc-window')) grid.innerHTML = '<div class="mc-empty">No windows open</div>';
+}
+
+function mcFilter(q) { renderMissionControl(q); }
+
+function mcRestore(wid) {
+  const win = document.getElementById(wid);
+  if (win && win.dataset.hcHidden === '1') { win.style.display = ''; win.removeAttribute('data-hc-hidden'); hcDesktopHidden = false; }
+  toggleMissionControl();
+  const target = document.getElementById(wid);
+  if (target) focusWindow(wid);
+}
+
+function closeMissionControl() {
+  const ov = document.getElementById('mcOverlay');
+  if (ov && ov.classList.contains('visible')) {
+    ov.classList.remove('visible');
+    document.body.classList.remove('mc-open');
+  }
+}
+
+function closeQuickNote() {
+  const ov = document.getElementById('qnOverlay');
+  if (ov && ov.style.display === 'flex') { ov.style.display = 'none'; playSystemSound('pop'); }
+}
+
+// ---- Quick Note ----
+function openQuickNote() {
+  const ov = document.getElementById('qnOverlay');
+  if (!ov) return;
+  ov.style.display = 'flex';
+  const ta = ov.querySelector('.qn-body');
+  if (ta) { ta.focus(); ta.oninput = () => { const c = document.getElementById('qnCharCount'); if (c) c.textContent = ta.value.length + ' characters'; }; }
+  playSystemSound('pop');
 }
 
 
