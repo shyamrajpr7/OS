@@ -810,10 +810,21 @@
             <!-- Sound -->
             <div class="settings-panel" id="settings-sound" style="display:none;">
               <h2>Sound</h2>
-              <div class="setting-row"><span>Output Volume</span><span class="setting-desc" id="soundOutputVolume">75%</span></div>
-              <div class="setting-row"><span>Input Volume</span><span class="setting-desc">50%</span></div>
-              <div class="setting-row"><span>Alert Sound</span><span class="setting-desc">Sosumi</span></div>
-              <div class="setting-row"><span>Play Sound on Startup</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+              <div class="snd-group">
+                <div class="snd-row"><span>Output Volume</span>
+                  <div class="snd-slider-wrap"><input type="range" class="snd-slider" id="sndOutVolume" min="0" max="100" value="75" oninput="sndSetVolume(this.value)"><span class="snd-slider-val" id="sndOutVolumeVal">75%</span></div>
+                </div>
+                <div class="snd-row"><span>Sound Effects Volume</span>
+                  <div class="snd-slider-wrap"><input type="range" class="snd-slider" id="sndFxVolume" min="0" max="100" value="100" oninput="sndSetFxVolume(this.value)"><span class="snd-slider-val" id="sndFxVolumeVal">100%</span></div>
+                </div>
+              </div>
+              <h3 class="li-section-label" style="margin-top:20px;">Alert Sounds</h3>
+              <div class="snd-alerts" id="sndAlerts"></div>
+              <div class="snd-group snd-options">
+                <div class="snd-row"><span>Play sound on startup</span><div class="toggle-switch on" id="sndStartupChime" onclick="sndToggleStartupChime(this)"></div></div>
+                <div class="snd-row"><span>Play sound effects</span><div class="toggle-switch on" onclick="sndToggleFx(this)"></div></div>
+                <div class="snd-row"><span>Show volume in menu bar</span><div class="toggle-switch on" onclick="toggleSetting(this)"></div></div>
+              </div>
             </div>
             <!-- Keyboard -->
             <div class="settings-panel" id="settings-keyboard" style="display:none;">

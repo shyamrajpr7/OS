@@ -2893,6 +2893,7 @@ function switchSettingsPanel(panel) {
   if (panel === 'keyboard') initKbPanel();
   if (panel === 'general') renderStorage();
   if (panel === 'users') initUsers();
+  if (panel === 'sound') sndInit();
 }
 
 // ---- Desktop & Dock Settings ----
@@ -4211,22 +4212,10 @@ function startBootScreen() {
   if (!bootScreen || !progressBar) return;
   let progress = 0;
   function playLoginChime() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-      notes.forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.8);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(ctx.currentTime + i * 0.12);
-        osc.stop(ctx.currentTime + i * 0.12 + 0.8);
-      });
-    } catch (e) { }
+    sndInit();
+    if (!sndState.startupChime) return;
+    if (sndState.ctx && sndState.ctx.state === 'suspended') sndState.ctx.resume();
+    playSystemSound('startup');
   }
   const interval = setInterval(() => {
     progress += Math.random() * 15 + 5;
@@ -4265,6 +4254,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initWindowDrag('finder-window');
   updateFinder();
   initFinderDragDrop();
+  sndInit();
 
   // Traffic light buttons (event delegation)
   document.addEventListener('click', e => {
@@ -5320,18 +5310,7 @@ function saveNotifSettings() { localStorage.setItem('threados_notif_settings', J
 
 let notifAudioCtx = null;
 function playNotifSound() {
-  try {
-    notifAudioCtx = notifAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    const osc = notifAudioCtx.createOscillator();
-    const gain = notifAudioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.04, notifAudioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, notifAudioCtx.currentTime + 0.35);
-    osc.connect(gain).connect(notifAudioCtx.destination);
-    osc.start();
-    osc.stop(notifAudioCtx.currentTime + 0.35);
-  } catch (e) {}
+  playSystemSound('alert');
 }
 
 const notifKnownApps = ['Mail.app', 'Messages.app', 'Calendar.app', 'Reminders.app', 'Notes.app', 'Music.app', 'Finder.app', 'System Settings.app', 'Disk Utility.app'];
@@ -9185,6 +9164,194 @@ function ugOpenLoginOptions() {
   if (!opts) return;
   const show = opts.style.display !== 'block';
   opts.style.display = show ? 'block' : 'none';
+}
+
+// ---- System Sounds (WebAudio) ----
+const sndState = {
+  ctx: null,
+  master: null,
+  volume: 0.75,
+  fxVolume: 1,
+  fxEnabled: true,
+  startupChime: true,
+  alertSound: 'sosumi'
+};
+
+const sndAlertSounds = [
+  { key: 'sosumi', name: 'Sosumi', icon: 'ri-music-2-line' },
+  { key: 'ping', name: 'Ping', icon: 'ri-volume-up-line' },
+  { key: 'basso', name: 'Basso', icon: 'ri-bass-line' },
+  { key: 'funk', name: 'Funk', icon: 'ri-music-2-fill' },
+  { key: 'glass', name: 'Glass', icon: 'ri-drop-line' },
+  { key: 'hero', name: 'Hero', icon: 'ri-star-line' },
+  { key: 'morse', name: 'Morse', icon: 'ri-broadcast-line' },
+  { key: 'pop', name: 'Pop', icon: 'ri-bubble-chart-line' },
+  { key: 'purr', name: 'Purr', icon: 'ri-cat-face-line' },
+  { key: 'submarine', name: 'Submarine', icon: 'ri-ship-2-line' }
+];
+
+function sndInit() {
+  if (!sndState.ctx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    sndState.ctx = new AC();
+    sndState.master = sndState.ctx.createGain();
+    sndState.master.gain.value = sndState.volume * sndState.fxVolume;
+    sndState.master.connect(sndState.ctx.destination);
+  }
+  try {
+    const vol = localStorage.getItem('thread_snd_volume');
+    if (vol !== null) sndState.volume = +vol;
+    const fx = localStorage.getItem('thread_snd_fx');
+    if (fx !== null) sndState.fxVolume = +fx;
+    const fxOn = localStorage.getItem('thread_snd_fxOn');
+    if (fxOn !== null) sndState.fxEnabled = fxOn === '1';
+    const chime = localStorage.getItem('thread_snd_chime');
+    if (chime !== null) sndState.startupChime = chime === '1';
+    const alert = localStorage.getItem('thread_snd_alert');
+    if (alert !== null) sndState.alertSound = alert;
+  } catch (e) { /* ignore */ }
+  renderSndAlerts();
+  const out = document.getElementById('sndOutVolume');
+  if (out) out.value = Math.round(sndState.volume * 100);
+  const outVal = document.getElementById('sndOutVolumeVal');
+  if (outVal) outVal.textContent = Math.round(sndState.volume * 100) + '%';
+  const fx = document.getElementById('sndFxVolume');
+  if (fx) fx.value = Math.round(sndState.fxVolume * 100);
+  const fxVal = document.getElementById('sndFxVolumeVal');
+  if (fxVal) fxVal.textContent = Math.round(sndState.fxVolume * 100) + '%';
+  const chimeEl = document.getElementById('sndStartupChime');
+  if (chimeEl) chimeEl.classList.toggle('on', sndState.startupChime);
+}
+
+function sndTone(freq, start, dur, type, vol, dest) {
+  const ctx = sndState.ctx;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.value = freq;
+  const t0 = ctx.currentTime + start;
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.linearRampToValueAtTime(vol, t0 + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  osc.connect(gain);
+  gain.connect(dest);
+  osc.start(t0);
+  osc.stop(t0 + dur + 0.05);
+}
+
+function sndNoiseBurst(start, dur, vol, dest) {
+  const ctx = sndState.ctx;
+  const len = Math.floor(ctx.sampleRate * dur);
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  const gain = ctx.createGain();
+  const t0 = ctx.currentTime + start;
+  gain.gain.setValueAtTime(vol, t0);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 1600;
+  src.connect(filter);
+  filter.connect(gain);
+  gain.connect(dest);
+  src.start(t0);
+}
+
+const sndAlerts = {
+  sosumi: (d) => { sndTone(880, 0, 0.16, 'sine', 0.5, d); sndTone(1318, 0.14, 0.22, 'sine', 0.5, d); },
+  ping: (d) => { sndTone(1244.5, 0, 0.35, 'triangle', 0.5, d); },
+  basso: (d) => { sndTone(392, 0, 0.14, 'sine', 0.5, d); sndTone(311, 0.13, 0.18, 'sine', 0.45, d); },
+  funk: (d) => { sndTone(329.6, 0, 0.08, 'square', 0.3, d); sndTone(329.6, 0.09, 0.08, 'square', 0.3, d); sndTone(261.6, 0.18, 0.12, 'square', 0.3, d); },
+  glass: (d) => { sndTone(2093, 0, 0.4, 'sine', 0.28, d); sndTone(2637, 0.02, 0.4, 'sine', 0.16, d); },
+  hero: (d) => { sndTone(523.25, 0, 0.12, 'sawtooth', 0.2, d); sndTone(659.25, 0.11, 0.12, 'sawtooth', 0.2, d); sndTone(783.99, 0.22, 0.2, 'sawtooth', 0.24, d); },
+  morse: (d) => { sndTone(660, 0, 0.06, 'square', 0.35, d); sndTone(660, 0.12, 0.18, 'square', 0.35, d); },
+  pop: (d) => { sndTone(1568, 0, 0.06, 'sine', 0.4, d); },
+  purr: (d) => { sndTone(196, 0, 0.18, 'sine', 0.45, d); sndTone(261.6, 0.18, 0.22, 'sine', 0.4, d); },
+  submarine: (d) => { sndTone(220, 0, 0.3, 'sine', 0.5, d); sndTone(110, 0.1, 0.5, 'sine', 0.35, d); }
+};
+
+function playSystemSound(name) {
+  if (!sndState.fxEnabled) return;
+  sndInit();
+  if (!sndState.ctx || !sndState.master) return;
+  if (sndState.ctx.state === 'suspended') sndState.ctx.resume();
+  const d = sndState.master;
+  if (name === 'alert') {
+    const fn = sndAlerts[sndState.alertSound] || sndAlerts.sosumi;
+    fn(d);
+    return;
+  }
+  if (name === 'error') { sndTone(220, 0, 0.15, 'square', 0.3, d); sndTone(196, 0.14, 0.2, 'square', 0.3, d); return; }
+  if (name === 'keyclick') { sndTone(2093, 0, 0.02, 'square', 0.12, d); return; }
+  if (name === 'screenshot') { sndTone(1568, 0, 0.07, 'sine', 0.3, d); sndNoiseBurst(0.04, 0.03, 0.08, d); sndTone(2093, 0.1, 0.08, 'sine', 0.3, d); return; }
+  if (name === 'trash') { sndNoiseBurst(0, 0.12, 0.3, d); return; }
+  if (name === 'empty-trash') { sndNoiseBurst(0, 0.3, 0.4, d); sndTone(140, 0.05, 0.2, 'sine', 0.3, d); return; }
+  if (name === 'lock') { sndTone(392, 0, 0.12, 'sine', 0.4, d); sndTone(523.25, 0.12, 0.2, 'sine', 0.4, d); return; }
+  if (name === 'unlock') { sndTone(523.25, 0, 0.12, 'sine', 0.4, d); sndTone(392, 0.12, 0.2, 'sine', 0.4, d); return; }
+  if (name === 'mail') { sndTone(1046.5, 0, 0.09, 'sine', 0.3, d); sndTone(1318.5, 0.09, 0.16, 'sine', 0.3, d); return; }
+  if (name === 'message') { sndTone(1318.5, 0, 0.08, 'triangle', 0.3, d); sndTone(1568, 0.08, 0.14, 'triangle', 0.3, d); return; }
+  if (name === 'facetime') { sndTone(523.25, 0, 0.1, 'sine', 0.25, d); sndTone(659.25, 0.1, 0.1, 'sine', 0.25, d); sndTone(783.99, 0.2, 0.18, 'sine', 0.28, d); return; }
+  if (name === 'volume') { sndTone(988, 0, 0.06, 'sine', 0.35, d); sndTone(1318.5, 0.07, 0.09, 'sine', 0.35, d); return; }
+  if (name === 'startup') {
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, i) => {
+      sndTone(freq, i * 0.13, 1.1, 'sine', 0.3, d);
+      sndTone(freq, i * 0.13, 1.1, 'triangle', 0.12, d);
+    });
+    return;
+  }
+}
+
+function renderSndAlerts() {
+  const wrap = document.getElementById('sndAlerts');
+  if (!wrap) return;
+  wrap.innerHTML = sndAlertSounds.map(a =>
+    '<div class="snd-alert' + (sndState.alertSound === a.key ? ' snd-selected' : '') + '" onclick="sndPickAlert(\'' + a.key + '\')" title="' + a.name + '">'
+    + '<i class="' + a.icon + '"></i>'
+    + '<span>' + a.name + '</span>'
+    + '<button class="snd-preview" onclick="event.stopPropagation();playSystemSound(\'alert\');" title="Preview">' + (sndState.alertSound === a.key ? '<i class="ri-check-line"></i>' : '<i class="ri-play-circle-line"></i>') + '</button>'
+    + '</div>'
+  ).join('');
+}
+
+function sndPickAlert(key) {
+  sndState.alertSound = key;
+  try { localStorage.setItem('thread_snd_alert', key); } catch (e) { /* ignore */ }
+  renderSndAlerts();
+  playSystemSound('alert');
+}
+
+function sndSetVolume(v) {
+  sndState.volume = v / 100;
+  try { localStorage.setItem('thread_snd_volume', sndState.volume); } catch (e) { /* ignore */ }
+  if (sndState.master) sndState.master.gain.value = sndState.volume * sndState.fxVolume;
+  const val = document.getElementById('sndOutVolumeVal');
+  if (val) val.textContent = v + '%';
+}
+
+function sndSetFxVolume(v) {
+  sndState.fxVolume = v / 100;
+  try { localStorage.setItem('thread_snd_fx', sndState.fxVolume); } catch (e) { /* ignore */ }
+  if (sndState.master) sndState.master.gain.value = sndState.volume * sndState.fxVolume;
+  const val = document.getElementById('sndFxVolumeVal');
+  if (val) val.textContent = v + '%';
+  playSystemSound('alert');
+}
+
+function sndToggleStartupChime(el) {
+  sndState.startupChime = el.classList.toggle('on');
+  try { localStorage.setItem('thread_snd_chime', sndState.startupChime ? '1' : '0'); } catch (e) { /* ignore */ }
+  showNotifToast('Sound', 'Startup sound ' + (sndState.startupChime ? 'enabled' : 'disabled'), 'System Settings.app');
+}
+
+function sndToggleFx(el) {
+  sndState.fxEnabled = el.classList.toggle('on');
+  try { localStorage.setItem('thread_snd_fxOn', sndState.fxEnabled ? '1' : '0'); } catch (e) { /* ignore */ }
+  if (sndState.fxEnabled) playSystemSound('alert');
 }
 
 
