@@ -861,7 +861,8 @@ const appIdMap = {
   'FaceTime.app': 'facetime-window',
   'QuickTime Player.app': 'quicktime-window',
   'Screen Time.app': 'screentime-window',
-  'Digital Color Meter.app': 'colormeter-window'
+  'Digital Color Meter.app': 'colormeter-window',
+  'Print Queue.app': 'printqueue-window'
 };
 
 const dockIconMap = {
@@ -900,7 +901,8 @@ const dockIconMap = {
   'FaceTime.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#34C759"/><path d="M16 18l12-6v24l-12-6V18z" fill="white"/><path d="M30 21l8-4v14l-8-4V21z" fill="white" opacity="0.85"/></svg>`,
   'QuickTime Player.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#333"/><path d="M20 20v10l9-5-9-5z" fill="white"/><rect x="6" y="14" width="36" height="22" rx="3" fill="#1C1C1E" stroke="#FF6B9D" stroke-width="1.5"/></svg>`,
   'Screen Time.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5E5CE6"/><path d="M8 20h32v6H8z" fill="white"/><path d="M8 32h32v6H8z" fill="white" opacity="0.75"/><path d="M24 8v6" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="8" r="2" fill="#FFD60A"/></svg>`,
-  'Digital Color Meter.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="url(#cmGrad)"/><defs><radialGradient id="cmGrad" cx="35%" cy="35%" r="75%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="40%" stop-color="#FF2D55"/><stop offset="100%" stop-color="#BF5AF2"/></radialGradient></defs></svg>`
+  'Digital Color Meter.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="url(#cmGrad)"/><defs><radialGradient id="cmGrad" cx="35%" cy="35%" r="75%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="40%" stop-color="#FF2D55"/><stop offset="100%" stop-color="#BF5AF2"/></radialGradient></defs></svg>`,
+  'Print Queue.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="20" rx="3" fill="#0D1117" stroke="#5AC8FA" stroke-width="2"/><rect x="14" y="20" width="20" height="3" rx="1.5" fill="#5AC8FA" opacity="0.6"/><rect x="14" y="26" width="14" height="3" rx="1.5" fill="#5AC8FA" opacity="0.35"/><rect x="12" y="34" width="24" height="6" rx="2" fill="#333"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -971,6 +973,7 @@ function openApp(appName) {
   if (winId === 'quicktime-window') initQT();
   if (winId === 'screentime-window') initScreenTime();
   if (winId === 'colormeter-window') initColorMeter();
+  if (winId === 'printqueue-window') initPrintQueue();
   // Privacy permissions
   if (winId === 'facetime-window') {
     requestPermission(appName, 'camera').then(ok => { if (!ok) showNotifToast('FaceTime', 'Camera access denied', 'FaceTime.app'); });
@@ -3465,9 +3468,9 @@ function spotlightSearch(query) {
     { name: 'Console', app: 'Console.app', icon: 'ri-terminal-box-line', kind: 'Application' },
     { name: 'System Settings', app: 'System Settings.app', icon: 'ri-settings-3-line', kind: 'Application' },
     { name: 'Preview', app: 'Preview.app', icon: 'ri-image-line', kind: 'Application' },
-    { name: 'Digital Color Meter', app: 'Digital Color Meter.app', icon: 'ri-eyedropper-line', kind: 'Application' }
-  ];
-  apps.forEach(a => { if (a.name.toLowerCase().includes(q)) matches.push({ ...a, action: () => openApp(a.app) }); });
+    { name: 'Digital Color Meter', app: 'Digital Color Meter.app', icon: 'ri-eyedropper-line', kind: 'Application' },
+    { name: 'Print Queue', app: 'Print Queue.app', icon: 'ri-printer-line', kind: 'Application' }
+  ];  apps.forEach(a => { if (a.name.toLowerCase().includes(q)) matches.push({ ...a, action: () => openApp(a.app) }); });
 
   // Search files
   (function searchAll(path) {
@@ -7150,10 +7153,13 @@ function mailComposeSend() {
 // ---- Print Dialog ----
 let printCopies = 1;
 let printOrientation = 'portrait';
+let pqDocName = 'Untitled Document';
 
 function openPrintDialog() {
   printCopies = 1;
   printOrientation = 'portrait';
+  const activeWin = document.querySelector('.mac-window.active:not([id="printqueue-window"]) .window-title');
+  if (activeWin) pqDocName = activeWin.textContent.trim();
   document.getElementById('printCopiesVal').textContent = '1';
   document.querySelectorAll('.print-ori-btn').forEach(b => b.classList.toggle('active', b.dataset.ori === 'portrait'));
   const p = document.getElementById('printProgress');
@@ -7197,6 +7203,8 @@ function printDocument() {
   document.getElementById('printProgress').style.display = 'block';
   const fill = document.getElementById('printProgressFill');
   const text = document.getElementById('printProgressText');
+  const printer = document.getElementById('printPrinter') ? document.getElementById('printPrinter').value : 'Thread Printer (IPPS)';
+  const name = pqDocName || 'Untitled Document';
   const steps = ['Sending to printer…', 'Rendering page 1 of ' + printCopies, 'Printing…', 'Finishing…'];
   let pct = 0;
   const iv = setInterval(() => {
@@ -7207,7 +7215,10 @@ function printDocument() {
     if (pct >= 100) {
       clearInterval(iv);
       closePrintDialog();
-      showNotifToast('Print', 'Document printed successfully', 'Preview.app');
+      const job = addPrintJob(name, printer, printCopies);
+      showNotifToast('Print', 'Sent "' + name + '" to ' + printer.replace(' (IPPS)', ''), 'Preview.app');
+      setTimeout(() => renderPrintQueue(), 600);
+      void job;
     }
   }, 320);
 }
@@ -8727,6 +8738,203 @@ function cmRenderHistory() {
 
 function cmCopyHex(hex) {
   try { navigator.clipboard.writeText(hex); showNotifToast('Digital Color Meter', 'Copied ' + hex, 'Digital Color Meter.app'); } catch (e) { /* ignore */ }
+}
+
+// ---- Print Queue Manager ----
+let pqPrinters = [
+  { name: 'Thread Printer', model: 'IPPS', status: 'Idle', selected: true },
+  { name: 'LaserJet Pro 4001dn', model: 'HP', status: 'Offline', selected: false },
+  { name: 'Color LaserJet Pro', model: 'HP', status: 'Idle', selected: false }
+];
+let pqJobs = [];
+
+function openPrintQueueApp() {
+  closePrintDialog();
+  openApp('Print Queue.app');
+}
+
+function initPrintQueue() {
+  if (!pqJobs.length) {
+    pqJobs = [
+      { id: 1, name: 'Weekly Report.pdf', size: '2.4 MB', pages: 12, printer: 'Thread Printer', color: '#0A84FF', date: 'Today', status: 'Printing', progress: 47 },
+      { id: 2, name: 'Presentation Deck.pptx', size: '8.1 MB', pages: 34, printer: 'Thread Printer', color: '#FF9F0A', date: 'Today', status: 'Queued', progress: 0 },
+      { id: 3, name: 'Meeting Notes.txt', size: '12 KB', pages: 2, printer: 'Color LaserJet Pro', color: '#30D158', date: 'Today', status: 'Queued', progress: 0 }
+    ];
+  }
+  renderPrintQueue();
+  clearInterval(window._pqRefreshIv);
+  window._pqRefreshIv = setInterval(pqRefreshJobs, 2600);
+}
+
+function pqRefreshJobs() {
+  if (!document.getElementById('printqueue-window') || document.getElementById('printqueue-window').style.display === 'none') return;
+  let changed = false;
+  pqJobs.forEach(j => {
+    if (j.status === 'Printing') {
+      j.progress = Math.min(100, j.progress + 14 + Math.random() * 20);
+      if (j.progress >= 100) { j.status = 'Completed'; changed = true; }
+      else changed = true;
+    } else if (j.status === 'Queued' && Math.random() > 0.4) {
+      j.status = 'Printing'; j.progress = 6; changed = true;
+    }
+  });
+  if (changed) renderPrintQueue();
+}
+
+function addPrintJob(name, printer, copies) {
+  const id = pqJobs.length ? Math.max(...pqJobs.map(j => j.id)) + 1 : 1;
+  const job = {
+    id, name, size: (Math.random() * 3 + 0.4).toFixed(1) + ' MB', pages: copies || 1,
+    printer: printer.replace(' (IPPS)', ''), color: '#0A84FF', date: 'Just now',
+    status: 'Queued', progress: 0
+  };
+  pqJobs.unshift(job);
+  setTimeout(() => {
+    const j = pqJobs.find(x => x.id === job.id);
+    if (j) { j.status = 'Printing'; j.progress = 8; }
+    renderPrintQueue();
+  }, 1200);
+  setTimeout(() => {
+    const j = pqJobs.find(x => x.id === job.id);
+    if (j) { j.status = 'Completed'; j.progress = 100; }
+    renderPrintQueue();
+    showNotifToast('Print Queue', '"' + job.name + '" finished printing', 'Print Queue.app');
+  }, 5200);
+  renderPrintQueue();
+  return job;
+}
+
+function renderPrintQueue() {
+  const list = document.getElementById('pqList');
+  const empty = document.getElementById('pqEmpty');
+  if (!list || !empty) return;
+  const count = document.getElementById('pqJobCount');
+  if (count) count.textContent = pqJobs.length + ' job' + (pqJobs.length === 1 ? '' : 's');
+  if (!pqJobs.length) {
+    list.innerHTML = '';
+    empty.style.display = 'flex';
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = pqJobs.map(job => {
+    const prog = job.status === 'Queued' ? '<div class="pq-progress"><div class="pq-progress-fill pq-wait" style="width:100%"></div></div>'
+      : job.status === 'Printing' ? '<div class="pq-progress"><div class="pq-progress-fill" style="width:' + job.progress + '%"></div></div>'
+      : '<div class="pq-progress"><div class="pq-progress-fill pq-done" style="width:100%"></div></div>';
+    const statusCls = job.status === 'Completed' ? 'pq-status-done' : job.status === 'Printing' ? 'pq-status-print' : '';
+    const pct = job.status === 'Completed' ? 'Done' : job.status === 'Printing' ? job.progress + '%' : job.status === 'Paused' ? 'Paused' : 'Queued';
+    return '<div class="pq-job' + (job.status === 'Completed' ? ' pq-completed' : '') + '">'
+      + '<div class="pq-job-icon" style="background:' + job.color + '21;color:' + job.color + ';"><i class="ri-file-text-line"></i></div>'
+      + '<div class="pq-job-main">'
+      +   '<div class="pq-job-row"><span class="pq-job-name">' + job.name + '</span>'
+      +   '<span class="pq-job-badge ' + statusCls + '">' + pct + '</span></div>'
+      +   '<div class="pq-job-meta">' + job.size + ' &middot; ' + job.pages + ' page' + (job.pages === 1 ? '' : 's') + ' &middot; ' + job.printer + ' &middot; ' + job.date + '</div>'
+      +   prog
+      + '</div>'
+      + '<div class="pq-job-actions">'
+      +   (job.status === 'Completed'
+      ? '<button class="pq-icon-btn" title="Remove" onclick="pqRemoveJob(' + job.id + ')"><i class="ri-delete-bin-line"></i></button>'
+      : '<button class="pq-icon-btn" title="Pause" onclick="pqTogglePause(' + job.id + ')"><i class="ri-pause-line"></i></button>'
+      +   '<button class="pq-icon-btn" title="Cancel" onclick="pqRemoveJob(' + job.id + ')"><i class="ri-close-line"></i></button>')
+      + '</div>'
+      + '</div>';
+  }).join('');
+  renderPrinters();
+}
+
+function renderPrinters() {
+  const wrap = document.getElementById('pqPrinters');
+  if (!wrap) return;
+  const sel = pqPrinters.find(p => p.selected) || pqPrinters[0];
+  const hName = document.getElementById('pqPrinterName');
+  const hStatus = document.getElementById('pqPrinterStatus');
+  if (hName) hName.textContent = sel ? sel.name : 'No Printer';
+  if (hStatus) {
+    const dotColor = sel && sel.status === 'Idle' ? 'green' : sel && sel.status === 'Printing' ? 'orange' : 'gray';
+    hStatus.innerHTML = '<span class="pq-dot pq-dot-' + dotColor + '"></span> ' + (sel ? sel.status : 'Offline');
+  }
+  wrap.innerHTML = pqPrinters.map((p, i) => {
+    const dot = p.status === 'Idle' ? '#30D158' : p.status === 'Printing' ? '#FF9F0A' : '#8E8E93';
+    return '<div class="pq-printer' + (p.selected ? ' pq-selected' : '') + '" onclick="pqSelectPrinter(' + i + ')">'
+      + '<i class="ri-printer-line" style="color:' + dot + ';"></i>'
+      + '<div class="pq-printer-info"><div class="pq-printer-name">' + p.name + '</div>'
+      + '<div class="pq-printer-status">' + p.status + '</div></div>'
+      + (p.selected ? '<i class="ri-check-line pq-check"></i>' : '')
+      + '</div>';
+  }).join('');
+}
+
+function pqSelectPrinter(i) {
+  pqPrinters.forEach((p, idx) => p.selected = idx === i);
+  renderPrinters();
+}
+
+function pqRemoveJob(id) {
+  pqJobs = pqJobs.filter(j => j.id !== id);
+  renderPrintQueue();
+}
+
+function pqTogglePause(id) {
+  const j = pqJobs.find(x => x.id === id);
+  if (!j) return;
+  if (j.paused) {
+    j.paused = false;
+    j.status = j.progress >= 100 ? 'Completed' : 'Printing';
+  } else {
+    j.paused = true;
+    j.status = 'Paused';
+  }
+  renderPrintQueue();
+}
+
+function pqClearAll() {
+  if (!pqJobs.length) return;
+  const active = pqJobs.filter(j => j.status === 'Printing' || j.status === 'Queued').length;
+  pqJobs = [];
+  renderPrintQueue();
+  showNotifToast('Print Queue', active + ' job' + (active === 1 ? '' : 's') + ' canceled and removed', 'Print Queue.app');
+}
+
+function pqAddPrinter() {
+  const row = document.getElementById('pqAddRow');
+  if (!row) return;
+  row.style.display = 'flex';
+  const inp = document.getElementById('pqNewPrinter');
+  if (inp) { inp.value = ''; inp.focus(); }
+}
+
+function pqCancelAdd() {
+  const row = document.getElementById('pqAddRow');
+  if (row) row.style.display = 'none';
+}
+
+function pqConfirmAddPrinter() {
+  const inp = document.getElementById('pqNewPrinter');
+  const name = (inp ? inp.value : '').trim().replace(/ \(IPPS\)$/, '');
+  if (!name) { showNotifToast('Print Queue', 'Enter a printer name to continue.', 'Print Queue.app'); return; }
+  pqPrinters.push({ name: name, model: 'Generic', status: 'Idle', selected: false });
+  pqPrinters.forEach((p, i) => p.selected = i === pqPrinters.length - 1);
+  pqCancelAdd();
+  renderPrinters();
+  const list = document.getElementById('printPrinter');
+  if (list) {
+    const opt = document.createElement('option');
+    opt.textContent = name + ' (IPPS)';
+    list.appendChild(opt);
+    list.value = opt.textContent;
+  }
+  showNotifToast('Print Queue', 'Added "' + name + '"', 'Print Queue.app');
+}
+
+function pqRefreshJobs() {
+  pqJobs.forEach(j => {
+    if (j.status === 'Printing') {
+      j.progress = Math.min(100, j.progress + 14 + Math.random() * 20);
+      if (j.progress >= 100) { j.status = 'Completed'; }
+    } else if (j.status === 'Queued' && Math.random() > 0.4) {
+      j.status = 'Printing'; j.progress = 6;
+    }
+  });
+  renderPrintQueue();
 }
 
 
