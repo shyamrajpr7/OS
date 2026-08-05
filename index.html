@@ -609,6 +609,12 @@
         </div>
         <div class="window-body settings-body">
           <aside class="settings-sidebar">
+            <div class="settings-search-wrap">
+              <i class="ri-search-line"></i>
+              <input type="text" class="settings-search" id="settingsSearch" placeholder="Search" oninput="settingsSearch(this.value)">
+              <button class="settings-search-clear" id="settingsSearchClear" onclick="clearSettingsSearch()" style="display:none;"><i class="ri-close-circle-fill"></i></button>
+            </div>
+            <div class="settings-nav-list" id="settingsNavList">
             <div class="settings-nav-item active" data-panel="general"><i class="ri-settings-3-line"></i><span>General</span></div>
             <div class="settings-nav-item" data-panel="login-items"><i class="ri-rocket-line"></i><span>Login Items</span></div>
             <div class="settings-nav-item" data-panel="appearance"><i class="ri-palette-line"></i><span>Appearance</span></div>
@@ -623,6 +629,8 @@
             <div class="settings-nav-item" data-panel="privacy"><i class="ri-shield-check-line"></i><span>Privacy & Security</span></div>
             <div class="settings-nav-item" data-panel="software-update"><i class="ri-download-cloud-line"></i><span>Software Update</span></div>
             <div class="settings-nav-item" data-panel="accessibility"><i class="ri-universal-access-line"></i><span>Accessibility</span></div>
+            </div>
+            <div class="settings-no-results" id="settingsNoResults" style="display:none;">No results found</div>
           </aside>
           <div class="settings-content" id="settingsContent">
             <!-- General -->

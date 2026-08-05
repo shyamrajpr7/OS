@@ -2879,6 +2879,53 @@ function updateProcessList() {
 }
 
 // ---- System Settings ----
+const settingsSearchKeywords = {
+  general: 'about storage capacity information startup',
+  'login-items': 'startup launch open',
+  appearance: 'dark mode accent color wallpaper theme',
+  'desktop-dock': 'dock desktop hot corners wallpaper menu bar icons',
+  display: 'resolution screen brightness night shift',
+  sound: 'volume audio output input alert chime effects speaker',
+  keyboard: 'keys text replacements dictation shortcuts input',
+  network: 'wifi wi-fi bluetooth internet ethernet vpn connection',
+  battery: 'power energy charger battery usage',
+  notifications: 'alerts banners notifications focus',
+  users: 'accounts users groups password login guest admin',
+  privacy: 'security permissions camera microphone location privacy',
+  'software-update': 'update os software version install',
+  accessibility: 'vision display zoom voiceover reduce motion text'
+};
+
+function settingsSearch(q) {
+  q = (q || '').trim().toLowerCase();
+  const list = document.getElementById('settingsNavList');
+  const noRes = document.getElementById('settingsNoResults');
+  const clear = document.getElementById('settingsSearchClear');
+  if (!list || !noRes || !clear) return;
+  clear.style.display = q ? 'flex' : 'none';
+  if (!q) {
+    list.querySelectorAll('.settings-nav-item').forEach(el => el.style.display = '');
+    noRes.style.display = 'none';
+    return;
+  }
+  let matchCount = 0;
+  list.querySelectorAll('.settings-nav-item').forEach(el => {
+    const label = (el.querySelector('span') || {}).textContent || '';
+    const kws = settingsSearchKeywords[el.dataset.panel] || '';
+    const hit = label.toLowerCase().includes(q) || kws.includes(q);
+    el.style.display = hit ? '' : 'none';
+    if (hit) matchCount++;
+  });
+  noRes.style.display = matchCount ? 'none' : 'block';
+}
+
+function clearSettingsSearch() {
+  const inp = document.getElementById('settingsSearch');
+  if (inp) inp.value = '';
+  settingsSearch('');
+  if (inp) inp.focus();
+}
+
 function toggleSetting(el) { el.classList.toggle('on'); }
 
 function switchSettingsPanel(panel) {
