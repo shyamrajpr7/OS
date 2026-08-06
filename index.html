@@ -2473,6 +2473,32 @@
         </div>
       </div>
 
+      <!-- ========== FIND MY ========== -->
+      <div class="mac-window app-window" id="findmy-window" style="width:800px;height:500px;top:60px;left:150px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Find My</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body findmy-body">
+          <aside class="findmy-sidebar">
+            <div class="findmy-sidebar-label">Devices</div>
+            <div class="findmy-devices" id="findmyDevices"></div>
+            <div class="findmy-sidebar-label">Items</div>
+            <div class="findmy-items" id="findmyItems"></div>
+          </aside>
+          <div class="findmy-map" id="findmyMap">
+            <div class="findmy-map-grid"></div>
+            <div class="findmy-map-pin" id="findmyMapPin"></div>
+            <div class="findmy-map-card" id="findmyMapCard"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2719,6 +2745,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="12" width="32" height="22" rx="4" fill="none" stroke="#0A84FF" stroke-width="2.5"/><line x1="18" y1="38" x2="30" y2="38" stroke="#8E8E93" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="23" r="5" fill="#0A84FF"/><path d="M24 18v10M19 21h10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/></svg>
           </div>
           <span class="launchpad-label">TV</span>
+        </div>
+        <div class="launchpad-item" data-app="Find My.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#30D158"/><circle cx="24" cy="24" r="15" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="#fff"/><circle cx="24" cy="24" r="2.5" fill="#30D158"/></svg>
+          </div>
+          <span class="launchpad-label">Find My</span>
         </div>
       </div>
     </div>

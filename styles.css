@@ -5174,3 +5174,24 @@ button:focus-visible { outline: 2px solid rgba(100, 210, 255, 0.6); outline-offs
 .tv-player-progress { flex: 1; height: 5px; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; }
 .tv-player-progress-fill { height: 100%; width: 0%; background: #fff; border-radius: 3px; transition: width 1s linear; }
 .tv-player-time { font-size: 11px; color: rgba(255,255,255,0.6); }
+
+/* ===== Find My ===== */
+.findmy-body { background: var(--mac-window-bg); }
+.findmy-sidebar { width: 200px; flex-shrink: 0; background: var(--mac-sidebar-bg); border-right: 1px solid var(--mac-border); padding: 14px 10px; overflow-y: auto; }
+.findmy-sidebar-label { font-size: 11px; color: var(--mac-text-muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 10px 6px; }
+.findmy-device-item, .findmy-item-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+.findmy-device-item:hover, .findmy-item-item:hover { background: rgba(255,255,255,0.05); }
+.findmy-device-item.selected, .findmy-item-item.selected { background: rgba(48,209,88,0.15); }
+.findmy-device-icon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #fff; flex-shrink: 0; }
+.findmy-device-name { font-size: 13px; color: var(--mac-text); }
+.findmy-device-loc { font-size: 10px; color: var(--mac-text-muted); }
+.findmy-map { flex: 1; position: relative; overflow: hidden; background: linear-gradient(180deg, #101c2e 0%, #0f2438 40%, #14202c 100%); }
+.findmy-map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 46px 46px; }
+.findmy-map::before { content: ''; position: absolute; inset: 0; background: radial-gradient(600px 340px at 60% 45%, rgba(48,209,88,0.08), transparent 70%); }
+.findmy-map-pin { position: absolute; width: 14px; height: 14px; background: #30D158; border: 3px solid rgba(255,255,255,0.85); border-radius: 50% 50% 50% 0; transform: rotate(-45deg) translate(-50%, 0); box-shadow: 0 0 24px rgba(48,209,88,0.6); transition: left 0.8s cubic-bezier(0.16,1,0.3,1), top 0.8s cubic-bezier(0.16,1,0.3,1); }
+.findmy-map-pin::after { content: ''; position: absolute; top: 50%; left: 50%; width: 200px; height: 200px; border-radius: 50%; border: 1.5px solid rgba(48,209,88,0.25); transform: translate(-50%, -50%) rotate(45deg); animation: findmyPulse 2.4s ease-out infinite; }
+@keyframes findmyPulse { 0% { transform: translate(-50%,-50%) rotate(45deg) scale(0.3); opacity: 1; } 100% { transform: translate(-50%,-50%) rotate(45deg) scale(1.2); opacity: 0; } }
+.findmy-map-card { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); background: rgba(20,24,36,0.92); backdrop-filter: blur(16px); border: 1px solid var(--mac-border); border-radius: 12px; padding: 12px 18px; min-width: 260px; text-align: center; }
+.findmy-map-card-name { font-size: 14px; font-weight: 600; color: var(--mac-text); }
+.findmy-map-card-loc { font-size: 12px; color: var(--mac-text-secondary); margin-top: 3px; }
+.findmy-map-card-time { font-size: 10px; color: var(--mac-text-muted); margin-top: 2px; }

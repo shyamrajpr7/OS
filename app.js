@@ -869,7 +869,8 @@ const appIdMap = {
   'Stocks.app': 'stocks-window',
   'Fitness.app': 'fitness-window',
   'Home.app': 'home-window',
-  'TV.app': 'tv-window'
+  'TV.app': 'tv-window',
+  'Find My.app': 'findmy-window'
 };
 
 const dockIconMap = {
@@ -916,7 +917,8 @@ const dockIconMap = {
   'Stocks.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="30" width="36" height="4" rx="2" fill="#8E8E93"/><polyline points="8,30 18,20 26,26 40,12" stroke="#30D158" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="40" cy="12" r="2.5" fill="#30D158"/></svg>`,
   'Fitness.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#FF453A" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.2 94.2" transform="rotate(-90 24 24)" opacity="0.25"/><circle cx="24" cy="24" r="10" fill="none" stroke="#30D158" stroke-width="4" stroke-linecap="round" stroke-dasharray="50 62.8" transform="rotate(-90 24 24)" opacity="0.8"/><circle cx="24" cy="24" r="5" fill="none" stroke="#64D2FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="20 31.4" transform="rotate(-90 24 24)"/></svg>`,
   'Home.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 8l16 14h-4v18h-9v-9h-6v9h-9V22H8l16-14z" fill="#fff"/></svg>`,
-  'TV.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="12" width="32" height="22" rx="4" fill="none" stroke="#0A84FF" stroke-width="2.5"/><line x1="18" y1="38" x2="30" y2="38" stroke="#8E8E93" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="23" r="5" fill="#0A84FF"/><path d="M24 18v10M19 21h10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/></svg>`
+  'TV.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="12" width="32" height="22" rx="4" fill="none" stroke="#0A84FF" stroke-width="2.5"/><line x1="18" y1="38" x2="30" y2="38" stroke="#8E8E93" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="23" r="5" fill="#0A84FF"/><path d="M24 18v10M19 21h10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/></svg>`,
+  'Find My.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#30D158"/><circle cx="24" cy="24" r="15" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="#fff"/><circle cx="24" cy="24" r="2.5" fill="#30D158"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -995,6 +997,7 @@ function openApp(appName) {
   if (winId === 'fitness-window') initFitness();
   if (winId === 'home-window') initHome();
   if (winId === 'tv-window') initTV();
+  if (winId === 'findmy-window') initFindMy();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -10392,4 +10395,72 @@ function initTV() {
   document.querySelectorAll('.tv-sidebar-item').forEach(item => {
     item.addEventListener('click', () => switchTVView(item.dataset.view));
   });
+}
+
+// ===================== FIND MY =====================
+const findmyDevices = [
+  { name: 'MacBook Pro', icon: 'ri-macbook-line', color: '#8E8E93', loc: 'Thread HQ · San Francisco', time: '2 min ago', x: 62, y: 40 },
+  { name: 'iPhone 15 Pro', icon: 'ri-smartphone-line', color: '#0A84FF', loc: 'Thread HQ · San Francisco', time: 'Just now', x: 55, y: 55 },
+  { name: 'AirPods Pro', icon: 'ri-headphone-line', color: '#BF5AF2', loc: 'Thread HQ · San Francisco', time: '4 min ago', x: 68, y: 48 },
+  { name: 'iPad Air', icon: 'ri-tablet-line', color: '#30D158', loc: 'Home · Cupertino', time: '1 hr ago', x: 40, y: 62 }
+];
+const findmyItems = [
+  { name: 'Keys', icon: 'ri-key-2-line', color: '#FF9500', loc: 'Home · Cupertino', time: '3 hr ago', x: 38, y: 66 },
+  { name: 'Backpack', icon: 'ri-backpack-line', color: '#FFD60A', loc: 'Thread HQ · San Francisco', time: '26 min ago', x: 60, y: 44 }
+];
+let findmySelected = 0;
+let findmyLocateTimer = null;
+
+function findmyRenderSidebar() {
+  const devEl = document.getElementById('findmyDevices');
+  if (devEl) devEl.innerHTML = findmyDevices.map((d, i) =>
+    '<div class="findmy-device-item' + (findmySelected === i ? ' selected' : '') + '" data-i="' + i + '">' +
+      '<div class="findmy-device-icon" style="background:' + d.color + '"><i class="' + d.icon + '"></i></div>' +
+      '<div><div class="findmy-device-name">' + d.name + '</div><div class="findmy-device-loc">' + d.time + '</div></div>' +
+    '</div>'
+  ).join('');
+  const itemEl = document.getElementById('findmyItems');
+  if (itemEl) itemEl.innerHTML = findmyItems.map((d, i) =>
+    '<div class="findmy-item-item" data-it="' + i + '">' +
+      '<div class="findmy-device-icon" style="background:' + d.color + '"><i class="' + d.icon + '"></i></div>' +
+      '<div><div class="findmy-device-name">' + d.name + '</div><div class="findmy-device-loc">' + d.time + '</div></div>' +
+    '</div>'
+  ).join('');
+  devEl.querySelectorAll('.findmy-device-item').forEach(el => el.addEventListener('click', () => findmySelect(parseInt(el.dataset.i, 10))));
+  itemEl.querySelectorAll('.findmy-item-item').forEach(el => el.addEventListener('click', () => findmySelect(findmyDevices.length + parseInt(el.dataset.it, 10))));
+}
+
+function findmySelect(i) {
+  findmySelected = i;
+  const list = i < findmyDevices.length ? findmyDevices : findmyItems;
+  const d = i < findmyDevices.length ? findmyDevices[i] : findmyItems[i - findmyDevices.length];
+  findmyRenderSidebar();
+  findmyRenderMap(d);
+  playSystemSound('message');
+}
+
+function findmyRenderMap(d) {
+  const pin = document.getElementById('findmyMapPin');
+  pin.style.display = 'block';
+  pin.style.left = d.x + '%';
+  pin.style.top = d.y + '%';
+  const card = document.getElementById('findmyMapCard');
+  card.innerHTML = '<div class="findmy-map-card-name">' + d.name + '</div>' +
+    '<div class="findmy-map-card-loc"><i class="ri-map-pin-line" style="color:#30D158"></i> ' + d.loc + '</div>' +
+    '<div class="findmy-map-card-time">Updated ' + d.time + '</div>';
+  card.style.display = 'block';
+  clearInterval(findmyLocateTimer);
+  if (d.icon && d.icon === 'ri-smartphone-line') {
+    findmyLocateTimer = setInterval(() => {
+      const dx = (Math.random() - 0.5) * 1.6;
+      const dy = (Math.random() - 0.5) * 1.6;
+      pin.style.left = Math.min(85, Math.max(15, d.x + dx)) + '%';
+      pin.style.top = Math.min(80, Math.max(20, d.y + dy)) + '%';
+    }, 1200);
+  }
+}
+
+function initFindMy() {
+  findmyRenderSidebar();
+  findmyRenderMap(findmyDevices[0]);
 }
