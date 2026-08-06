@@ -6043,7 +6043,7 @@ document.querySelectorAll('.activity-tab').forEach(el => {
 // Global keyboard shortcuts
 document.addEventListener('keydown', e => {
   applyModifierRemap(e);
-  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); closeDiskEraseDialog(); exitAnyFullscreen(); if (kbViewerOpen) closeKeyboardViewer(); closeMissionControl(); closeQuickNote(); }
+  if (e.key === 'Escape') { hideContextMenu(); closeAllMenuDropdowns(); closeLaunchpad(); closeNotifCenter(); closeControlCenter(); closeCalendar(); closeBatteryPopup(); cancelScreenshot(); closeSpotlight(); closeWallpaperPicker(); closeForceQuit(); closeShortcuts(); closeAboutMac(); closeWifiDropdown(); closeWidgetsPicker(); closeDiskEraseDialog(); exitAnyFullscreen(); if (kbViewerOpen) closeKeyboardViewer(); closeMissionControl(); closeQuickNote(); closeQuickLook(); }
   // Ctrl+Cmd+F -> toggle Full-Screen on focused window (like macOS)
   if (e.ctrlKey && e.metaKey && e.key === 'f') { e.preventDefault(); const fsWin = document.querySelector('.mac-window.fullscreen') || document.querySelector('.mac-window.focused'); if (fsWin) toggleFullscreenWindow(fsWin); }
   // Cmd+F or Ctrl+F -> focus search
@@ -6066,6 +6066,13 @@ document.addEventListener('keydown', e => {
     if (!appSwitcherVisible) { showAppSwitcher(); }
     else { cycleAppSwitcher(e.shiftKey ? -1 : 1); }
   }
+  // Space -> Quick Look preview in Finder
+  if (e.key === ' ' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    if (qlOpen) { e.preventDefault(); qlClose(); }
+    else if (finderIsActive() && selectedItems.length > 0 && !isTypingInInput(e)) { e.preventDefault(); qlOpenLook(); }
+  }
+  // Arrow keys -> browse items while Quick Look is open
+  if (qlOpen && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { e.preventDefault(); qlNav(e.key === 'ArrowLeft' ? -1 : 1); }
   // Cmd+A -> select all in Finder
   if ((e.metaKey || e.ctrlKey) && e.key === 'a' && finderIsActive()) { e.preventDefault(); selectAllItems(); }
   // Cmd+Shift+S -> Siri
@@ -11268,3 +11275,148 @@ function initShortcutsApp() {
   document.getElementById('scSearch').addEventListener('input', scRenderGrid);
   scRenderGrid();
 }
+
+// ============================================================
+// ---- Quick Look (Space preview) ----
+// ============================================================
+let qlOpen = false;
+let qlItems = [];
+let qlIndex = 0;
+
+function qlHash(s) {
+  let h = 7;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360;
+  return h;
+}
+
+function qlPhotoEmoji(hash) {
+  const list = ['🏔️', '🌅', '🌊', '🌴', '🌋', '🏜️', '🌸', '❄️', '🌌', '🍁'];
+  return list[hash % list.length];
+}
+
+function qlFolderSvg() {
+  return '<svg viewBox="0 0 48 48"><path d="M6 12a3 3 0 0 1 3-3h10l4 4h16a3 3 0 0 1 3 3v20a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V12z" fill="#5AC8FA"/><path d="M6 16h36v20a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V16z" fill="#BFE7FF"/></svg>';
+}
+
+function qlZipSvg() {
+  return '<svg viewBox="0 0 48 48"><rect x="8" y="6" width="32" height="36" rx="4" fill="#F0F0F5"/><rect x="16" y="4" width="16" height="6" rx="2" fill="#FF9F0A"/><rect x="8" y="20" width="32" height="8" fill="#8E8E93"/><rect x="8" y="28" width="32" height="8" fill="#AEAEB2"/><rect x="8" y="36" width="32" height="6" fill="#D1D1D6"/><path d="M16 14h4l-4 6h4" stroke="#FF9F0A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+function qlFakeText(name) {
+  const head = name.replace(/\.[^.]*$/, '') || 'Untitled';
+  const lines = [
+    head, '',
+    'This file is being previewed with Quick Look.',
+    'Press Space again to close the preview, or use',
+    'the arrow keys to browse other items in the folder.',
+    '', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+    '', 'Duis aute irure dolor in reprehenderit in voluptate velit esse',
+    'cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat',
+    'cupidatat non proident, sunt in culpa qui officia deserunt mollit.',
+    '', '— End of preview —'
+  ];
+  return lines.map(l => l ? '<div>' + l + '</div>' : '<div class="ql-line-gap"></div>').join('');
+}
+
+function qlPageBars() {
+  return '<div class="ql-page-bar wide"></div><div class="ql-page-bar med"></div>' +
+    '<div class="ql-page-line"></div><div class="ql-page-line"></div><div class="ql-page-line short"></div>' +
+    '<div class="ql-page-line"></div><div class="ql-page-line short"></div><div class="ql-page-line"></div>' +
+    '<div class="ql-page-line"></div><div class="ql-page-line short"></div><div class="ql-page-line"></div>' +
+    '<div class="ql-page-bar wide" style="margin-top:16px"></div><div class="ql-page-bar narrow"></div>';
+}
+
+function qlFakePlay(btn) {
+  const icon = btn.querySelector('i');
+  if (!icon) return;
+  const playing = icon.classList.contains('ri-play-fill');
+  icon.className = playing ? 'ri-pause-fill' : 'ri-play-fill';
+  playSystemSound('pop');
+}
+
+function qlContentHTML(item) {
+  const hash = qlHash(item.name);
+  if (item.type === 'folder') {
+    const count = getChildren(item.path) ? getChildren(item.path).length : 0;
+    return '<div class="ql-big-icon">' + qlFolderSvg() +
+      '<div class="ql-cap">' + item.name + '</div>' +
+      '<div class="ql-sub">' + count + ' item' + (count === 1 ? '' : 's') + '</div>' +
+      '<button class="ql-open" onclick="navigateTo(\'' + item.path + '\'); qlClose();">Open Folder</button></div>';
+  }
+  if (item.type === 'app') {
+    return '<div class="ql-big-icon">' + (dockIconMap[item.name] || dockIconMap.Finder) +
+      '<div class="ql-cap">' + item.name.replace('.app', '') + '</div>' +
+      '<div class="ql-sub">Application</div>' +
+      '<button class="ql-open" onclick="openApp(\'' + item.name + '\'); qlClose();">Open</button></div>';
+  }
+  switch (item.icon) {
+    case 'image':
+      return '<div class="ql-photo" style="background:linear-gradient(135deg,hsl(' + hash + ',70%,55%),hsl(' + ((hash + 55) % 360) + ',80%,38%))">' +
+        '<div class="ql-photo-sun"></div><div class="ql-photo-mount"></div><div class="ql-photo-emoji">' + qlPhotoEmoji(hash) + '</div></div>';
+    case 'pdf':
+      return '<div class="ql-page"><div class="ql-page-title">' + (item.name.replace(/\.[^.]*$/, '') || 'Document') + '</div>' + qlPageBars() + '</div>';
+    case 'music':
+      return '<div class="ql-player"><div class="ql-art" style="background:linear-gradient(135deg,hsl(' + hash + ',65%,55%),hsl(' + ((hash + 70) % 360) + ',70%,35%))"><span>' + qlPhotoEmoji(hash) + '</span></div>' +
+        '<div class="ql-player-row"><button class="ql-play-btn" onclick="qlFakePlay(this)"><i class="ri-play-fill"></i></button>' +
+        '<div class="ql-eq"><span></span><span></span><span></span><span></span><span></span></div></div></div>';
+    case 'video':
+      return '<div class="ql-video" style="background:linear-gradient(135deg,hsl(' + hash + ',60%,30%),hsl(' + ((hash + 80) % 360) + ',70%,18%))">' +
+        '<button class="ql-video-play" onclick="qlFakePlay(this)"><i class="ri-play-fill"></i></button></div>';
+    case 'zip':
+      return '<div class="ql-big-icon">' + qlZipSvg() + '<div class="ql-cap">' + item.name + '</div><div class="ql-sub">Ready to unarchive</div></div>';
+    default:
+      return '<div class="ql-doc">' + qlFakeText(item.name) + '</div>';
+  }
+}
+
+function qlOpenLook() {
+  if (!finderIsActive() || selectedItems.length === 0) return;
+  const sorted = sortItems(getChildren(currentPath));
+  const idx = selectedItems[0];
+  if (!sorted[idx]) return;
+  qlItems = sorted;
+  qlIndex = idx;
+  document.getElementById('quicklookOverlay').style.display = 'flex';
+  qlOpen = true;
+  qlRender();
+}
+
+function qlClose() {
+  qlOpen = false;
+  const ov = document.getElementById('quicklookOverlay');
+  if (ov) ov.style.display = 'none';
+}
+
+function closeQuickLook() {
+  qlClose();
+}
+
+function qlNav(dir) {
+  if (!qlItems.length) return;
+  qlIndex = (qlIndex + dir + qlItems.length) % qlItems.length;
+  qlRender();
+  playSystemSound('pop');
+}
+
+function qlRender() {
+  const item = qlItems[qlIndex];
+  if (!item) return;
+  const kind = item.kind || (item.type === 'folder' ? 'Folder' : 'Item');
+  document.getElementById('qlName').textContent = item.name;
+  document.getElementById('qlMeta').textContent = kind + ' — ' + (item.size || '--') + ' — ' + (item.date || '');
+  const content = document.getElementById('qlContent');
+  content.className = 'quicklook-content';
+  content.innerHTML = qlContentHTML(item);
+}
+
+function initQuickLook() {
+  document.getElementById('qlClose').addEventListener('click', qlClose);
+  document.getElementById('qlPrev').addEventListener('click', () => qlNav(-1));
+  document.getElementById('qlNext').addEventListener('click', () => qlNav(1));
+  document.getElementById('quicklookOverlay').addEventListener('mousedown', e => {
+    if (e.target.id === 'quicklookOverlay') qlClose();
+  });
+}
+initQuickLook();
