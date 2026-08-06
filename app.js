@@ -866,7 +866,8 @@ const appIdMap = {
   'Podcasts.app': 'podcasts-window',
   'Books.app': 'books-window',
   'News.app': 'news-window',
-  'Stocks.app': 'stocks-window'
+  'Stocks.app': 'stocks-window',
+  'Fitness.app': 'fitness-window'
 };
 
 const dockIconMap = {
@@ -910,7 +911,8 @@ const dockIconMap = {
   'Podcasts.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#7E2BEA"/><circle cx="24" cy="26" r="6" fill="white"/><path d="M24 18v16M16 32a12 12 0 0 0 16 0M14 34a16 16 0 0 0 20 0" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
   'Books.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9500"/><rect x="6" y="10" width="36" height="28" rx="4" fill="#FF9F0A"/><rect x="10" y="14" width="28" height="20" rx="2" fill="#fff"/><path d="M10 16l14 8 14-8" stroke="#FF9F0A" stroke-width="2" fill="none" stroke-linejoin="round"/><line x1="10" y1="30" x2="20" y2="30" stroke="#FFD60A" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="26" x2="16" y2="26" stroke="#FFD60A" stroke-width="2" stroke-linecap="round" opacity="0.5"/></svg>`,
   'News.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF3B30"/><rect x="8" y="8" width="32" height="32" rx="3" fill="#fff"/><rect x="8" y="8" width="32" height="22" rx="3" fill="#FF5A4F"/><text x="24" y="23" text-anchor="middle" font-family="Georgia" font-size="11" fill="#fff" font-weight="bold">NEWS</text><g stroke="#ddd" stroke-width="1.5"><line x1="13" y1="34" x2="35" y2="34"/><line x1="13" y1="30" x2="35" y2="30"/><line x1="13" y1="38" x2="35" y2="38"/></g></svg>`,
-  'Stocks.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="30" width="36" height="4" rx="2" fill="#8E8E93"/><polyline points="8,30 18,20 26,26 40,12" stroke="#30D158" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="40" cy="12" r="2.5" fill="#30D158"/></svg>`
+  'Stocks.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="30" width="36" height="4" rx="2" fill="#8E8E93"/><polyline points="8,30 18,20 26,26 40,12" stroke="#30D158" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="40" cy="12" r="2.5" fill="#30D158"/></svg>`,
+  'Fitness.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#FF453A" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.2 94.2" transform="rotate(-90 24 24)" opacity="0.25"/><circle cx="24" cy="24" r="10" fill="none" stroke="#30D158" stroke-width="4" stroke-linecap="round" stroke-dasharray="50 62.8" transform="rotate(-90 24 24)" opacity="0.8"/><circle cx="24" cy="24" r="5" fill="none" stroke="#64D2FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="20 31.4" transform="rotate(-90 24 24)"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -986,6 +988,7 @@ function openApp(appName) {
   if (winId === 'books-window') initBooks();
   if (winId === 'news-window') initNews();
   if (winId === 'stocks-window') initStocks();
+  if (winId === 'fitness-window') initFitness();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -10128,4 +10131,85 @@ function initStocks() {
   stocksDrawDetail(stocksState[0]);
   clearInterval(stocksInterval);
   stocksInterval = setInterval(stocksTick, 2000);
+}
+
+// ===================== FITNESS =====================
+const fitnessData = {
+  today: { move: 482, moveGoal: 600, exercise: 26, exerciseGoal: 30, stand: 8, standGoal: 12, steps: 6842, distance: '5.2 km', flights: 9, calories: 2140 },
+  week: { move: 3310, moveGoal: 4200, exercise: 168, exerciseGoal: 210, stand: 74, standGoal: 84, steps: 48210, distance: '36.4 km', flights: 64, calories: 15200 }
+};
+const fitnessWorkouts = [
+  { name: 'Morning Run', icon: 'ri-run-line', iconBg: 'linear-gradient(135deg,#FF375F,#FF9500)', meta: 'Outdoor · 5.2 km · 31 min', value: '486 kcal' },
+  { name: 'Strength Training', icon: 'ri-dumbbell-line', iconBg: 'linear-gradient(135deg,#0A84FF,#64D2FF)', meta: 'Upper body · 8 exercises', value: '312 kcal' },
+  { name: 'Yoga Flow', icon: 'ri-heart-pulse-line', iconBg: 'linear-gradient(135deg,#30D158,#64D2FF)', meta: 'Evening session · 20 min', value: '98 kcal' },
+  { name: 'Brisk Walk', icon: 'ri-walk-line', iconBg: 'linear-gradient(135deg,#BF5AF2,#0A84FF)', meta: 'Lunch break · 3.1 km', value: '164 kcal' }
+];
+const fitnessBarLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const fitnessBarValues = [0.55, 0.78, 0.62, 0.9, 0.71, 0.84, 0.49];
+
+function fitnessRing(size, stroke, frac, color, dashTotal) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const off = c * (1 - frac);
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">' +
+    '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="' + stroke + '"/>' +
+    '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + stroke + '" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + off + '" style="transition:stroke-dashoffset 0.8s cubic-bezier(0.16,1,0.3,1)"/>' +
+  '</svg>';
+}
+
+function renderFitnessRings(d) {
+  const el = document.getElementById('fitnessRings');
+  if (!el) return;
+  const moveFrac = Math.min(1, d.move / d.moveGoal);
+  const exFrac = Math.min(1, d.exercise / d.exerciseGoal);
+  const standFrac = Math.min(1, d.stand / d.standGoal);
+  el.innerHTML =
+    '<div style="position:absolute;inset:0;transform:rotate(-90deg);display:flex;align-items:center;justify-content:center">' + fitnessRing(210, 22, moveFrac, '#FA114F') + '</div>' +
+    '<div style="position:absolute;inset:22px;transform:rotate(-90deg)">' + fitnessRing(166, 22, exFrac, '#64D2FF') + '</div>' +
+    '<div style="position:absolute;inset:44px;transform:rotate(-90deg)">' + fitnessRing(122, 22, standFrac, '#30D158') + '</div>' +
+    '<div class="fitness-rings-center"><div class="fitness-rings-total">' + Math.round(moveFrac * 100) + '%</div><div class="fitness-rings-sub">Move goal</div></div>';
+}
+
+function renderFitnessStats(d) {
+  const el = document.getElementById('fitnessStats');
+  if (!el) return;
+  el.innerHTML =
+    '<div class="fitness-stat"><div class="fitness-stat-label"><span class="fitness-stat-dot" style="background:#FA114F"></span>Move</div><div class="fitness-stat-value">' + d.move + ' / ' + d.moveGoal + '</div><div class="fitness-stat-sub">' + (d.move / d.moveGoal * 100).toFixed(0) + '% of goal</div></div>' +
+    '<div class="fitness-stat"><div class="fitness-stat-label"><span class="fitness-stat-dot" style="background:#64D2FF"></span>Exercise</div><div class="fitness-stat-value">' + d.exercise + ' / ' + d.exerciseGoal + '</div><div class="fitness-stat-sub">' + d.exercise + ' minutes</div></div>' +
+    '<div class="fitness-stat"><div class="fitness-stat-label"><span class="fitness-stat-dot" style="background:#30D158"></span>Stand</div><div class="fitness-stat-value">' + d.stand + ' / ' + d.standGoal + '</div><div class="fitness-stat-sub">' + d.stand + ' hours</div></div>' +
+    '<div class="fitness-stat"><div class="fitness-stat-label"><i class="ri-footprint-line" style="color:var(--mac-accent)"></i>Steps</div><div class="fitness-stat-value">' + d.steps.toLocaleString() + '</div><div class="fitness-stat-sub">' + d.distance + ' · ' + d.flights + ' flights</div></div>';
+}
+
+function renderFitnessWorkouts() {
+  const el = document.getElementById('fitnessWorkouts');
+  if (!el) return;
+  el.innerHTML = fitnessWorkouts.map(w =>
+    '<div class="fitness-workout"><div class="fitness-workout-icon" style="background:' + w.iconBg + '"><i class="' + w.icon + '"></i></div>' +
+    '<div class="fitness-workout-info"><div class="fitness-workout-name">' + w.name + '</div><div class="fitness-workout-meta">' + w.meta + '</div></div>' +
+    '<div class="fitness-workout-value">' + w.value + '</div></div>'
+  ).join('');
+}
+
+function renderFitnessBars() {
+  const el = document.getElementById('fitnessBars');
+  if (!el) return;
+  el.innerHTML = fitnessBarLabels.map((label, i) =>
+    '<div class="fitness-bar-col"><div class="fitness-bar" style="height:' + Math.round(fitnessBarValues[i] * 90) + '%"></div><div class="fitness-bar-label">' + label + '</div></div>'
+  ).join('');
+}
+
+function switchFitnessDay(day) {
+  document.querySelectorAll('.fitness-tab').forEach(t => t.classList.toggle('active', t.dataset.day === day));
+  renderFitnessRings(fitnessData[day]);
+  renderFitnessStats(fitnessData[day]);
+}
+
+function initFitness() {
+  renderFitnessRings(fitnessData.today);
+  renderFitnessStats(fitnessData.today);
+  renderFitnessWorkouts();
+  renderFitnessBars();
+  document.querySelectorAll('.fitness-tab').forEach(tab => {
+    tab.addEventListener('click', () => switchFitnessDay(tab.dataset.day));
+  });
 }
