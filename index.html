@@ -2227,6 +2227,51 @@
         </div>
       </div>
 
+      <!-- ========== PODCASTS ========== -->
+      <div class="mac-window app-window" id="podcasts-window" style="width:780px;height:500px;top:70px;left:160px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Podcasts</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body podcasts-body">
+          <aside class="podcasts-sidebar">
+            <div class="podcasts-sidebar-item active" data-view="listen"><i class="ri-play-circle-line"></i> Listen Now</div>
+            <div class="podcasts-sidebar-item" data-view="browse"><i class="ri-compass-line"></i> Browse</div>
+            <div class="podcasts-sidebar-item" data-view="library"><i class="ri-album-line"></i> Library</div>
+            <div class="podcasts-sidebar-label">Shows</div>
+            <div class="podcasts-shows" id="podcastsShows"></div>
+          </aside>
+          <div class="podcasts-main">
+            <div class="podcasts-view" id="podcastsListenView">
+              <div class="podcasts-hero" id="podcastsHero"></div>
+              <div class="podcasts-section-title">New Episodes</div>
+              <div class="podcasts-episode-list" id="podcastsEpisodeList"></div>
+            </div>
+            <div class="podcasts-view" id="podcastsBrowseView" style="display:none;">
+              <div class="podcasts-section-title">Top Shows</div>
+              <div class="podcasts-show-grid" id="podcastsShowGrid"></div>
+            </div>
+            <div class="podcasts-view" id="podcastsLibraryView" style="display:none;">
+              <div class="podcasts-section-title">Your Library</div>
+              <div class="podcasts-library-grid" id="podcastsLibraryGrid"></div>
+            </div>
+          </div>
+        </div>
+        <div class="podcasts-minibar" id="podcastsMinibar" style="display:none;">
+          <div class="podcasts-mini-art" id="podcastsMiniArt"></div>
+          <div class="podcasts-mini-info">
+            <div class="podcasts-mini-title" id="podcastsMiniTitle"></div>
+            <div class="podcasts-mini-progress"><div class="podcasts-mini-progress-fill" id="podcastsMiniProgress"></div></div>
+          </div>
+          <button class="podcasts-mini-play" id="podcastsMiniPlay" onclick="podcastsTogglePlay()"><i class="ri-pause-fill"></i></button>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2431,6 +2476,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="20" rx="3" fill="#0D1117" stroke="#5AC8FA" stroke-width="2"/><rect x="14" y="20" width="20" height="3" rx="1.5" fill="#5AC8FA" opacity="0.6"/><rect x="14" y="26" width="14" height="3" rx="1.5" fill="#5AC8FA" opacity="0.35"/><rect x="12" y="34" width="24" height="6" rx="2" fill="#333"/></svg>
           </div>
           <span class="launchpad-label">Print Queue</span>
+        </div>
+        <div class="launchpad-item" data-app="Podcasts.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#7E2BEA"/><circle cx="24" cy="26" r="6" fill="#fff"/><path d="M24 18v16M16 32a12 12 0 0 0 16 0M14 34a16 16 0 0 0 20 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <span class="launchpad-label">Podcasts</span>
         </div>
       </div>
     </div>

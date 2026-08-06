@@ -862,7 +862,8 @@ const appIdMap = {
   'QuickTime Player.app': 'quicktime-window',
   'Screen Time.app': 'screentime-window',
   'Digital Color Meter.app': 'colormeter-window',
-  'Print Queue.app': 'printqueue-window'
+  'Print Queue.app': 'printqueue-window',
+  'Podcasts.app': 'podcasts-window'
 };
 
 const dockIconMap = {
@@ -902,7 +903,8 @@ const dockIconMap = {
   'QuickTime Player.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#333"/><path d="M20 20v10l9-5-9-5z" fill="white"/><rect x="6" y="14" width="36" height="22" rx="3" fill="#1C1C1E" stroke="#FF6B9D" stroke-width="1.5"/></svg>`,
   'Screen Time.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5E5CE6"/><path d="M8 20h32v6H8z" fill="white"/><path d="M8 32h32v6H8z" fill="white" opacity="0.75"/><path d="M24 8v6" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="8" r="2" fill="#FFD60A"/></svg>`,
   'Digital Color Meter.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="url(#cmGrad)"/><defs><radialGradient id="cmGrad" cx="35%" cy="35%" r="75%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="40%" stop-color="#FF2D55"/><stop offset="100%" stop-color="#BF5AF2"/></radialGradient></defs></svg>`,
-  'Print Queue.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="20" rx="3" fill="#0D1117" stroke="#5AC8FA" stroke-width="2"/><rect x="14" y="20" width="20" height="3" rx="1.5" fill="#5AC8FA" opacity="0.6"/><rect x="14" y="26" width="14" height="3" rx="1.5" fill="#5AC8FA" opacity="0.35"/><rect x="12" y="34" width="24" height="6" rx="2" fill="#333"/></svg>`
+  'Print Queue.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="20" rx="3" fill="#0D1117" stroke="#5AC8FA" stroke-width="2"/><rect x="14" y="20" width="20" height="3" rx="1.5" fill="#5AC8FA" opacity="0.6"/><rect x="14" y="26" width="14" height="3" rx="1.5" fill="#5AC8FA" opacity="0.35"/><rect x="12" y="34" width="24" height="6" rx="2" fill="#333"/></svg>`,
+  'Podcasts.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#7E2BEA"/><circle cx="24" cy="26" r="6" fill="white"/><path d="M24 18v16M16 32a12 12 0 0 0 16 0M14 34a16 16 0 0 0 20 0" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -974,6 +976,7 @@ function openApp(appName) {
   if (winId === 'screentime-window') initScreenTime();
   if (winId === 'colormeter-window') initColorMeter();
   if (winId === 'printqueue-window') initPrintQueue();
+  if (winId === 'podcasts-window') initPodcasts();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -9630,3 +9633,161 @@ function initAutoLock() {
 
 
 
+
+// ===================== PODCASTS =====================
+const podcastsShows = [
+  { id: 0, name: 'The Big Idea', gradient: 'linear-gradient(135deg,#7E2BEA,#FF375F)', init: 'BI', desc: 'Weekly conversations about how great things get made.' },
+  { id: 1, name: 'Tech Horizons', gradient: 'linear-gradient(135deg,#0A84FF,#64D2FF)', init: 'TH', desc: 'The future of computing, one episode at a time.' },
+  { id: 2, name: 'Deep Space', gradient: 'linear-gradient(135deg,#1C1C1E,#5E5CE6)', init: 'DS', desc: 'A journey through the cosmos and beyond.' },
+  { id: 3, name: 'The Daily Grind', gradient: 'linear-gradient(135deg,#FF9500,#FFD60A)', init: 'DG', desc: 'Your morning briefing in fifteen minutes.' },
+  { id: 4, name: 'Sound of Code', gradient: 'linear-gradient(135deg,#30D158,#64D2FF)', init: 'SC', desc: 'Developers talk about craft, career and coffee.' }
+];
+const podcastsEpisodes = [
+  { show: 0, title: 'Why Simplicity Wins', time: '42 min', date: 'Today' },
+  { show: 0, title: 'Designing for Calm', time: '38 min', date: 'Yesterday' },
+  { show: 1, title: 'The Rise of On-Device AI', time: '51 min', date: 'Today' },
+  { show: 1, title: 'Rethinking the OS', time: '45 min', date: 'Monday' },
+  { show: 2, title: 'Life on Europa?', time: '33 min', date: 'Today' },
+  { show: 3, title: 'Markets open, Monday Edition', time: '15 min', date: 'Today' },
+  { show: 4, title: 'Shipping Software, Not Stress', time: '29 min', date: 'Yesterday' }
+];
+let podcastsPlaying = null;
+let podcastsPlayInterval = null;
+
+function podcastsGrad(showId) { return podcastsShows[showId] ? podcastsShows[showId].gradient : 'linear-gradient(135deg,#7E2BEA,#FF375F)'; }
+function podcastsInit(showId) { return podcastsShows[showId] ? podcastsShows[showId].init : 'BI'; }
+
+function renderPodcastsShows() {
+  const el = document.getElementById('podcastsShows');
+  if (!el) return;
+  el.innerHTML = podcastsShows.map(s =>
+    '<div class="podcasts-show-item" data-show="' + s.id + '"><div class="podcasts-show-avatar" style="background:' + s.gradient + '">' + s.init + '</div>' + s.name + '</div>'
+  ).join('');
+  el.querySelectorAll('.podcasts-show-item').forEach(item => {
+    item.addEventListener('click', () => podcastsShowEpisodes(parseInt(item.dataset.show, 10)));
+  });
+}
+
+function renderPodcastsHero() {
+  const hero = document.getElementById('podcastsHero');
+  if (!hero) return;
+  const show = podcastsShows[0];
+  hero.innerHTML =
+    '<div class="podcasts-hero-art" style="background:' + show.gradient + '">' + show.init + '</div>' +
+    '<div class="podcasts-hero-info">' +
+      '<div class="podcasts-hero-title">' + show.name + '</div>' +
+      '<div class="podcasts-hero-desc">' + show.desc + '</div>' +
+      '<button class="podcasts-hero-btn" id="podcastsHeroPlay"><i class="ri-play-fill"></i> Play Latest Episode</button>' +
+    '</div>';
+  document.getElementById('podcastsHeroPlay').addEventListener('click', () => podcastsPlay(0));
+}
+
+function renderPodcastsEpisodes() {
+  const el = document.getElementById('podcastsEpisodeList');
+  if (!el) return;
+  el.innerHTML = podcastsEpisodes.map((ep, i) => {
+    const show = podcastsShows[ep.show];
+    return '<div class="podcasts-episode' + (podcastsPlaying === i ? ' podcasts-episode-playing' : '') + '" data-ep="' + i + '">' +
+      '<div class="podcasts-episode-art" style="background:' + show.gradient + '">' + (podcastsPlaying === i ? '<i class="ri-volume-up-line"></i>' : show.init) + '</div>' +
+      '<div class="podcasts-episode-info">' +
+        '<div class="podcasts-episode-title">' + ep.title + '</div>' +
+        '<div class="podcasts-episode-show">' + show.name + ' · ' + ep.date + '</div>' +
+        '<div class="podcasts-episode-time">' + ep.time + '</div>' +
+      '</div>' +
+      '<button class="podcasts-episode-play" data-ep-play="' + i + '">' + (podcastsPlaying === i ? '<i class="ri-pause-fill"></i>' : '<i class="ri-play-fill"></i>') + '</button>' +
+    '</div>';
+  }).join('');
+  el.querySelectorAll('[data-ep]').forEach(row => {
+    row.addEventListener('click', e => { if (!e.target.closest('[data-ep-play]')) podcastsPlay(parseInt(row.dataset.ep, 10)); });
+  });
+  el.querySelectorAll('[data-ep-play]').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); podcastsTogglePlay(parseInt(btn.dataset.epPlay, 10)); });
+  });
+}
+
+function podcastsShowEpisodes(showId) {
+  const el = document.getElementById('podcastsEpisodeList');
+  if (!el) return;
+  const eps = podcastsEpisodes.map((ep, i) => ({ ep, i })).filter(x => x.ep.show === showId);
+  const show = podcastsShows[showId];
+  el.innerHTML = eps.map(x => {
+    return '<div class="podcasts-episode' + (podcastsPlaying === x.i ? ' podcasts-episode-playing' : '') + '" data-ep="' + x.i + '">' +
+      '<div class="podcasts-episode-art" style="background:' + show.gradient + '">' + show.init + '</div>' +
+      '<div class="podcasts-episode-info">' +
+        '<div class="podcasts-episode-title">' + x.ep.title + '</div>' +
+        '<div class="podcasts-episode-show">' + show.name + ' · ' + x.ep.date + '</div>' +
+        '<div class="podcasts-episode-time">' + x.ep.time + '</div>' +
+      '</div>' +
+      '<button class="podcasts-episode-play" data-ep-play="' + x.i + '"><i class="ri-play-fill"></i></button>' +
+    '</div>';
+  }).join('');
+  el.querySelectorAll('[data-ep-play]').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); podcastsPlay(parseInt(btn.dataset.epPlay, 10)); });
+  });
+}
+
+function renderPodcastsGrids() {
+  const grid = document.getElementById('podcastsShowGrid');
+  const lib = document.getElementById('podcastsLibraryGrid');
+  if (grid) grid.innerHTML = podcastsShows.map(s =>
+    '<div class="podcasts-show-card" data-show="' + s.id + '"><div class="podcasts-show-card-art" style="background:' + s.gradient + '">' + s.init + '</div><div class="podcasts-show-card-name">' + s.name + '</div><div class="podcasts-show-card-desc">' + s.desc + '</div></div>'
+  ).join('');
+  if (lib) lib.innerHTML = podcastsShows.slice(0, 4).map(s =>
+    '<div class="podcasts-show-card" data-show="' + s.id + '"><div class="podcasts-show-card-art" style="background:' + s.gradient + '">' + s.init + '</div><div class="podcasts-show-card-name">' + s.name + '</div></div>'
+  ).join('');
+  document.querySelectorAll('#podcastsShowGrid .podcasts-show-card, #podcastsLibraryGrid .podcasts-show-card').forEach(card => {
+    card.addEventListener('click', () => podcastsShowEpisodes(parseInt(card.dataset.show, 10)));
+  });
+}
+
+function podcastsPlay(i) {
+  podcastsPlaying = i;
+  const ep = podcastsEpisodes[i];
+  const show = podcastsShows[ep.show];
+  const bar = document.getElementById('podcastsMinibar');
+  if (bar) {
+    bar.style.display = 'flex';
+    document.getElementById('podcastsMiniArt').style.background = show.gradient;
+    document.getElementById('podcastsMiniArt').textContent = show.init;
+    document.getElementById('podcastsMiniTitle').textContent = ep.title;
+    document.getElementById('podcastsMiniPlay').innerHTML = '<i class="ri-pause-fill"></i>';
+  }
+  renderPodcastsEpisodes();
+  playSystemSound('message');
+  clearInterval(podcastsPlayInterval);
+  podcastsPlayInterval = setInterval(() => {
+    const fill = document.getElementById('podcastsMiniProgress');
+    if (fill) {
+      let w = parseFloat(fill.style.width) || 0;
+      w = Math.min(100, w + 0.6);
+      fill.style.width = w + '%';
+      if (w >= 100) { clearInterval(podcastsPlayInterval); showNotifToast('Podcasts', 'Episode finished', 'Podcasts.app'); }
+    }
+  }, 1000);
+}
+
+function podcastsTogglePlay(i) {
+  if (i !== undefined && i !== podcastsPlaying) { podcastsPlay(i); return; }
+  clearInterval(podcastsPlayInterval);
+  podcastsPlaying = null;
+  document.getElementById('podcastsMiniPlay').innerHTML = '<i class="ri-play-fill"></i>';
+  renderPodcastsEpisodes();
+}
+
+function switchPodcastsView(view) {
+  document.querySelectorAll('.podcasts-view').forEach(v => v.style.display = 'none');
+  const map = { listen: 'podcastsListenView', browse: 'podcastsBrowseView', library: 'podcastsLibraryView' };
+  const el = document.getElementById(map[view]);
+  if (el) el.style.display = 'block';
+  document.querySelectorAll('.podcasts-sidebar-item').forEach(it => it.classList.toggle('active', it.dataset.view === view));
+}
+
+function initPodcasts() {
+  renderPodcastsShows();
+  renderPodcastsHero();
+  renderPodcastsEpisodes();
+  renderPodcastsGrids();
+  document.querySelectorAll('.podcasts-sidebar-item').forEach(item => {
+    item.addEventListener('click', () => switchPodcastsView(item.dataset.view));
+  });
+}
