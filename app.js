@@ -875,7 +875,8 @@ const appIdMap = {
   'Journal.app': 'journal-window',
   'Freeform.app': 'freeform-window',
   'Health.app': 'health-window',
-  'Photo Booth.app': 'photobooth-window'
+  'Photo Booth.app': 'photobooth-window',
+  'Shortcuts.app': 'shortcuts-app-window'
 };
 
 const dockIconMap = {
@@ -928,7 +929,8 @@ const dockIconMap = {
   'Journal.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="#BF5AF2" stroke-width="2.5"/><text x="24" y="28" text-anchor="middle" font-family="Georgia" font-size="18" fill="#BF5AF2" font-style="italic">J</text><line x1="14" y1="33" x2="34" y2="33" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/></svg>`,
   'Freeform.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#BF5AF2"/><path d="M8 30c2-4 5-5 8-3s7 1 10-4 6-5 9-2" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 38h32" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="14" r="4" fill="#FFD60A"/><circle cx="12" cy="16" r="3" fill="#0A84FF"/></svg>`,
   'Health.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M24 34C20 30 14 25 14 19a6 6 0 0 1 10-4.6A6 6 0 0 1 34 19c0 6-6 11-10 15z" fill="none" stroke="#FF453A" stroke-width="3"/><path d="M14 24h6l2-3 3 5 2-2h7" stroke="#FF453A" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  'Photo Booth.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="24" rx="5" fill="none" stroke="#A855F7" stroke-width="2.5"/><circle cx="24" cy="26" r="8" fill="#A855F7"/><circle cx="24" cy="26" r="3" fill="#fff"/><path d="M16 14l3-6h10l3 6" fill="none" stroke="#A855F7" stroke-width="2.5" stroke-linejoin="round"/></svg>`
+  'Photo Booth.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="24" rx="5" fill="none" stroke="#A855F7" stroke-width="2.5"/><circle cx="24" cy="26" r="8" fill="#A855F7"/><circle cx="24" cy="26" r="3" fill="#fff"/><path d="M16 14l3-6h10l3 6" fill="none" stroke="#A855F7" stroke-width="2.5" stroke-linejoin="round"/></svg>`,
+  'Shortcuts.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M24 6l4 12 12 4-12 4-4 12-4-12-12-4 12-4 4-12z" fill="none" stroke="#5AC8FA" stroke-width="2.5" stroke-linejoin="round"/><circle cx="24" cy="24" r="3" fill="#FFD60A"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -1013,6 +1015,7 @@ function openApp(appName) {
   if (winId === 'freeform-window') initFreeform();
   if (winId === 'health-window') initHealth();
   if (winId === 'photobooth-window') initPhotoBooth();
+  if (winId === 'shortcuts-app-window') initShortcutsApp();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -1056,6 +1059,7 @@ function doCloseWindow(winId) {
   if (winId === 'activity-window') stopActivityMonitor();
   if (winId === 'stocks-window') { clearInterval(stocksInterval); stocksInterval = null; }
   if (winId === 'photobooth-window') { if (pbSceneTimer) { clearInterval(pbSceneTimer); pbSceneTimer = null; } }
+  if (winId === 'shortcuts-app-window') { if (scRunTimer) { clearTimeout(scRunTimer); scRunTimer = null; } }
   const entry = Object.entries(appIdMap).find(([, v]) => v === winId);
   if (entry) { const dockItem = document.querySelector(`.dock-item[data-app="${entry[0]}"]`); if (dockItem) { const ind = dockItem.querySelector('.dock-indicator'); if (ind) ind.classList.remove('active'); } }
   renderRunningDock();
@@ -11133,4 +11137,134 @@ function initPhotoBooth() {
     pbSceneSeed++;
     pbRenderScene();
   }, 6000);
+}
+
+// ============================================================
+// ---- Shortcuts ----
+// ============================================================
+const scLibrary = [
+  { id: 'lock', name: 'Lock Screen', icon: 'ri-lock-line', color: '#0A84FF', views: ['mine'], action: 'lock' },
+  { id: 'screensaver', name: 'Start Screen Saver', icon: 'ri-sun-cloudy-line', color: '#BF5AF2', views: ['mine'], action: 'screensaver' },
+  { id: 'spotlight', name: 'Open Spotlight', icon: 'ri-search-line', color: '#30D158', views: ['mine'], action: 'spotlight' },
+  { id: 'quicknote', name: 'New Quick Note', icon: 'ri-sticky-note-line', color: '#FFD60A', views: ['mine'], action: 'quicknote' },
+  { id: 'screenshot', name: 'Take Full Screenshot', icon: 'ri-camera-3-line', color: '#FF9F0A', views: ['mine'], action: 'screenshot' },
+  { id: 'controlcenter', name: 'Open Control Center', icon: 'ri-settings-3-line', color: '#5E5CE6', views: ['mine'], action: 'controlcenter' },
+  { id: 'dnd', name: 'Toggle Do Not Disturb', icon: 'ri-moon-line', color: '#5E5CE6', views: ['mine'], action: 'dnd' },
+  { id: 'wifi', name: 'Toggle Wi-Fi', icon: 'ri-wifi-line', color: '#0A84FF', views: ['mine'], action: 'wifi' },
+  { id: 'notifcenter', name: 'Show Notifications', icon: 'ri-notification-3-line', color: '#FF375F', views: ['mine'], action: 'notifcenter' },
+  { id: 'forcequit', name: 'Force Quit Apps', icon: 'ri-close-circle-line', color: '#FF453A', views: ['mine'], action: 'forcequit' },
+  { id: 'textedit', name: 'New TextEdit Document', icon: 'ri-file-text-line', color: '#64D2FF', views: ['folder'], action: 'textedit' },
+  { id: 'terminal', name: 'Open Terminal', icon: 'ri-terminal-box-line', color: '#8E8E93', views: ['folder'], action: 'terminal' },
+  { id: 'clock', name: 'Start a Timer', icon: 'ri-timer-line', color: '#FF9500', views: ['folder'], action: 'clock' },
+  { id: 'music', name: 'Play Music', icon: 'ri-music-2-line', color: '#FF9F0A', views: ['folder'], action: 'music' },
+  { id: 'emptytrash', name: 'Empty Trash', icon: 'ri-delete-bin-5-line', color: '#FF453A', views: ['folder', 'automations'], action: 'emptytrash' },
+  { id: 'screenshot_region', name: 'Capture Region', icon: 'ri-crop-line', color: '#FF9F0A', views: ['automations'], action: 'screenshot_region' },
+  { id: 'siri', name: 'Ask Siri', icon: 'ri-mic-line', color: '#30D158', views: ['automations'], action: 'siri' },
+  { id: 'night', name: 'Enable Night Shift', icon: 'ri-moon-clear-line', color: '#5E5CE6', views: ['automations'], action: 'night' },
+  { id: 'volup', name: 'Turn Up Volume', icon: 'ri-volume-up-line', color: '#64D2FF', views: ['automations'], action: 'volup' },
+  { id: 'voldown', name: 'Turn Down Volume', icon: 'ri-volume-down-line', color: '#64D2FF', views: ['automations'], action: 'voldown' },
+  { id: 'wallpaper', name: 'Change Wallpaper', icon: 'ri-image-2-line', color: '#0A84FF', views: ['automations'], action: 'wallpaper' }
+];
+const scViewTitles = { mine: 'My Shortcuts', gallery: 'Gallery', automations: 'Automations', folder: 'Folder' };
+let scView = 'mine';
+let scRunTimer = null;
+let dndActive = false;
+let scInitialized = false;
+
+function scToggleDnd() {
+  dndActive = !dndActive;
+  const el = document.getElementById('dndToggle');
+  if (el) el.classList.toggle('on', dndActive);
+  showNotifToast('Shortcuts', dndActive ? 'Do Not Disturb turned on' : 'Do Not Disturb turned off', 'Shortcuts.app');
+}
+
+function scToggleWifi() {
+  const el = document.getElementById('wifiToggle');
+  if (el) {
+    el.classList.toggle('on');
+    showNotifToast('Shortcuts', el.classList.contains('on') ? 'Wi-Fi turned on' : 'Wi-Fi turned off', 'Shortcuts.app');
+  } else {
+    showNotifToast('Shortcuts', 'Toggled Wi-Fi', 'Shortcuts.app');
+  }
+}
+
+function scRun(sc) {
+  document.querySelectorAll('.sc-card').forEach(c => c.classList.remove('running'));
+  const card = document.querySelector('.sc-card[data-id="' + sc.id + '"]');
+  if (card) card.classList.add('running');
+  if (scRunTimer) clearTimeout(scRunTimer);
+  scRunTimer = setTimeout(() => {
+    document.querySelectorAll('.sc-card').forEach(c => c.classList.remove('running'));
+  }, 900);
+  playSystemSound('pop');
+  switch (sc.action) {
+    case 'lock': lockScreen(); break;
+    case 'screensaver': startScreensaver(); break;
+    case 'spotlight': toggleSpotlight(); break;
+    case 'quicknote': openQuickNote(); break;
+    case 'screenshot': startScreenshot('full'); break;
+    case 'screenshot_region': startScreenshot('region'); break;
+    case 'controlcenter': toggleControlCenter(); break;
+    case 'notifcenter': toggleNotifCenter(); break;
+    case 'forcequit': openForceQuit(); break;
+    case 'dnd': scToggleDnd(); break;
+    case 'wifi': scToggleWifi(); break;
+    case 'textedit': openApp('TextEdit.app'); break;
+    case 'terminal': openApp('Terminal.app'); break;
+    case 'clock': openApp('Clock.app'); break;
+    case 'music': openApp('Music.app'); break;
+    case 'emptytrash': showNotifToast('Shortcuts', 'Trash emptied — 3 items removed', 'Shortcuts.app'); break;
+    case 'siri': if (siriIsOpen()) siriClose(); else siriOpen(); break;
+    case 'night': showNotifToast('Shortcuts', 'Night Shift on — warming your display', 'Shortcuts.app'); break;
+    case 'volup': showNotifToast('Shortcuts', 'Volume up', 'Shortcuts.app'); break;
+    case 'voldown': showNotifToast('Shortcuts', 'Volume down', 'Shortcuts.app'); break;
+    case 'wallpaper': openWallpaperPicker(); break;
+    default: showNotifToast('Shortcuts', 'Running "' + sc.name + '"', 'Shortcuts.app');
+  }
+}
+
+function scRenderGrid() {
+  const grid = document.getElementById('scGrid');
+  if (!grid) return;
+  const q = (document.getElementById('scSearch').value || '').toLowerCase();
+  let list = scLibrary.filter(sc => sc.views.indexOf(scView) !== -1);
+  if (scView === 'gallery') list = scLibrary.slice();
+  if (q) list = scLibrary.filter(sc => sc.name.toLowerCase().indexOf(q) !== -1);
+  if (!list.length) {
+    grid.innerHTML = '<div class="sc-empty">No shortcuts found.</div>';
+    return;
+  }
+  grid.innerHTML = list.map(sc =>
+    '<div class="sc-card" data-id="' + sc.id + '">' +
+      '<div class="sc-card-icon" style="background:' + sc.color + '"><i class="' + sc.icon + '"></i></div>' +
+      '<span class="sc-card-name">' + sc.name + '</span>' +
+      '<button class="sc-card-run" title="Run shortcut"><i class="ri-play-fill"></i></button>' +
+    '</div>'
+  ).join('');
+  grid.querySelectorAll('.sc-card').forEach(card => {
+    const sc = scLibrary.find(s => s.id === card.dataset.id);
+    card.addEventListener('click', () => scRun(sc));
+    const runBtn = card.querySelector('.sc-card-run');
+    if (runBtn) runBtn.addEventListener('click', e => { e.stopPropagation(); scRun(sc); });
+  });
+}
+
+function initShortcutsApp() {
+  const title = document.getElementById('scTitle');
+  if (scInitialized) {
+    if (title) title.textContent = scViewTitles[scView];
+    scRenderGrid();
+    return;
+  }
+  scInitialized = true;
+  document.querySelectorAll('.sc-sidebar-item').forEach(item => {
+    item.addEventListener('click', () => {
+      scView = item.dataset.view;
+      document.querySelectorAll('.sc-sidebar-item').forEach(it => it.classList.toggle('active', it === item));
+      if (title) title.textContent = scViewTitles[scView];
+      scRenderGrid();
+    });
+  });
+  document.getElementById('scSearch').addEventListener('input', scRenderGrid);
+  scRenderGrid();
 }

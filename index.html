@@ -2684,6 +2684,34 @@
         </div>
       </div>
 
+      <!-- ========== SHORTCUTS ========== -->
+      <div class="mac-window app-window" id="shortcuts-app-window" style="width:860px;height:540px;top:70px;left:150px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Shortcuts</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body shortcuts-body">
+          <aside class="sc-sidebar">
+            <div class="sc-sidebar-item active" data-view="mine"><i class="ri-apps-2-line"></i> My Shortcuts</div>
+            <div class="sc-sidebar-item" data-view="gallery"><i class="ri-store-2-line"></i> Gallery</div>
+            <div class="sc-sidebar-item" data-view="automations"><i class="ri-time-line"></i> Automations</div>
+            <div class="sc-sidebar-item" data-view="folder"><i class="ri-folder-line"></i> Folder</div>
+          </aside>
+          <div class="sc-main">
+            <div class="sc-header">
+              <div class="sc-title" id="scTitle">My Shortcuts</div>
+              <div class="sc-search-wrap"><i class="ri-search-line"></i><input type="text" id="scSearch" placeholder="Search shortcuts..."></div>
+            </div>
+            <div class="sc-grid" id="scGrid"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2966,6 +2994,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="24" rx="5" fill="none" stroke="#A855F7" stroke-width="2.5"/><circle cx="24" cy="26" r="8" fill="#A855F7"/><circle cx="24" cy="26" r="3" fill="#fff"/><path d="M16 14l3-6h10l3 6" fill="none" stroke="#A855F7" stroke-width="2.5" stroke-linejoin="round"/></svg>
           </div>
           <span class="launchpad-label">Photo Booth</span>
+        </div>
+        <div class="launchpad-item" data-app="Shortcuts.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M24 6l4 12 12 4-12 4-4 12-4-12-12-4 12-4 4-12z" fill="none" stroke="#5AC8FA" stroke-width="2.5" stroke-linejoin="round"/><circle cx="24" cy="24" r="3" fill="#FFD60A"/></svg>
+          </div>
+          <span class="launchpad-label">Shortcuts</span>
         </div>
       </div>
     </div>
