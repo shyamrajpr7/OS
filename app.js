@@ -864,7 +864,8 @@ const appIdMap = {
   'Digital Color Meter.app': 'colormeter-window',
   'Print Queue.app': 'printqueue-window',
   'Podcasts.app': 'podcasts-window',
-  'Books.app': 'books-window'
+  'Books.app': 'books-window',
+  'News.app': 'news-window'
 };
 
 const dockIconMap = {
@@ -906,7 +907,8 @@ const dockIconMap = {
   'Digital Color Meter.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="url(#cmGrad)"/><defs><radialGradient id="cmGrad" cx="35%" cy="35%" r="75%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="40%" stop-color="#FF2D55"/><stop offset="100%" stop-color="#BF5AF2"/></radialGradient></defs></svg>`,
   'Print Queue.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="20" rx="3" fill="#0D1117" stroke="#5AC8FA" stroke-width="2"/><rect x="14" y="20" width="20" height="3" rx="1.5" fill="#5AC8FA" opacity="0.6"/><rect x="14" y="26" width="14" height="3" rx="1.5" fill="#5AC8FA" opacity="0.35"/><rect x="12" y="34" width="24" height="6" rx="2" fill="#333"/></svg>`,
   'Podcasts.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#7E2BEA"/><circle cx="24" cy="26" r="6" fill="white"/><path d="M24 18v16M16 32a12 12 0 0 0 16 0M14 34a16 16 0 0 0 20 0" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
-  'Books.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9500"/><rect x="6" y="10" width="36" height="28" rx="4" fill="#FF9F0A"/><rect x="10" y="14" width="28" height="20" rx="2" fill="#fff"/><path d="M10 16l14 8 14-8" stroke="#FF9F0A" stroke-width="2" fill="none" stroke-linejoin="round"/><line x1="10" y1="30" x2="20" y2="30" stroke="#FFD60A" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="26" x2="16" y2="26" stroke="#FFD60A" stroke-width="2" stroke-linecap="round" opacity="0.5"/></svg>`
+  'Books.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9500"/><rect x="6" y="10" width="36" height="28" rx="4" fill="#FF9F0A"/><rect x="10" y="14" width="28" height="20" rx="2" fill="#fff"/><path d="M10 16l14 8 14-8" stroke="#FF9F0A" stroke-width="2" fill="none" stroke-linejoin="round"/><line x1="10" y1="30" x2="20" y2="30" stroke="#FFD60A" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="26" x2="16" y2="26" stroke="#FFD60A" stroke-width="2" stroke-linecap="round" opacity="0.5"/></svg>`,
+  'News.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF3B30"/><rect x="8" y="8" width="32" height="32" rx="3" fill="#fff"/><rect x="8" y="8" width="32" height="22" rx="3" fill="#FF5A4F"/><text x="24" y="23" text-anchor="middle" font-family="Georgia" font-size="11" fill="#fff" font-weight="bold">NEWS</text><g stroke="#ddd" stroke-width="1.5"><line x1="13" y1="34" x2="35" y2="34"/><line x1="13" y1="30" x2="35" y2="30"/><line x1="13" y1="38" x2="35" y2="38"/></g></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -980,6 +982,7 @@ function openApp(appName) {
   if (winId === 'printqueue-window') initPrintQueue();
   if (winId === 'podcasts-window') initPodcasts();
   if (winId === 'books-window') initBooks();
+  if (winId === 'news-window') initNews();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -9888,4 +9891,78 @@ function initBooks() {
   });
   const search = document.getElementById('booksSearch');
   if (search) search.addEventListener('input', () => { booksSearch = search.value; renderBooksGrid(); });
+}
+
+// ===================== NEWS =====================
+const newsArticles = [
+  { id: 0, cat: 'top', source: 'The Signal', title: 'Thread OS 2.0 Teased at WWDC: A Quiet Revolution in Desktop Computing', time: '12 min ago', body: ['Thread OS has spent the past three years quietly rebuilding its foundation, and today it finally showed the results. The new release brings a unified thread model that lets applications scale effortlessly across every core in your machine.', 'The headline feature is a redesigned window server that renders interfaces with near-zero latency, along with a new privacy architecture that keeps every process sandboxed by default.', 'Developers describe the shift as the most significant since the transition to the modern kernel. The public beta arrives this fall.'] },
+  { id: 1, cat: 'for-you', source: 'Tech Current', title: 'The Rise of the Personal Computer Again', time: '1 hr ago', body: ['After a decade of consolidation, the personal computer is having a renaissance. Creators, tinkerers and professionals are reclaiming the desktop as a space for deep work.', 'Retail shelves that once held only sleek thin clients now carry modular towers, mechanical keyboards and high-refresh displays. The message is clear: people want control again.', 'The trend has energized a whole ecosystem of small makers, who are shipping exotic components straight from their garages to customers across the globe.'] },
+  { id: 2, cat: 'science', source: 'Orbit Weekly', title: 'Astronomers Spot Water Vapor on a Distant Ocean World', time: '2 hrs ago', body: ['Using the new generation of space telescopes, astronomers have detected water vapor in the atmosphere of a temperate planet nearly 40 light-years away.', 'The signature, a wobble in the infrared spectrum, suggests the world may be wrapped in a global ocean under a thin atmosphere — a prime target in the search for life.', 'Follow-up observations are already scheduled. If confirmed, the finding would make this world the most promising candidate yet for habitability beyond the solar system.'] },
+  { id: 3, cat: 'business', source: 'The Ledger', title: 'Chip Makers Report Record Quarter as AI Demand Accelerates', time: '3 hrs ago', body: ['Semiconductor giants posted record revenue this quarter, powered by a surge in demand for AI accelerators and the slow but steady refresh of the consumer PC market.', 'Analysts note that supply chains have finally stabilized after years of turbulence, allowing manufacturers to ship at full capacity for the first time since the pandemic.', 'The sector\'s rally has lifted broader markets, though investors remain cautious about the sustainability of the capex boom.'] },
+  { id: 4, cat: 'sports', source: 'The Sideline', title: 'Underdogs Stun Champions in Five-Set Thriller', time: '4 hrs ago', body: ['In a match that will be talked about for years, the eighth-seeded side rallied from two sets down to dethrone the defending champions in a five-set classic.', 'The decisive moment came at 24-24 in the final set, when a rookie delivered the block of her career to seal a 27-25 victory and send the arena into a frenzy.', 'The champions were gracious in defeat. "They simply wanted it more tonight," their captain said. "Credit to a team that refused to believe the script."'] },
+  { id: 5, cat: 'technology', source: 'Stack & Frame', title: 'Why Local-First Software Is Winning Developers Back', time: '5 hrs ago', body: ['The pendulum is swinging. After a decade of cloud-everything, a growing movement of developers is building software that works offline first and syncs when it can.', 'Local-first apps feel instant because the data lives where you do. The approach also restores user ownership: your files, your formats, your future.', 'The tooling has matured rapidly, and industry watchers expect local-first to become the default architecture for a new generation of productivity apps.'] },
+  { id: 6, cat: 'for-you', source: 'The Daily Brief', title: 'Five Small Habits That Compound Into a Remarkable Year', time: '6 hrs ago', body: ['Everyone wants the one big change, but the people who actually transform their lives rarely make one. They make a thousand small ones.', 'Read for twenty minutes before checking your phone. Walk after meals. Write down one thing you learned each day. Keep a single note for every idea.', 'None of these habits is impressive on its own. Together, they compound quietly — and a year later, you look back at a person you barely recognize.'] },
+  { id: 7, cat: 'entertainment', source: 'Screen & Sound', title: 'The Indie Film Renaissance Is Streaming Straight to You', time: '8 hrs ago', body: ['Streaming platforms have become the new home for independent cinema, and audiences are the winners.', 'Filmmakers who once needed a theatrical run now premiere directly to global audiences, funded by a new wave of studio programs that back riskier, stranger stories.', 'This season\'s festival circuit proved the point: the most talked-about films arrived in homes the same week they debuted.'] },
+  { id: 8, cat: 'business', source: 'The Ledger', title: 'Energy Storage Costs Fall Below the Magic Number', time: '10 hrs ago', body: ['Grid-scale battery costs have crossed a long-awaited threshold, making renewables-plus-storage cheaper than new gas plants in most markets.', 'The implications are enormous. Energy that was once "too intermittent to rely on" can now be banked for hours, smoothing the grid and lowering bills.', 'Utilities are racing to add capacity, and analysts expect the price drop to accelerate the retirement of fossil fuel plants by nearly a decade.'] },
+  { id: 9, cat: 'science', source: 'Lab Notes', title: 'Researchers Crack the Code of Muscle Memory', time: '12 hrs ago', body: ['A new study maps the precise neural pathway that allows skills to persist for years after they are learned.', 'The finding overturns a long-held assumption that memories fade unless revisited. Some motor patterns, it turns out, are written in especially durable ink.', 'The work could eventually inform rehabilitation for stroke patients and help athletes recover faster from injury.'] }
+];
+let newsActiveCat = 'for-you';
+
+function newsArticlesForCat() {
+  if (newsActiveCat === 'for-you') return newsArticles.filter(a => a.cat !== 'for-you');
+  return newsArticles.filter(a => a.cat === newsActiveCat);
+}
+
+function renderNewsHeadline() {
+  const el = document.getElementById('newsHeadline');
+  if (!el) return;
+  const first = newsArticles.find(a => a.cat === 'for-you') || newsArticles[0];
+  el.innerHTML =
+    '<div class="news-headline-tag">For You</div>' +
+    '<div class="news-headline-title">' + first.title + '</div>' +
+    '<div class="news-headline-src">' + first.source + ' · ' + first.time + '</div>';
+  el.addEventListener('click', () => newsOpenArticle(first.id));
+}
+
+function renderNewsList(selectedId) {
+  const el = document.getElementById('newsList');
+  if (!el) return;
+  el.innerHTML = newsArticlesForCat().map(a =>
+    '<div class="news-story' + (a.id === selectedId ? ' selected' : '') + '" data-id="' + a.id + '">' +
+      '<div class="news-story-title">' + a.title + '</div>' +
+      '<div class="news-story-src">' + a.source + ' · ' + a.time + '</div>' +
+    '</div>'
+  ).join('');
+  el.querySelectorAll('.news-story').forEach(story => story.addEventListener('click', () => newsOpenArticle(parseInt(story.dataset.id, 10))));
+}
+
+function newsOpenArticle(id) {
+  const a = newsArticles.find(x => x.id === id);
+  if (!a) return;
+  const article = document.getElementById('newsArticle');
+  article.innerHTML =
+    '<div class="news-article-cat">' + a.cat + '</div>' +
+    '<div class="news-article-title">' + a.title + '</div>' +
+    '<div class="news-article-src">' + a.source + ' · ' + a.time + '</div>' +
+    '<div class="news-article-body">' + a.body.map(p => '<p>' + p + '</p>').join('') + '</div>';
+  renderNewsList(id);
+  article.scrollTop = 0;
+  playSystemSound('message');
+}
+
+function switchNewsCat(cat) {
+  newsActiveCat = cat;
+  document.querySelectorAll('.news-sidebar-item').forEach(it => it.classList.toggle('active', it.dataset.cat === cat));
+  renderNewsHeadline();
+  renderNewsList(null);
+  const article = document.getElementById('newsArticle');
+  if (article) article.innerHTML = '<div class="news-article-empty">Select a story to read</div>';
+}
+
+function initNews() {
+  renderNewsHeadline();
+  renderNewsList(null);
+  document.querySelectorAll('.news-sidebar-item').forEach(item => {
+    item.addEventListener('click', () => switchNewsCat(item.dataset.cat));
+  });
 }
