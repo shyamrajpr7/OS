@@ -2573,6 +2573,48 @@
         </div>
       </div>
 
+      <!-- ========== FREEFORM ========== -->
+      <div class="mac-window app-window" id="freeform-window" style="width:820px;height:520px;top:55px;left:140px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Freeform</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body freeform-body">
+          <div class="freeform-toolbar">
+            <div class="freeform-tool-group">
+              <button class="freeform-tool active" data-tool="pen" title="Pen"><i class="ri-pen-line"></i></button>
+              <button class="freeform-tool" data-tool="line" title="Line"><i class="ri-draggable-line"></i></button>
+              <button class="freeform-tool" data-tool="rect" title="Rectangle"><i class="ri-checkbox-blank-line"></i></button>
+              <button class="freeform-tool" data-tool="circle" title="Ellipse"><i class="ri-circle-line"></i></button>
+            </div>
+            <div class="freeform-tool-group">
+              <button class="freeform-color" data-color="#FFFFFF" style="background:#FFFFFF"></button>
+              <button class="freeform-color" data-color="#FF453A" style="background:#FF453A"></button>
+              <button class="freeform-color" data-color="#FFD60A" style="background:#FFD60A"></button>
+              <button class="freeform-color" data-color="#30D158" style="background:#30D158"></button>
+              <button class="freeform-color" data-color="#0A84FF" style="background:#0A84FF"></button>
+              <button class="freeform-color" data-color="#BF5AF2" style="background:#BF5AF2"></button>
+            </div>
+            <div class="freeform-tool-group">
+              <input type="range" class="freeform-size" id="freeformSize" min="1" max="30" value="4">
+              <span class="freeform-size-label" id="freeformSizeLabel">4px</span>
+            </div>
+            <div class="freeform-tool-group freeform-right">
+              <button class="freeform-tool" id="freeformUndo" title="Undo"><i class="ri-arrow-go-back-line"></i></button>
+              <button class="freeform-tool" id="freeformClear" title="Clear Board"><i class="ri-delete-bin-line"></i></button>
+            </div>
+          </div>
+          <div class="freeform-canvas-wrap">
+            <canvas id="freeformCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2837,6 +2879,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="#BF5AF2" stroke-width="2.5"/><text x="24" y="28" text-anchor="middle" font-family="Georgia" font-size="18" fill="#BF5AF2" font-style="italic">J</text><line x1="14" y1="33" x2="34" y2="33" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/></svg>
           </div>
           <span class="launchpad-label">Journal</span>
+        </div>
+        <div class="launchpad-item" data-app="Freeform.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#BF5AF2"/><path d="M8 30c2-4 5-5 8-3s7 1 10-4 6-5 9-2" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 38h32" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="14" r="4" fill="#FFD60A"/><circle cx="12" cy="16" r="3" fill="#0A84FF"/></svg>
+          </div>
+          <span class="launchpad-label">Freeform</span>
         </div>
       </div>
     </div>

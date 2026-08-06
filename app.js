@@ -872,7 +872,8 @@ const appIdMap = {
   'TV.app': 'tv-window',
   'Find My.app': 'findmy-window',
   'Translator.app': 'translator-window',
-  'Journal.app': 'journal-window'
+  'Journal.app': 'journal-window',
+  'Freeform.app': 'freeform-window'
 };
 
 const dockIconMap = {
@@ -922,7 +923,8 @@ const dockIconMap = {
   'TV.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="12" width="32" height="22" rx="4" fill="none" stroke="#0A84FF" stroke-width="2.5"/><line x1="18" y1="38" x2="30" y2="38" stroke="#8E8E93" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="23" r="5" fill="#0A84FF"/><path d="M24 18v10M19 21h10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/></svg>`,
   'Find My.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#30D158"/><circle cx="24" cy="24" r="15" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="#fff"/><circle cx="24" cy="24" r="2.5" fill="#30D158"/></svg>`,
   'Translator.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M8 12h32M24 8v4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M12 12c2 10 6 16 12 20M20 32c-1-5-2-9-2-14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M16 18h16M28 18c0 6-3 11-8 14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="28" cy="28" r="11" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><path d="M28 19v18M22 22h12" stroke="#5AC8FA" stroke-width="2.5" stroke-linecap="round"/></svg>`,
-  'Journal.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="#BF5AF2" stroke-width="2.5"/><text x="24" y="28" text-anchor="middle" font-family="Georgia" font-size="18" fill="#BF5AF2" font-style="italic">J</text><line x1="14" y1="33" x2="34" y2="33" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/></svg>`
+  'Journal.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="#BF5AF2" stroke-width="2.5"/><text x="24" y="28" text-anchor="middle" font-family="Georgia" font-size="18" fill="#BF5AF2" font-style="italic">J</text><line x1="14" y1="33" x2="34" y2="33" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/></svg>`,
+  'Freeform.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#BF5AF2"/><path d="M8 30c2-4 5-5 8-3s7 1 10-4 6-5 9-2" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 38h32" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="14" r="4" fill="#FFD60A"/><circle cx="12" cy="16" r="3" fill="#0A84FF"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -1004,6 +1006,7 @@ function openApp(appName) {
   if (winId === 'findmy-window') initFindMy();
   if (winId === 'translator-window') initTranslator();
   if (winId === 'journal-window') initJournal();
+  if (winId === 'freeform-window') initFreeform();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -10693,4 +10696,138 @@ function initJournal() {
   addBtn.innerHTML = '<i class="ri-add-line"></i> New Entry';
   addBtn.onclick = journalNew;
   sidebar.appendChild(addBtn);
+}
+
+// ===================== FREEFORM =====================
+let ffCtx = null;
+let ffTool = 'pen';
+let ffColor = '#FFFFFF';
+let ffSize = 4;
+let ffDrawing = false;
+let ffStart = null;
+let ffUndoStack = [];
+let ffPos = null;
+
+function ffResizeCanvas() {
+  const wrap = document.querySelector('.freeform-canvas-wrap');
+  const canvas = document.getElementById('freeformCanvas');
+  if (!wrap || !canvas) return;
+  const rect = wrap.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(10, rect.width) * dpr;
+  canvas.height = Math.max(10, rect.height) * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  ffCtx = canvas.getContext('2d');
+  ffCtx.scale(dpr, dpr);
+  ffCtx.lineCap = 'round';
+  ffCtx.lineJoin = 'round';
+  ffRestore(ffUndoStack[ffUndoStack.length - 1]);
+}
+
+function ffSnapshot() {
+  if (!ffCtx) return;
+  const canvas = document.getElementById('freeformCanvas');
+  ffUndoStack.push(canvas.toDataURL());
+  if (ffUndoStack.length > 20) ffUndoStack.shift();
+}
+
+function ffRestore(dataUrl) {
+  if (!ffCtx || !dataUrl) return;
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.getElementById('freeformCanvas');
+    ffCtx.clearRect(0, 0, canvas.width, canvas.height);
+    ffCtx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  };
+  img.src = dataUrl;
+}
+
+function ffCanvasPos(e) {
+  const canvas = document.getElementById('freeformCanvas');
+  const rect = canvas.getBoundingClientRect();
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+
+function ffBegin(e) {
+  ffDrawing = true;
+  ffStart = ffCanvasPos(e);
+  ffPos = ffStart;
+  if (ffTool === 'pen') ffSnapshot();
+}
+
+function ffMove(e) {
+  if (!ffDrawing || !ffCtx) return;
+  const p = ffCanvasPos(e);
+  if (ffTool === 'pen') {
+    ffCtx.strokeStyle = ffColor;
+    ffCtx.lineWidth = ffSize;
+    ffCtx.beginPath();
+    ffCtx.moveTo(ffPos.x, ffPos.y);
+    ffCtx.lineTo(p.x, p.y);
+    ffCtx.stroke();
+    ffPos = p;
+  }
+}
+
+function ffEnd(e) {
+  if (!ffDrawing) return;
+  ffDrawing = false;
+  if (!ffCtx || !ffStart) return;
+  const p = ffCanvasPos(e);
+  if (ffTool !== 'pen') ffSnapshot();
+  ffCtx.strokeStyle = ffColor;
+  ffCtx.lineWidth = ffSize;
+  ffCtx.fillStyle = ffColor;
+  ffCtx.beginPath();
+  if (ffTool === 'line') {
+    ffCtx.moveTo(ffStart.x, ffStart.y);
+    ffCtx.lineTo(p.x, p.y);
+    ffCtx.stroke();
+  } else if (ffTool === 'rect') {
+    const w = p.x - ffStart.x, h = p.y - ffStart.y;
+    ffCtx.strokeRect(ffStart.x, ffStart.y, w, h);
+  } else if (ffTool === 'circle') {
+    const rx = (p.x - ffStart.x) / 2, ry = (p.y - ffStart.y) / 2;
+    ffCtx.ellipse(ffStart.x + rx, ffStart.y + ry, Math.abs(rx), Math.abs(ry), 0, 0, Math.PI * 2);
+    ffCtx.stroke();
+  }
+  ffStart = null;
+}
+
+function ffUndo() {
+  ffUndoStack.pop();
+  ffRestore(ffUndoStack[ffUndoStack.length - 1]);
+}
+
+function initFreeform() {
+  ffUndoStack = [];
+  const wrap = document.querySelector('.freeform-canvas-wrap');
+  const canvas = document.getElementById('freeformCanvas');
+  ffResizeCanvas();
+  window.addEventListener('resize', ffResizeCanvas);
+  document.querySelectorAll('.freeform-tool[data-tool]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.freeform-tool[data-tool]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      ffTool = btn.dataset.tool;
+    });
+  });
+  document.querySelectorAll('.freeform-color').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.freeform-color').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      ffColor = btn.dataset.color;
+    });
+  });
+  const size = document.getElementById('freeformSize');
+  size.addEventListener('input', () => { ffSize = parseInt(size.value, 10); document.getElementById('freeformSizeLabel').textContent = ffSize + 'px'; });
+  document.getElementById('freeformUndo').addEventListener('click', ffUndo);
+  document.getElementById('freeformClear').addEventListener('click', () => {
+    ffSnapshot();
+    ffCtx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+  canvas.addEventListener('mousedown', ffBegin);
+  canvas.addEventListener('mousemove', ffMove);
+  window.addEventListener('mouseup', ffEnd);
 }
