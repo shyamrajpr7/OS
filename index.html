@@ -2345,6 +2345,36 @@
         </div>
       </div>
 
+      <!-- ========== STOCKS ========== -->
+      <div class="mac-window app-window" id="stocks-window" style="width:760px;height:500px;top:70px;left:160px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Stocks</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body stocks-body">
+          <aside class="stocks-watchlist">
+            <div class="stocks-watchlist-head">
+              <span>Watchlist</span>
+              <button class="stocks-add-btn" onclick="stocksAddRow()" title="Add Ticker"><i class="ri-add-line"></i></button>
+            </div>
+            <div class="stocks-add-row" id="stocksAddRow" style="display:none;">
+              <input type="text" id="stocksNewTicker" placeholder="Ticker (e.g. TSLA)" maxlength="6" onkeydown="if(event.key==='Enter')stocksConfirmAdd()">
+              <button class="stocks-add-ok" onclick="stocksConfirmAdd()">Add</button>
+            </div>
+            <div class="stocks-list" id="stocksList"></div>
+            <div class="stocks-watchlist-foot">Prices simulated in real time</div>
+          </aside>
+          <div class="stocks-detail" id="stocksDetail">
+            <div class="stocks-detail-empty">Select a stock to view its chart</div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2567,6 +2597,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF3B30"/><rect x="8" y="8" width="32" height="32" rx="3" fill="#fff"/><rect x="8" y="8" width="32" height="22" rx="3" fill="#FF5A4F"/><text x="24" y="23" text-anchor="middle" font-family="Georgia" font-size="11" fill="#fff" font-weight="bold">NEWS</text><g stroke="#ddd" stroke-width="1.5"><line x1="13" y1="30" x2="35" y2="30"/><line x1="13" y1="34" x2="35" y2="34"/><line x1="13" y1="38" x2="35" y2="38"/></g></svg>
           </div>
           <span class="launchpad-label">News</span>
+        </div>
+        <div class="launchpad-item" data-app="Stocks.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="30" width="36" height="4" rx="2" fill="#8E8E93"/><polyline points="8,30 18,20 26,26 40,12" stroke="#30D158" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="40" cy="12" r="2.5" fill="#30D158"/></svg>
+          </div>
+          <span class="launchpad-label">Stocks</span>
         </div>
       </div>
     </div>

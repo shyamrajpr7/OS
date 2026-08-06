@@ -865,7 +865,8 @@ const appIdMap = {
   'Print Queue.app': 'printqueue-window',
   'Podcasts.app': 'podcasts-window',
   'Books.app': 'books-window',
-  'News.app': 'news-window'
+  'News.app': 'news-window',
+  'Stocks.app': 'stocks-window'
 };
 
 const dockIconMap = {
@@ -908,7 +909,8 @@ const dockIconMap = {
   'Print Queue.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="20" rx="3" fill="#0D1117" stroke="#5AC8FA" stroke-width="2"/><rect x="14" y="20" width="20" height="3" rx="1.5" fill="#5AC8FA" opacity="0.6"/><rect x="14" y="26" width="14" height="3" rx="1.5" fill="#5AC8FA" opacity="0.35"/><rect x="12" y="34" width="24" height="6" rx="2" fill="#333"/></svg>`,
   'Podcasts.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#7E2BEA"/><circle cx="24" cy="26" r="6" fill="white"/><path d="M24 18v16M16 32a12 12 0 0 0 16 0M14 34a16 16 0 0 0 20 0" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
   'Books.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9500"/><rect x="6" y="10" width="36" height="28" rx="4" fill="#FF9F0A"/><rect x="10" y="14" width="28" height="20" rx="2" fill="#fff"/><path d="M10 16l14 8 14-8" stroke="#FF9F0A" stroke-width="2" fill="none" stroke-linejoin="round"/><line x1="10" y1="30" x2="20" y2="30" stroke="#FFD60A" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="26" x2="16" y2="26" stroke="#FFD60A" stroke-width="2" stroke-linecap="round" opacity="0.5"/></svg>`,
-  'News.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF3B30"/><rect x="8" y="8" width="32" height="32" rx="3" fill="#fff"/><rect x="8" y="8" width="32" height="22" rx="3" fill="#FF5A4F"/><text x="24" y="23" text-anchor="middle" font-family="Georgia" font-size="11" fill="#fff" font-weight="bold">NEWS</text><g stroke="#ddd" stroke-width="1.5"><line x1="13" y1="34" x2="35" y2="34"/><line x1="13" y1="30" x2="35" y2="30"/><line x1="13" y1="38" x2="35" y2="38"/></g></svg>`
+  'News.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF3B30"/><rect x="8" y="8" width="32" height="32" rx="3" fill="#fff"/><rect x="8" y="8" width="32" height="22" rx="3" fill="#FF5A4F"/><text x="24" y="23" text-anchor="middle" font-family="Georgia" font-size="11" fill="#fff" font-weight="bold">NEWS</text><g stroke="#ddd" stroke-width="1.5"><line x1="13" y1="34" x2="35" y2="34"/><line x1="13" y1="30" x2="35" y2="30"/><line x1="13" y1="38" x2="35" y2="38"/></g></svg>`,
+  'Stocks.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="30" width="36" height="4" rx="2" fill="#8E8E93"/><polyline points="8,30 18,20 26,26 40,12" stroke="#30D158" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="40" cy="12" r="2.5" fill="#30D158"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -983,6 +985,7 @@ function openApp(appName) {
   if (winId === 'podcasts-window') initPodcasts();
   if (winId === 'books-window') initBooks();
   if (winId === 'news-window') initNews();
+  if (winId === 'stocks-window') initStocks();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -1024,6 +1027,7 @@ function doCloseWindow(winId) {
   win.classList.add('minimized');
   win.classList.remove('focused');
   if (winId === 'activity-window') stopActivityMonitor();
+  if (winId === 'stocks-window') { clearInterval(stocksInterval); stocksInterval = null; }
   const entry = Object.entries(appIdMap).find(([, v]) => v === winId);
   if (entry) { const dockItem = document.querySelector(`.dock-item[data-app="${entry[0]}"]`); if (dockItem) { const ind = dockItem.querySelector('.dock-indicator'); if (ind) ind.classList.remove('active'); } }
   renderRunningDock();
@@ -9965,4 +9969,163 @@ function initNews() {
   document.querySelectorAll('.news-sidebar-item').forEach(item => {
     item.addEventListener('click', () => switchNewsCat(item.dataset.cat));
   });
+}
+
+// ===================== STOCKS =====================
+const stocksSeed = [
+  { symbol: 'AAPL', name: 'Apple Inc.', base: 221.4, open: 218.9 },
+  { symbol: 'MSFT', name: 'Microsoft Corp.', base: 462.1, open: 458.7 },
+  { symbol: 'GOOGL', name: 'Alphabet Inc.', base: 178.6, open: 180.2 },
+  { symbol: 'TSLA', name: 'Tesla Inc.', base: 244.3, open: 251.8 },
+  { symbol: 'NVDA', name: 'NVIDIA Corp.', base: 134.8, open: 128.1 },
+  { symbol: 'AMZN', name: 'Amazon.com Inc.', base: 186.9, open: 185.3 },
+  { symbol: 'META', name: 'Meta Platforms', base: 516.2, open: 510.4 },
+  { symbol: 'NFLX', name: 'Netflix Inc.', base: 674.5, open: 680.1 },
+  { symbol: 'THRD', name: 'Thread OS Inc.', base: 42.7, open: 38.2 },
+  { symbol: 'SPOT', name: 'Spotify Tech.', base: 312.4, open: 308.9 }
+];
+let stocksState = [];
+let stocksSelected = 0;
+let stocksInterval = null;
+
+function stocksInitState() {
+  stocksState = stocksSeed.map(s => {
+    const spark = [];
+    let v = s.open;
+    for (let i = 0; i < 40; i++) { v += (Math.random() - 0.48) * s.base * 0.01; spark.push(v); }
+    return { symbol: s.symbol, name: s.name, price: s.base, open: s.open, spark, history: [s.base], volatility: 0.006 + Math.random() * 0.005 };
+  });
+}
+
+function stocksColor(change) { return change >= 0 ? '#30D158' : '#FF453A'; }
+function stocksSigned(v) { return (v >= 0 ? '+' : '') + v.toFixed(2); }
+
+function stocksSparkline(s, w, h) {
+  const min = Math.min(...s.spark), max = Math.max(...s.spark);
+  const span = (max - min) || 1;
+  const pts = s.spark.map((v, i) => (i / (s.spark.length - 1)) * w + ',' + (h - ((v - min) / span) * (h - 4) - 2)).join(' ');
+  return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none"><polyline points="' + pts + '" fill="none" stroke="' + stocksColor(s.spark[s.spark.length - 1] - s.spark[0]) + '" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+}
+
+function renderStocksList() {
+  const el = document.getElementById('stocksList');
+  if (!el) return;
+  el.innerHTML = stocksState.map((s, i) => {
+    const change = s.price - s.open;
+    const pct = (change / s.open) * 100;
+    return '<div class="stocks-row' + (i === stocksSelected ? ' selected' : '') + '" data-i="' + i + '">' +
+      '<div class="stocks-row-info">' +
+        '<div class="stocks-row-name">' + s.symbol + '</div>' +
+        '<div class="stocks-row-full">' + s.name + '</div>' +
+      '</div>' +
+      '<div class="stocks-row-chart">' + stocksSparkline(s, 60, 26) + '</div>' +
+      '<div style="text-align:right">' +
+        '<div class="stocks-row-price">' + s.price.toFixed(2) + '</div>' +
+        '<div class="stocks-row-change ' + (change >= 0 ? 'stocks-up' : 'stocks-down') + '">' + stocksSigned(change) + ' (' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%)</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  el.querySelectorAll('.stocks-row').forEach(row => row.addEventListener('click', () => stocksSelect(parseInt(row.dataset.i, 10))));
+}
+
+function stocksDrawDetail(s) {
+  const wrap = document.getElementById('stocksDetail');
+  const change = s.price - s.open;
+  const pct = (change / s.open) * 100;
+  wrap.innerHTML =
+    '<div class="stocks-detail-head"><span class="stocks-detail-name">' + s.symbol + '</span><span class="stocks-detail-full">' + s.name + '</span></div>' +
+    '<div class="stocks-detail-price">$' + s.price.toFixed(2) + '</div>' +
+    '<div class="stocks-detail-change ' + (change >= 0 ? 'stocks-up' : 'stocks-down') + '">' + stocksSigned(change) + ' (' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%) today</div>' +
+    '<div class="stocks-detail-chart-wrap"><canvas id="stocksChart"></canvas></div>' +
+    '<div class="stocks-detail-grid">' +
+      '<div class="stocks-detail-grid-item"><div class="stocks-detail-grid-label">Open</div><div class="stocks-detail-grid-value">$' + s.open.toFixed(2) + '</div></div>' +
+      '<div class="stocks-detail-grid-item"><div class="stocks-detail-grid-label">Day Range</div><div class="stocks-detail-grid-value">$' + (Math.min(...s.history) || s.price * 0.98).toFixed(2) + ' – $' + (Math.max(...s.history) || s.price * 1.02).toFixed(2) + '</div></div>' +
+      '<div class="stocks-detail-grid-item"><div class="stocks-detail-grid-label">Market Cap</div><div class="stocks-detail-grid-value">$' + (s.price * 2800000 / 1e6).toFixed(1) + 'T</div></div>' +
+      '<div class="stocks-detail-grid-item"><div class="stocks-detail-grid-label">Volume</div><div class="stocks-detail-grid-value">' + (Math.floor(4e7 + Math.random() * 9e7)).toLocaleString() + '</div></div>' +
+    '</div>';
+  stocksDrawChart(s);
+}
+
+function stocksDrawChart(s) {
+  const canvas = document.getElementById('stocksChart');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+  const data = s.history;
+  const min = Math.min(...data), max = Math.max(...data);
+  const span = (max - min) || 1;
+  const up = data[data.length - 1] >= s.open;
+  const color = up ? '#30D158' : '#FF453A';
+  ctx.beginPath();
+  data.forEach((v, i) => {
+    const x = (i / (data.length - 1)) * w;
+    const y = h - ((v - min) / span) * (h - 10) - 5;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath();
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, up ? 'rgba(48,209,88,0.25)' : 'rgba(255,69,58,0.25)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad; ctx.fill();
+  ctx.beginPath();
+  data.forEach((v, i) => {
+    const x = (i / (data.length - 1)) * w;
+    const y = h - ((v - min) / span) * (h - 10) - 5;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+}
+
+function stocksTick() {
+  stocksState.forEach(s => {
+    const drift = (Math.random() - 0.5) * s.volatility * s.price;
+    s.price = Math.max(1, s.price + drift);
+    s.history.push(s.price);
+    if (s.history.length > 200) s.history.shift();
+    s.spark.push(s.price);
+    if (s.spark.length > 40) s.spark.shift();
+  });
+  renderStocksList();
+  if (document.getElementById('stocksChart')) stocksDrawChart(stocksState[stocksSelected]);
+}
+
+function stocksSelect(i) {
+  stocksSelected = i;
+  renderStocksList();
+  stocksDrawDetail(stocksState[i]);
+  playSystemSound('keyclick');
+}
+
+function stocksAddRow() {
+  const row = document.getElementById('stocksAddRow');
+  const wasHidden = row.style.display === 'none';
+  row.style.display = wasHidden ? 'flex' : 'none';
+  if (wasHidden) document.getElementById('stocksNewTicker').focus();
+}
+
+function stocksConfirmAdd() {
+  const input = document.getElementById('stocksNewTicker');
+  const symbol = input.value.trim().toUpperCase();
+  if (symbol && !stocksState.find(s => s.symbol === symbol)) {
+    const spark = [];
+    let v = 30 + Math.random() * 300;
+    for (let i = 0; i < 40; i++) { v += (Math.random() - 0.48) * 3; spark.push(v); }
+    stocksState.push({ symbol, name: symbol + ' Holdings', price: v, open: v * 0.99, spark, history: [v], volatility: 0.01 });
+    stocksSelect(stocksState.length - 1);
+  }
+  input.value = '';
+  document.getElementById('stocksAddRow').style.display = 'none';
+}
+
+function initStocks() {
+  if (!stocksState.length) stocksInitState();
+  renderStocksList();
+  stocksDrawDetail(stocksState[0]);
+  clearInterval(stocksInterval);
+  stocksInterval = setInterval(stocksTick, 2000);
 }
