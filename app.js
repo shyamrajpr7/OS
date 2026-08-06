@@ -873,7 +873,8 @@ const appIdMap = {
   'Find My.app': 'findmy-window',
   'Translator.app': 'translator-window',
   'Journal.app': 'journal-window',
-  'Freeform.app': 'freeform-window'
+  'Freeform.app': 'freeform-window',
+  'Health.app': 'health-window'
 };
 
 const dockIconMap = {
@@ -924,7 +925,8 @@ const dockIconMap = {
   'Find My.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#30D158"/><circle cx="24" cy="24" r="15" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="#fff"/><circle cx="24" cy="24" r="2.5" fill="#30D158"/></svg>`,
   'Translator.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M8 12h32M24 8v4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M12 12c2 10 6 16 12 20M20 32c-1-5-2-9-2-14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M16 18h16M28 18c0 6-3 11-8 14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="28" cy="28" r="11" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><path d="M28 19v18M22 22h12" stroke="#5AC8FA" stroke-width="2.5" stroke-linecap="round"/></svg>`,
   'Journal.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="#BF5AF2" stroke-width="2.5"/><text x="24" y="28" text-anchor="middle" font-family="Georgia" font-size="18" fill="#BF5AF2" font-style="italic">J</text><line x1="14" y1="33" x2="34" y2="33" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/></svg>`,
-  'Freeform.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#BF5AF2"/><path d="M8 30c2-4 5-5 8-3s7 1 10-4 6-5 9-2" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 38h32" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="14" r="4" fill="#FFD60A"/><circle cx="12" cy="16" r="3" fill="#0A84FF"/></svg>`
+  'Freeform.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#BF5AF2"/><path d="M8 30c2-4 5-5 8-3s7 1 10-4 6-5 9-2" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 38h32" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="14" r="4" fill="#FFD60A"/><circle cx="12" cy="16" r="3" fill="#0A84FF"/></svg>`,
+  'Health.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M24 34C20 30 14 25 14 19a6 6 0 0 1 10-4.6A6 6 0 0 1 34 19c0 6-6 11-10 15z" fill="none" stroke="#FF453A" stroke-width="3"/><path d="M14 24h6l2-3 3 5 2-2h7" stroke="#FF453A" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -1007,6 +1009,7 @@ function openApp(appName) {
   if (winId === 'translator-window') initTranslator();
   if (winId === 'journal-window') initJournal();
   if (winId === 'freeform-window') initFreeform();
+  if (winId === 'health-window') initHealth();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -10830,4 +10833,92 @@ function initFreeform() {
   canvas.addEventListener('mousedown', ffBegin);
   canvas.addEventListener('mousemove', ffMove);
   window.addEventListener('mouseup', ffEnd);
+}
+
+// ===================== HEALTH =====================
+const healthSteps = [6120, 8210, 7420, 9180, 6880, 10420, 4840];
+const healthHeart = [62, 68, 71, 66, 64, 70, 67];
+const healthSleep = [7.2, 6.5, 7.8, 5.9, 8.1, 7.4, 6.9];
+
+function healthRingChart(frac, color, size) {
+  const r = (size - 14) / 2;
+  const c = 2 * Math.PI * r;
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">' +
+    '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12"/>' +
+    '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + (c * (1 - frac)) + '"/>' +
+  '</svg>';
+}
+
+function healthBarRow(label, value, max, color) {
+  const pct = Math.min(100, Math.round(value / max * 100));
+  return '<div class="health-bar-row"><span class="health-bar-label">' + label + '</span>' +
+    '<div class="health-bar"><div class="health-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+    '<span class="health-bar-val">' + value.toLocaleString() + '</span></div>';
+}
+
+function renderHealthSummary() {
+  const el = document.getElementById('healthMain');
+  const steps = healthSteps.reduce((a, b) => a + b, 0);
+  const avgSteps = Math.round(steps / 7);
+  el.innerHTML =
+    '<div class="health-card"><div class="health-card-head"><span class="health-card-title"><i class="ri-footprint-line" style="color:var(--mac-accent)"></i> Steps</span><span class="health-card-sub">Last 7 days</span></div>' +
+    '<div class="health-card-value">' + avgSteps.toLocaleString() + '</div><div class="health-card-sub">Daily average</div></div>' +
+    '<div class="health-grid">' +
+      '<div class="health-card"><div class="health-card-head"><span class="health-card-title"><i class="ri-heart-pulse-line" style="color:#FF453A"></i> Heart Rate</span></div>' +
+      '<div class="health-card-value">' + healthHeart[healthHeart.length - 1] + ' <span style="font-size:13px;color:var(--mac-text-secondary)">bpm</span></div>' +
+      '<div class="health-card-sub">Resting · within normal range</div></div>' +
+      '<div class="health-card"><div class="health-card-head"><span class="health-card-title"><i class="ri-moon-line" style="color:#BF5AF2"></i> Sleep</span></div>' +
+      '<div class="health-card-value">' + healthSleep[healthSleep.length - 1].toFixed(1) + ' <span style="font-size:13px;color:var(--mac-text-secondary)">hrs</span></div>' +
+      '<div class="health-card-sub">Last night · 7h recommended</div></div>' +
+    '</div>' +
+    '<div class="health-card"><div class="health-card-head"><span class="health-card-title"><i class="ri-heart-fill" style="color:#FF453A"></i> Heart Rate Trend</span></div>' +
+    healthHeart.map((v, i) => healthBarRow('D' + (i + 1), v, 90, '#FF453A')).join('') + '</div>';
+}
+
+function renderHealthActivity() {
+  const el = document.getElementById('healthMain');
+  el.innerHTML =
+    '<div class="health-card"><div class="health-card-head"><span class="health-card-title"><i class="ri-footprint-line" style="color:var(--mac-accent)"></i> Steps This Week</span><span class="health-card-sub">' + healthSteps.reduce((a, b) => a + b, 0).toLocaleString() + ' total</span></div>' +
+    healthSteps.map((v, i) => healthBarRow('D' + (i + 1), v, 12000, '#0A84FF')).join('') + '</div>' +
+    '<div class="health-card"><div class="health-card-head"><span class="health-card-title"><i class="ri-run-line" style="color:#30D158"></i> Active Energy</span></div>' +
+    '<div class="health-card-value">482 <span style="font-size:13px;color:var(--mac-text-secondary)">kcal</span></div>' +
+    '<div class="health-card-sub">Move goal 600 kcal · 80% complete</div>' +
+    '<div style="margin-top:10px">' + healthRingChart(0.8, '#30D158', 90) + '</div></div>';
+}
+
+function renderHealthVitals() {
+  const el = document.getElementById('healthMain');
+  el.innerHTML =
+    '<div class="health-grid">' +
+      '<div class="health-card health-vital"><div class="health-vital-value">' + healthHeart[healthHeart.length - 1] + '</div><div class="health-vital-label">Heart Rate (bpm)</div><div class="health-card-sub" style="margin-top:8px">Resting</div></div>' +
+      '<div class="health-card health-vital"><div class="health-vital-value">120/78</div><div class="health-vital-label">Blood Pressure</div><div class="health-card-sub" style="margin-top:8px">Systolic / Diastolic</div></div>' +
+      '<div class="health-card health-vital"><div class="health-vital-value">98%</div><div class="health-vital-label">Blood Oxygen</div><div class="health-card-sub" style="margin-top:8px">SpO2 · Healthy</div></div>' +
+      '<div class="health-card health-vital"><div class="health-vital-value">36.4°</div><div class="health-vital-label">Body Temperature</div><div class="health-card-sub" style="margin-top:8px">Normal range</div></div>' +
+      '<div class="health-card health-vital"><div class="health-vital-value">74</div><div class="health-vital-label">Respiratory Rate</div><div class="health-card-sub" style="margin-top:8px">Breaths / minute</div></div>' +
+      '<div class="health-card health-vital"><div class="health-vital-value">8h 41m</div><div class="health-vital-label">Time in Bed</div><div class="health-card-sub" style="margin-top:8px">Sleep quality · Good</div></div>' +
+    '</div>';
+}
+
+function renderHealthSleep() {
+  const el = document.getElementById('healthMain');
+  el.innerHTML =
+    '<div class="health-card"><div class="health-card-head"><span class="health-card-title"><i class="ri-moon-line" style="color:#BF5AF2"></i> Sleep Duration</span></div>' +
+    healthSleep.map((v, i) => healthBarRow('D' + (i + 1), v, 9, '#BF5AF2')).join('') + '</div>' +
+    '<div class="health-card"><div class="health-card-head"><span class="health-card-title"><i class="ri-timer-line" style="color:#64D2FF"></i> Sleep Stages — Last Night</span></div>' +
+      healthBarRow('Deep', 1.6, 2.5, '#5E5CE6') +
+      healthBarRow('REM', 1.9, 2.5, '#BF5AF2') +
+      healthBarRow('Core', 3.4, 5, '#0A84FF') + '</div>';
+}
+
+function switchHealthTab(tab) {
+  document.querySelectorAll('.health-sidebar-item').forEach(it => it.classList.toggle('active', it.dataset.tab === tab));
+  const fn = { summary: renderHealthSummary, activity: renderHealthActivity, vitals: renderHealthVitals, sleep: renderHealthSleep };
+  (fn[tab] || renderHealthSummary)();
+}
+
+function initHealth() {
+  renderHealthSummary();
+  document.querySelectorAll('.health-sidebar-item').forEach(item => {
+    item.addEventListener('click', () => switchHealthTab(item.dataset.tab));
+  });
 }
