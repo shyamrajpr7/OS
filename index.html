@@ -2430,6 +2430,49 @@
         </div>
       </div>
 
+      <!-- ========== TV ========== -->
+      <div class="mac-window app-window" id="tv-window" style="width:820px;height:520px;top:55px;left:140px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">TV</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body tv-body">
+          <aside class="tv-sidebar">
+            <div class="tv-sidebar-item active" data-view="watchnow"><i class="ri-play-circle-line"></i> Watch Now</div>
+            <div class="tv-sidebar-item" data-view="library"><i class="ri-movie-2-line"></i> Library</div>
+            <div class="tv-sidebar-item" data-view="search"><i class="ri-search-line"></i> Search</div>
+          </aside>
+          <div class="tv-main">
+            <div class="tv-hero" id="tvHero"></div>
+            <div class="tv-row-title">Continue Watching</div>
+            <div class="tv-row" id="tvContinue"></div>
+            <div class="tv-row-title">Top Movies</div>
+            <div class="tv-row" id="tvMovies"></div>
+            <div class="tv-row-title">Shows You May Like</div>
+            <div class="tv-row" id="tvShows"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tv-player-overlay" id="tvPlayerOverlay" style="display:none;">
+        <div class="tv-player" id="tvPlayer">
+          <div class="tv-player-top">
+            <span class="tv-player-title" id="tvPlayerTitle"></span>
+            <button class="tv-player-close" onclick="tvClosePlayer()"><i class="ri-close-line"></i></button>
+          </div>
+          <div class="tv-player-stage" id="tvPlayerStage"><i class="ri-play-fill"></i></div>
+          <div class="tv-player-controls">
+            <button class="tv-ctl" onclick="tvTogglePlayback()"><i class="ri-play-fill" id="tvPlayIcon"></i></button>
+            <div class="tv-player-progress"><div class="tv-player-progress-fill" id="tvProgressFill"></div></div>
+            <span class="tv-player-time" id="tvPlayerTime">0:00 / 12:00</span>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2670,6 +2713,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 8l16 14h-4v18h-9v-9h-6v9h-9V22H8l16-14z" fill="#fff"/></svg>
           </div>
           <span class="launchpad-label">Home</span>
+        </div>
+        <div class="launchpad-item" data-app="TV.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="12" width="32" height="22" rx="4" fill="none" stroke="#0A84FF" stroke-width="2.5"/><line x1="18" y1="38" x2="30" y2="38" stroke="#8E8E93" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="23" r="5" fill="#0A84FF"/><path d="M24 18v10M19 21h10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/></svg>
+          </div>
+          <span class="launchpad-label">TV</span>
         </div>
       </div>
     </div>

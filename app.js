@@ -868,7 +868,8 @@ const appIdMap = {
   'News.app': 'news-window',
   'Stocks.app': 'stocks-window',
   'Fitness.app': 'fitness-window',
-  'Home.app': 'home-window'
+  'Home.app': 'home-window',
+  'TV.app': 'tv-window'
 };
 
 const dockIconMap = {
@@ -914,7 +915,8 @@ const dockIconMap = {
   'News.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF3B30"/><rect x="8" y="8" width="32" height="32" rx="3" fill="#fff"/><rect x="8" y="8" width="32" height="22" rx="3" fill="#FF5A4F"/><text x="24" y="23" text-anchor="middle" font-family="Georgia" font-size="11" fill="#fff" font-weight="bold">NEWS</text><g stroke="#ddd" stroke-width="1.5"><line x1="13" y1="34" x2="35" y2="34"/><line x1="13" y1="30" x2="35" y2="30"/><line x1="13" y1="38" x2="35" y2="38"/></g></svg>`,
   'Stocks.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="30" width="36" height="4" rx="2" fill="#8E8E93"/><polyline points="8,30 18,20 26,26 40,12" stroke="#30D158" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="40" cy="12" r="2.5" fill="#30D158"/></svg>`,
   'Fitness.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#FF453A" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.2 94.2" transform="rotate(-90 24 24)" opacity="0.25"/><circle cx="24" cy="24" r="10" fill="none" stroke="#30D158" stroke-width="4" stroke-linecap="round" stroke-dasharray="50 62.8" transform="rotate(-90 24 24)" opacity="0.8"/><circle cx="24" cy="24" r="5" fill="none" stroke="#64D2FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="20 31.4" transform="rotate(-90 24 24)"/></svg>`,
-  'Home.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 8l16 14h-4v18h-9v-9h-6v9h-9V22H8l16-14z" fill="#fff"/></svg>`
+  'Home.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 8l16 14h-4v18h-9v-9h-6v9h-9V22H8l16-14z" fill="#fff"/></svg>`,
+  'TV.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="12" width="32" height="22" rx="4" fill="none" stroke="#0A84FF" stroke-width="2.5"/><line x1="18" y1="38" x2="30" y2="38" stroke="#8E8E93" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="23" r="5" fill="#0A84FF"/><path d="M24 18v10M19 21h10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -992,6 +994,7 @@ function openApp(appName) {
   if (winId === 'stocks-window') initStocks();
   if (winId === 'fitness-window') initFitness();
   if (winId === 'home-window') initHome();
+  if (winId === 'tv-window') initTV();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -10292,5 +10295,101 @@ function initHome() {
   renderHomeDevices();
   document.querySelectorAll('.home-sidebar-item').forEach(item => {
     item.addEventListener('click', () => switchHomeRoom(item.dataset.room));
+  });
+}
+
+// ===================== TV =====================
+const tvTitles = [
+  { name: 'Neon Horizon', kind: 'movie', meta: 'Sci-Fi · 2026 · PG-13', gradient: 'linear-gradient(135deg,#0A84FF,#5E5CE6)', emoji: '🌆', hero: true },
+  { name: 'The Last Signal', kind: 'movie', meta: 'Thriller · 2025 · R', gradient: 'linear-gradient(135deg,#FF375F,#7E2BEA)', emoji: '📡', hero: false },
+  { name: 'Paper Trails', kind: 'show', meta: 'Drama · 3 Seasons', gradient: 'linear-gradient(135deg,#FF9500,#FF375F)', emoji: '🗞️', hero: false },
+  { name: 'Coral Reef', kind: 'show', meta: 'Documentary · 1 Season', gradient: 'linear-gradient(135deg,#30D158,#0A84FF)', emoji: '🐠', hero: false },
+  { name: 'Midnight Bakery', kind: 'show', meta: 'Comedy · 2 Seasons', gradient: 'linear-gradient(135deg,#BF5AF2,#FF9500)', emoji: '🍞', hero: false },
+  { name: 'Vault', kind: 'movie', meta: 'Heist · 2024 · PG-13', gradient: 'linear-gradient(135deg,#8E8E93,#1C1C1E)', emoji: '🏦', hero: false },
+  { name: 'Deep Currents', kind: 'movie', meta: 'Adventure · 2025 · PG', gradient: 'linear-gradient(135deg,#64D2FF,#0A84FF)', emoji: '🌊', hero: false },
+  { name: 'The Greenhouse', kind: 'show', meta: 'Reality · 4 Seasons', gradient: 'linear-gradient(135deg,#30D158,#FFD60A)', emoji: '🌱', hero: false }
+];
+let tvPlaying = null;
+let tvPlayTimer = null;
+let tvProgress = 0;
+
+function tvCardHTML(t, i) {
+  return '<div class="tv-card" data-i="' + i + '">' +
+    '<div class="tv-card-art" style="background:' + t.gradient + '">' + t.emoji + '</div>' +
+    '<div class="tv-card-name">' + t.name + '</div>' +
+    '<div class="tv-card-meta">' + t.meta + '</div>' +
+  '</div>';
+}
+
+function renderTV() {
+  const heroEl = document.getElementById('tvHero');
+  const hero = tvTitles.find(t => t.hero) || tvTitles[0];
+  if (heroEl) {
+    heroEl.innerHTML =
+      '<div style="position:relative"><div class="tv-hero-title">' + hero.name + '</div>' +
+      '<div class="tv-hero-sub">' + hero.meta + '</div>' +
+      '<button class="tv-hero-btn" id="tvHeroPlayBtn"><i class="ri-play-fill"></i> Play</button></div>';
+    document.getElementById('tvHeroPlayBtn').addEventListener('click', () => tvPlay(tvTitles.indexOf(hero)));
+  }
+  const movies = tvTitles.filter(t => t.kind === 'movie');
+  const shows = tvTitles.filter(t => t.kind === 'show');
+  const cont = document.getElementById('tvContinue');
+  if (cont) cont.innerHTML = tvTitles.filter((t, i) => i % 2 === 0).map((t, i) => tvCardHTML(t, i * 2)).join('');
+  const mv = document.getElementById('tvMovies');
+  if (mv) mv.innerHTML = movies.map((t, i) => tvCardHTML(t, tvTitles.indexOf(t))).join('');
+  const sh = document.getElementById('tvShows');
+  if (sh) sh.innerHTML = shows.map(t => tvCardHTML(t, tvTitles.indexOf(t))).join('');
+  document.querySelectorAll('.tv-card').forEach(card => card.addEventListener('click', () => tvPlay(parseInt(card.dataset.i, 10))));
+}
+
+function switchTVView(view) {
+  document.querySelectorAll('.tv-sidebar-item').forEach(it => it.classList.toggle('active', it.dataset.view === view));
+  const main = document.querySelector('.tv-main');
+  if (view === 'watchnow') { main.style.display = ''; }
+  else { main.style.display = 'none'; showNotifToast('TV', view.charAt(0).toUpperCase() + view.slice(1) + ' view is a work in progress', 'TV.app'); }
+}
+
+function tvPlay(i) {
+  const t = tvTitles[i];
+  if (!t) return;
+  tvPlaying = i;
+  tvProgress = 0;
+  const overlay = document.getElementById('tvPlayerOverlay');
+  document.getElementById('tvPlayerTitle').textContent = t.name + ' — ' + t.emoji;
+  document.getElementById('tvPlayerStage').style.background = t.gradient;
+  overlay.style.display = 'flex';
+  document.getElementById('tvPlayIcon').className = 'ri-pause-fill';
+  tvStartProgress();
+  playSystemSound('message');
+}
+
+function tvStartProgress() {
+  clearInterval(tvPlayTimer);
+  tvPlayTimer = setInterval(() => {
+    tvProgress = Math.min(100, tvProgress + 100 / 720);
+    document.getElementById('tvProgressFill').style.width = tvProgress + '%';
+    const secs = Math.round(tvProgress / 100 * 720);
+    document.getElementById('tvPlayerTime').textContent = Math.floor(secs / 60) + ':' + String(secs % 60).padStart(2, '0') + ' / 12:00';
+    if (tvProgress >= 100) { clearInterval(tvPlayTimer); showNotifToast('TV', 'Playback finished', 'TV.app'); }
+  }, 1000);
+}
+
+function tvTogglePlayback() {
+  if (tvPlaying === null) return;
+  if (tvPlayTimer) { clearInterval(tvPlayTimer); tvPlayTimer = null; document.getElementById('tvPlayIcon').className = 'ri-play-fill'; }
+  else { tvStartProgress(); document.getElementById('tvPlayIcon').className = 'ri-pause-fill'; }
+}
+
+function tvClosePlayer() {
+  document.getElementById('tvPlayerOverlay').style.display = 'none';
+  clearInterval(tvPlayTimer);
+  tvPlayTimer = null;
+  tvPlaying = null;
+}
+
+function initTV() {
+  renderTV();
+  document.querySelectorAll('.tv-sidebar-item').forEach(item => {
+    item.addEventListener('click', () => switchTVView(item.dataset.view));
   });
 }
