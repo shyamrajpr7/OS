@@ -2402,6 +2402,34 @@
         </div>
       </div>
 
+      <!-- ========== HOME ========== -->
+      <div class="mac-window app-window" id="home-window" style="width:760px;height:500px;top:70px;left:170px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Home</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body home-body">
+          <aside class="home-sidebar">
+            <div class="home-sidebar-item active" data-room="all"><i class="ri-home-4-line"></i> All Rooms</div>
+            <div class="home-sidebar-item" data-room="living"><i class="ri-armchair-line"></i> Living Room</div>
+            <div class="home-sidebar-item" data-room="bedroom"><i class="ri-bed-line"></i> Bedroom</div>
+            <div class="home-sidebar-item" data-room="kitchen"><i class="ri-cup-line"></i> Kitchen</div>
+            <div class="home-sidebar-item" data-room="office"><i class="ri-computer-line"></i> Office</div>
+            <div class="home-sidebar-item" data-room="outdoor"><i class="ri-tree-line"></i> Outdoor</div>
+          </aside>
+          <div class="home-main">
+            <div class="home-climate-strip" id="homeClimateStrip"></div>
+            <div class="home-section-title">Devices</div>
+            <div class="home-devices" id="homeDevices"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2636,6 +2664,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#FF453A" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.2 94.2" transform="rotate(-90 24 24)" opacity="0.25"/><circle cx="24" cy="24" r="10" fill="none" stroke="#30D158" stroke-width="4" stroke-linecap="round" stroke-dasharray="50 62.8" transform="rotate(-90 24 24)" opacity="0.8"/><circle cx="24" cy="24" r="5" fill="none" stroke="#64D2FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="20 31.4" transform="rotate(-90 24 24)"/></svg>
           </div>
           <span class="launchpad-label">Fitness</span>
+        </div>
+        <div class="launchpad-item" data-app="Home.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 8l16 14h-4v18h-9v-9h-6v9h-9V22H8l16-14z" fill="#fff"/></svg>
+          </div>
+          <span class="launchpad-label">Home</span>
         </div>
       </div>
     </div>

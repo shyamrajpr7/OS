@@ -867,7 +867,8 @@ const appIdMap = {
   'Books.app': 'books-window',
   'News.app': 'news-window',
   'Stocks.app': 'stocks-window',
-  'Fitness.app': 'fitness-window'
+  'Fitness.app': 'fitness-window',
+  'Home.app': 'home-window'
 };
 
 const dockIconMap = {
@@ -912,7 +913,8 @@ const dockIconMap = {
   'Books.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9500"/><rect x="6" y="10" width="36" height="28" rx="4" fill="#FF9F0A"/><rect x="10" y="14" width="28" height="20" rx="2" fill="#fff"/><path d="M10 16l14 8 14-8" stroke="#FF9F0A" stroke-width="2" fill="none" stroke-linejoin="round"/><line x1="10" y1="30" x2="20" y2="30" stroke="#FFD60A" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="26" x2="16" y2="26" stroke="#FFD60A" stroke-width="2" stroke-linecap="round" opacity="0.5"/></svg>`,
   'News.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF3B30"/><rect x="8" y="8" width="32" height="32" rx="3" fill="#fff"/><rect x="8" y="8" width="32" height="22" rx="3" fill="#FF5A4F"/><text x="24" y="23" text-anchor="middle" font-family="Georgia" font-size="11" fill="#fff" font-weight="bold">NEWS</text><g stroke="#ddd" stroke-width="1.5"><line x1="13" y1="34" x2="35" y2="34"/><line x1="13" y1="30" x2="35" y2="30"/><line x1="13" y1="38" x2="35" y2="38"/></g></svg>`,
   'Stocks.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="30" width="36" height="4" rx="2" fill="#8E8E93"/><polyline points="8,30 18,20 26,26 40,12" stroke="#30D158" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="40" cy="12" r="2.5" fill="#30D158"/></svg>`,
-  'Fitness.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#FF453A" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.2 94.2" transform="rotate(-90 24 24)" opacity="0.25"/><circle cx="24" cy="24" r="10" fill="none" stroke="#30D158" stroke-width="4" stroke-linecap="round" stroke-dasharray="50 62.8" transform="rotate(-90 24 24)" opacity="0.8"/><circle cx="24" cy="24" r="5" fill="none" stroke="#64D2FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="20 31.4" transform="rotate(-90 24 24)"/></svg>`
+  'Fitness.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#FF453A" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.2 94.2" transform="rotate(-90 24 24)" opacity="0.25"/><circle cx="24" cy="24" r="10" fill="none" stroke="#30D158" stroke-width="4" stroke-linecap="round" stroke-dasharray="50 62.8" transform="rotate(-90 24 24)" opacity="0.8"/><circle cx="24" cy="24" r="5" fill="none" stroke="#64D2FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="20 31.4" transform="rotate(-90 24 24)"/></svg>`,
+  'Home.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 8l16 14h-4v18h-9v-9h-6v9h-9V22H8l16-14z" fill="#fff"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -989,6 +991,7 @@ function openApp(appName) {
   if (winId === 'news-window') initNews();
   if (winId === 'stocks-window') initStocks();
   if (winId === 'fitness-window') initFitness();
+  if (winId === 'home-window') initHome();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -10211,5 +10214,83 @@ function initFitness() {
   renderFitnessBars();
   document.querySelectorAll('.fitness-tab').forEach(tab => {
     tab.addEventListener('click', () => switchFitnessDay(tab.dataset.day));
+  });
+}
+
+// ===================== HOME =====================
+const homeDevices = [
+  { id: 0, name: 'Ceiling Light', room: 'living', icon: 'ri-lightbulb-line', on: true, level: 70, kind: 'light' },
+  { id: 1, name: 'Floor Lamp', room: 'living', icon: 'ri-lamp-line', on: false, level: 0, kind: 'light' },
+  { id: 2, name: 'Thermostat', room: 'living', icon: 'ri-thermometer-line', on: true, level: 0, kind: 'thermostat', value: '21°' },
+  { id: 3, name: 'Bedroom Lamp', room: 'bedroom', icon: 'ri-lightbulb-line', on: false, level: 0, kind: 'light' },
+  { id: 4, name: 'Air Purifier', room: 'bedroom', icon: 'ri-wind-line', on: true, level: 55, kind: 'fan' },
+  { id: 5, name: 'Coffee Maker', room: 'kitchen', icon: 'ri-cup-line', on: false, level: 0, kind: 'switch' },
+  { id: 6, name: 'Fridge', room: 'kitchen', icon: 'ri-fridge-line', on: true, level: 0, kind: 'switch' },
+  { id: 7, name: 'Monitor Light', room: 'office', icon: 'ri-lightbulb-line', on: true, level: 40, kind: 'light' },
+  { id: 8, name: 'Desk Fan', room: 'office', icon: 'ri-fan-line', on: false, level: 0, kind: 'fan' },
+  { id: 9, name: 'Smart Speaker', room: 'office', icon: 'ri-speaker-3-line', on: true, level: 35, kind: 'volume' },
+  { id: 10, name: 'Patio Light', room: 'outdoor', icon: 'ri-lightbulb-flash-line', on: false, level: 0, kind: 'light' },
+  { id: 11, name: 'Sprinklers', room: 'outdoor', icon: 'ri-plant-line', on: false, level: 0, kind: 'switch' }
+];
+let homeActiveRoom = 'all';
+
+function homeFiltered() {
+  return homeDevices.filter(d => homeActiveRoom === 'all' || d.room === homeActiveRoom);
+}
+
+function renderHomeClimate() {
+  const el = document.getElementById('homeClimateStrip');
+  if (!el) return;
+  const t = homeDevices.find(d => d.kind === 'thermostat');
+  el.innerHTML =
+    '<div class="home-climate"><div class="home-climate-label">Home</div><div class="home-climate-value">' + (t ? t.value : '21°') + '</div><div class="home-climate-sub">Auto · Heating</div></div>' +
+    '<div class="home-climate"><div class="home-climate-label">Indoor Air</div><div class="home-climate-value">42%</div><div class="home-climate-sub">Humidity · Good</div></div>' +
+    '<div class="home-climate"><div class="home-climate-label">Energy</div><div class="home-climate-value">1.2 kW</div><div class="home-climate-sub">5 devices active</div></div>';
+}
+
+function renderHomeDevices() {
+  const el = document.getElementById('homeDevices');
+  if (!el) return;
+  el.innerHTML = homeFiltered().map(d =>
+    '<div class="home-device' + (d.on ? ' on' : '') + '" data-id="' + d.id + '">' +
+      '<div class="home-device-toggle"><div class="toggle-switch' + (d.on ? ' on' : '') + '" onclick="homeToggle(' + d.id + ')"></div></div>' +
+      '<div class="home-device-icon"><i class="' + d.icon + '"></i></div>' +
+      '<div class="home-device-name">' + d.name + '</div>' +
+      '<div class="home-device-room">' + d.room.charAt(0).toUpperCase() + d.room.slice(1) + '</div>' +
+      (d.kind === 'light' || d.kind === 'fan' || d.kind === 'volume' ? '<div class="home-device-level"><input type="range" min="0" max="100" value="' + d.level + '" oninput="homeLevel(' + d.id + ', this.value)"></div>' : '') +
+    '</div>'
+  ).join('');
+}
+
+function homeToggle(id) {
+  const d = homeDevices.find(x => x.id === id);
+  if (!d) return;
+  d.on = !d.on;
+  if (d.on && (d.kind === 'light' || d.kind === 'fan') && d.level === 0) d.level = 50;
+  playSystemSound('keyclick');
+  renderHomeDevices();
+  renderHomeClimate();
+}
+
+function homeLevel(id, value) {
+  const d = homeDevices.find(x => x.id === id);
+  if (!d) return;
+  d.level = parseInt(value, 10);
+  if (d.level > 0 && !d.on) { d.on = true; }
+  if (d.level === 0 && d.on && d.kind !== 'fan') { d.on = false; }
+  renderHomeDevices();
+}
+
+function switchHomeRoom(room) {
+  homeActiveRoom = room;
+  document.querySelectorAll('.home-sidebar-item').forEach(it => it.classList.toggle('active', it.dataset.room === room));
+  renderHomeDevices();
+}
+
+function initHome() {
+  renderHomeClimate();
+  renderHomeDevices();
+  document.querySelectorAll('.home-sidebar-item').forEach(item => {
+    item.addEventListener('click', () => switchHomeRoom(item.dataset.room));
   });
 }
