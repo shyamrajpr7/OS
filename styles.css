@@ -5282,3 +5282,59 @@ button:focus-visible { outline: 2px solid rgba(100, 210, 255, 0.6); outline-offs
 .health-vital { text-align: center; padding: 14px 8px; }
 .health-vital-value { font-size: 28px; font-weight: 700; color: var(--mac-text); }
 .health-vital-label { font-size: 11px; color: var(--mac-text-muted); margin-top: 4px; }
+
+/* ===== Photo Booth ===== */
+.photobooth-body { background: var(--mac-window-bg); flex-direction: column; align-items: center; padding: 14px; gap: 12px; }
+.pb-toolbar { display: flex; gap: 6px; width: 100%; justify-content: center; flex-wrap: wrap; }
+.pb-effect { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--mac-border); background: rgba(255,255,255,0.05); color: var(--mac-text-secondary); font-size: 12px; cursor: pointer; transition: all .15s; }
+.pb-effect:hover { background: rgba(255,255,255,0.1); color: var(--mac-text); }
+.pb-effect.active { background: var(--mac-accent); border-color: var(--mac-accent); color: #fff; }
+.pb-stage { flex: 1; width: 100%; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+.pb-view { flex: 1; position: relative; border-radius: 12px; overflow: hidden; min-height: 200px; background: #000; transition: transform .3s; }
+.pb-scene { position: absolute; inset: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.pb-sun { position: absolute; top: 8%; right: 12%; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,255,255,0.2)); filter: blur(2px); }
+.pb-hills { position: absolute; bottom: 0; left: 0; right: 0; height: 38%; border-radius: 50% 60% 0 0 / 100% 100% 0 0; opacity: .8; }
+.pb-figure { position: relative; display: flex; flex-direction: column; align-items: center; animation: pbBob 3.2s ease-in-out infinite; }
+.pb-head { font-size: 76px; line-height: 1; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35)); }
+.pb-torso { width: 44px; height: 56px; border-radius: 20px 20px 8px 8px; background: rgba(255,255,255,0.55); }
+@keyframes pbBob { 0%,100% { transform: translateY(10px); } 50% { transform: translateY(0); } }
+.pb-record-dot { position: absolute; top: 10px; left: 12px; width: 9px; height: 9px; border-radius: 50%; background: #FF453A; box-shadow: 0 0 8px #FF453A; animation: pbBlink 2.4s steps(1) infinite; z-index: 3; }
+@keyframes pbBlink { 0%,58% { opacity: 1; } 59%,100% { opacity: 0.25; } }
+.pb-shutter { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 4; }
+.pb-shutter.flash { animation: pbFlash .45s ease-out; }
+@keyframes pbFlash { 0% { opacity: 1; } 100% { opacity: 0; } }
+.pb-effect-thermal { filter: sepia(1) saturate(4.5) hue-rotate(-35deg) contrast(1.1); }
+.pb-effect-xray { filter: invert(1) grayscale(1) contrast(1.6); }
+.pb-effect-mirror { transform: scaleX(-1); }
+.pb-effect-squeeze { transform: scale(0.62, 1.45); }
+.pb-effect-twirl { animation: pbTwirl 1.2s ease-in-out infinite; }
+@keyframes pbTwirl { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.06); } 100% { transform: rotate(360deg) scale(1); } }
+.pb-preview { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; z-index: 2; }
+.pb-preview canvas { max-width: 92%; max-height: 92%; border-radius: 8px; }
+.pb-preview-close { position: absolute; top: 10px; right: 12px; width: 26px; height: 26px; border-radius: 50%; border: none; background: rgba(255,255,255,0.15); color: #fff; cursor: pointer; z-index: 3; }
+.pb-preview-close:hover { background: rgba(255,255,255,0.3); }
+.pb-view.previewing .pb-scene { visibility: hidden; }
+.pb-photo-canvas { width: 100%; height: 100%; display: block; }
+.pb-f-thermal { filter: sepia(1) saturate(4.5) hue-rotate(-35deg) contrast(1.1); }
+.pb-f-xray { filter: invert(1) grayscale(1) contrast(1.6); }
+.pb-f-mirror { transform: scaleX(-1); }
+.pb-f-squeeze { transform: scale(0.85, 1.15); }
+.pb-grid-view { flex: 1; min-height: 200px; border-radius: 12px; display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 1fr; gap: 8px; overflow-y: auto; align-content: start; padding: 4px; }
+.pb-empty { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; flex-direction: column; color: var(--mac-text-muted); font-size: 13px; text-align: center; line-height: 1.7; }
+.pb-grid-cell { position: relative; border-radius: 8px; overflow: hidden; background: #000; cursor: pointer; }
+.pb-grid-cell:hover .pb-thumb-del { opacity: 1; }
+.pb-thumb { position: relative; flex-shrink: 0; width: 108px; height: 81px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid transparent; }
+.pb-thumb.active { border-color: var(--mac-accent); }
+.pb-thumb:hover .pb-thumb-del { opacity: 1; }
+.pb-thumb-del { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%; border: none; background: rgba(0,0,0,0.6); color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity .15s; }
+.pb-filmstrip { display: flex; gap: 8px; height: 81px; overflow-x: auto; padding: 2px; }
+.pb-tabbar { display: flex; align-items: center; gap: 6px; }
+.pb-tab { display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 7px; border: 1px solid transparent; background: transparent; color: var(--mac-text-secondary); font-size: 12px; cursor: pointer; }
+.pb-tab.active { background: rgba(255,255,255,0.1); color: var(--mac-text); }
+.pb-count { font-size: 11px; color: var(--mac-text-muted); }
+.pb-tabbar-spacer { flex: 1; }
+.pb-clear { width: 28px; height: 28px; border-radius: 7px; border: none; background: transparent; color: var(--mac-text-muted); cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+.pb-clear:hover { background: rgba(255,69,58,0.15); color: #FF453A; }
+.pb-capture { width: 66px; height: 66px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.06); color: #fff; font-size: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .12s, background .15s; flex-shrink: 0; }
+.pb-capture:hover { transform: scale(1.05); background: rgba(255,255,255,0.14); }
+.pb-capture:active { transform: scale(0.94); }

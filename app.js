@@ -874,7 +874,8 @@ const appIdMap = {
   'Translator.app': 'translator-window',
   'Journal.app': 'journal-window',
   'Freeform.app': 'freeform-window',
-  'Health.app': 'health-window'
+  'Health.app': 'health-window',
+  'Photo Booth.app': 'photobooth-window'
 };
 
 const dockIconMap = {
@@ -926,7 +927,8 @@ const dockIconMap = {
   'Translator.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M8 12h32M24 8v4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M12 12c2 10 6 16 12 20M20 32c-1-5-2-9-2-14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M16 18h16M28 18c0 6-3 11-8 14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="28" cy="28" r="11" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><path d="M28 19v18M22 22h12" stroke="#5AC8FA" stroke-width="2.5" stroke-linecap="round"/></svg>`,
   'Journal.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="#BF5AF2" stroke-width="2.5"/><text x="24" y="28" text-anchor="middle" font-family="Georgia" font-size="18" fill="#BF5AF2" font-style="italic">J</text><line x1="14" y1="33" x2="34" y2="33" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/></svg>`,
   'Freeform.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#BF5AF2"/><path d="M8 30c2-4 5-5 8-3s7 1 10-4 6-5 9-2" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 38h32" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="14" r="4" fill="#FFD60A"/><circle cx="12" cy="16" r="3" fill="#0A84FF"/></svg>`,
-  'Health.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M24 34C20 30 14 25 14 19a6 6 0 0 1 10-4.6A6 6 0 0 1 34 19c0 6-6 11-10 15z" fill="none" stroke="#FF453A" stroke-width="3"/><path d="M14 24h6l2-3 3 5 2-2h7" stroke="#FF453A" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+  'Health.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M24 34C20 30 14 25 14 19a6 6 0 0 1 10-4.6A6 6 0 0 1 34 19c0 6-6 11-10 15z" fill="none" stroke="#FF453A" stroke-width="3"/><path d="M14 24h6l2-3 3 5 2-2h7" stroke="#FF453A" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  'Photo Booth.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="24" rx="5" fill="none" stroke="#A855F7" stroke-width="2.5"/><circle cx="24" cy="26" r="8" fill="#A855F7"/><circle cx="24" cy="26" r="3" fill="#fff"/><path d="M16 14l3-6h10l3 6" fill="none" stroke="#A855F7" stroke-width="2.5" stroke-linejoin="round"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -1010,6 +1012,7 @@ function openApp(appName) {
   if (winId === 'journal-window') initJournal();
   if (winId === 'freeform-window') initFreeform();
   if (winId === 'health-window') initHealth();
+  if (winId === 'photobooth-window') initPhotoBooth();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -1052,6 +1055,7 @@ function doCloseWindow(winId) {
   win.classList.remove('focused');
   if (winId === 'activity-window') stopActivityMonitor();
   if (winId === 'stocks-window') { clearInterval(stocksInterval); stocksInterval = null; }
+  if (winId === 'photobooth-window') { if (pbSceneTimer) { clearInterval(pbSceneTimer); pbSceneTimer = null; } }
   const entry = Object.entries(appIdMap).find(([, v]) => v === winId);
   if (entry) { const dockItem = document.querySelector(`.dock-item[data-app="${entry[0]}"]`); if (dockItem) { const ind = dockItem.querySelector('.dock-indicator'); if (ind) ind.classList.remove('active'); } }
   renderRunningDock();
@@ -10921,4 +10925,212 @@ function initHealth() {
   document.querySelectorAll('.health-sidebar-item').forEach(item => {
     item.addEventListener('click', () => switchHealthTab(item.dataset.tab));
   });
+}
+
+// ============================================================
+// ---- Photo Booth ----
+// ============================================================
+let pbPhotos = [];
+let pbEffect = 'normal';
+let pbTab = 'camera';
+let pbPreviewIdx = null;
+let pbInitialized = false;
+let pbSceneTimer = null;
+let pbSceneSeed = 0;
+const pbEmojis = ['🦆', '🐶', '🐱', '🦊', '🐼', '🦉', '🐸', '🦄', '🦋', '🐙', '🐠', '🦩', '🐻', '🦁', '🐨', '🐯'];
+const pbPalettes = [
+  ['#FF9A9E', '#FECFEF', '#FBC2EB'],
+  ['#a1c4fd', '#c2e9fb', '#d4fc79'],
+  ['#0f0c29', '#302b63', '#24243e'],
+  ['#89f7fe', '#66a6ff', '#c2e9fb']
+];
+
+function pbRenderScene() {
+  const s = document.getElementById('pbScene');
+  if (!s) return;
+  const p = pbPalettes[pbSceneSeed % pbPalettes.length];
+  const emoji = pbEmojis[pbSceneSeed % pbEmojis.length];
+  s.style.background = 'linear-gradient(160deg, ' + p[0] + ', ' + p[1] + ')';
+  const hills = s.querySelector('.pb-hills');
+  if (hills) hills.style.background = p[2];
+  const head = s.querySelector('.pb-head');
+  if (head) head.textContent = emoji;
+}
+
+function pbSetEffect(effect) {
+  pbEffect = effect;
+  const view = document.getElementById('pbView');
+  if (view) view.className = 'pb-view pb-effect-' + effect;
+  document.querySelectorAll('.pb-effect').forEach(b => b.classList.toggle('active', b.dataset.effect === effect));
+  playSystemSound('pop');
+}
+
+function pbDrawPhoto(photo) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 320; canvas.height = 240;
+  const ctx = canvas.getContext('2d');
+  const p = pbPalettes[photo.seed % pbPalettes.length];
+  const g = ctx.createLinearGradient(0, 0, 320, 240);
+  g.addColorStop(0, p[0]); g.addColorStop(1, p[1]);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, 320, 240);
+  ctx.beginPath(); ctx.arc(258, 58, 26, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.beginPath(); ctx.moveTo(0, 240); ctx.quadraticCurveTo(70, 150, 190, 205); ctx.quadraticCurveTo(250, 235, 320, 185); ctx.lineTo(320, 240); ctx.closePath(); ctx.fill();
+  ctx.font = '92px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(photo.emoji, 132, 136);
+  photo.canvas = canvas;
+}
+
+function pbCapturePhoto() {
+  const photo = { effect: pbEffect, emoji: pbEmojis[pbSceneSeed % pbEmojis.length], seed: pbSceneSeed, ts: Date.now() };
+  pbDrawPhoto(photo);
+  pbPhotos.unshift(photo);
+  pbRenderFilmstrip();
+  pbRenderGrid();
+  pbUpdateCount();
+  playSystemSound('pop');
+}
+
+function pbFlash() {
+  const shutter = document.getElementById('pbShutter');
+  if (!shutter) return;
+  shutter.classList.add('flash');
+  setTimeout(() => shutter.classList.remove('flash'), 450);
+}
+
+function pbUpdateCount() {
+  const c = document.getElementById('pbCount');
+  if (c) c.textContent = pbPhotos.length ? '(' + pbPhotos.length + ')' : '';
+}
+
+function pbRenderFilmstrip() {
+  const strip = document.getElementById('pbFilmstrip');
+  if (!strip) return;
+  strip.innerHTML = pbPhotos.map((ph, i) =>
+    '<div class="pb-thumb' + (pbPreviewIdx === i ? ' active' : '') + '" data-idx="' + i + '">' +
+      '<canvas width="120" height="90" class="pb-photo-canvas pb-f-' + ph.effect + '"></canvas>' +
+      '<button class="pb-thumb-del" data-del="' + i + '" title="Delete photo"><i class="ri-close-line"></i></button>' +
+    '</div>'
+  ).join('');
+  strip.querySelectorAll('.pb-thumb').forEach(th => {
+    const i = parseInt(th.dataset.idx);
+    const ph = pbPhotos[i];
+    if (ph && ph.canvas) th.querySelector('canvas').getContext('2d').drawImage(ph.canvas, 0, 0, 120, 90);
+    th.addEventListener('click', e => {
+      if (e.target.closest('.pb-thumb-del')) return;
+      pbOpenPreview(i);
+    });
+  });
+  strip.querySelectorAll('.pb-thumb-del').forEach(b => {
+    b.addEventListener('click', e => { e.stopPropagation(); pbDeletePhoto(parseInt(b.dataset.del)); });
+  });
+  strip.scrollLeft = 0;
+}
+
+function pbRenderGrid() {
+  const grid = document.getElementById('pbGridView');
+  if (!grid) return;
+  if (!pbPhotos.length) {
+    grid.innerHTML = '<div class="pb-empty">No photos yet.<br>Switch to Camera and press the shutter button.</div>';
+    return;
+  }
+  grid.innerHTML = pbPhotos.slice(0, 16).map((ph, i) =>
+    '<div class="pb-grid-cell" data-gidx="' + i + '">' +
+      '<canvas width="200" height="150" class="pb-photo-canvas pb-f-' + ph.effect + '"></canvas>' +
+      '<button class="pb-thumb-del" data-gdel="' + i + '" title="Delete photo"><i class="ri-close-line"></i></button>' +
+    '</div>'
+  ).join('');
+  grid.querySelectorAll('.pb-grid-cell').forEach(cell => {
+    const i = parseInt(cell.dataset.gidx);
+    const ph = pbPhotos[i];
+    if (ph && ph.canvas) cell.querySelector('canvas').getContext('2d').drawImage(ph.canvas, 0, 0, 200, 150);
+  });
+  grid.querySelectorAll('[data-gdel]').forEach(b => {
+    b.addEventListener('click', e => { e.stopPropagation(); pbDeletePhoto(parseInt(b.dataset.gdel)); });
+  });
+}
+
+function pbOpenPreview(i) {
+  const ph = pbPhotos[i];
+  if (!ph || !ph.canvas) return;
+  pbPreviewIdx = i;
+  const prev = document.getElementById('pbPreview');
+  prev.innerHTML = '<canvas width="480" height="360" class="pb-photo-canvas pb-f-' + ph.effect + '"></canvas>' +
+    '<button class="pb-preview-close" id="pbPreviewClose"><i class="ri-close-line"></i></button>';
+  prev.style.display = 'flex';
+  document.getElementById('pbView').classList.add('previewing');
+  prev.querySelector('canvas').getContext('2d').drawImage(ph.canvas, 0, 0, 480, 360);
+  document.getElementById('pbPreviewClose').addEventListener('click', pbClosePreview);
+  playSystemSound('pop');
+}
+
+function pbClosePreview() {
+  pbPreviewIdx = null;
+  const prev = document.getElementById('pbPreview');
+  prev.style.display = 'none';
+  prev.innerHTML = '';
+  const view = document.getElementById('pbView');
+  if (view) view.classList.remove('previewing');
+}
+
+function pbDeletePhoto(i) {
+  pbPhotos.splice(i, 1);
+  if (pbPreviewIdx !== null) pbClosePreview();
+  pbRenderFilmstrip();
+  pbRenderGrid();
+  pbUpdateCount();
+  playSystemSound('pop');
+}
+
+function pbSetTab(tab) {
+  pbTab = tab;
+  const camera = document.getElementById('pbCameraTab');
+  const photo = document.getElementById('pbPhotoTab');
+  if (camera) camera.classList.toggle('active', tab === 'camera');
+  if (photo) photo.classList.toggle('active', tab === 'photos');
+  const view = document.getElementById('pbView');
+  const grid = document.getElementById('pbGridView');
+  if (view) view.style.display = tab === 'camera' ? 'block' : 'none';
+  if (grid) grid.style.display = tab === 'photos' ? 'grid' : 'none';
+  if (tab === 'photos') pbRenderGrid();
+  playSystemSound('pop');
+}
+
+function pbClearAll() {
+  if (!pbPhotos.length) return;
+  pbPhotos = [];
+  pbClosePreview();
+  pbRenderFilmstrip();
+  pbRenderGrid();
+  pbUpdateCount();
+  showNotifToast('Photo Booth', 'Deleted all photos', 'Photo Booth.app');
+}
+
+function initPhotoBooth() {
+  if (pbInitialized) {
+    pbRenderScene();
+    pbRenderFilmstrip();
+    pbRenderGrid();
+    pbSetTab(pbTab);
+    return;
+  }
+  pbInitialized = true;
+  document.querySelectorAll('.pb-effect').forEach(b => {
+    b.addEventListener('click', () => pbSetEffect(b.dataset.effect));
+  });
+  document.getElementById('pbCapture').addEventListener('click', () => {
+    if (pbPreviewIdx !== null) pbClosePreview();
+    pbFlash();
+    setTimeout(pbCapturePhoto, 140);
+  });
+  document.getElementById('pbCameraTab').addEventListener('click', () => pbSetTab('camera'));
+  document.getElementById('pbPhotoTab').addEventListener('click', () => pbSetTab('photos'));
+  document.getElementById('pbClear').addEventListener('click', pbClearAll);
+  pbRenderScene();
+  if (pbSceneTimer) clearInterval(pbSceneTimer);
+  pbSceneTimer = setInterval(() => {
+    pbSceneSeed++;
+    pbRenderScene();
+  }, 6000);
 }
