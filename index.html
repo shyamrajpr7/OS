@@ -2272,6 +2272,47 @@
         </div>
       </div>
 
+      <!-- ========== BOOKS ========== -->
+      <div class="mac-window app-window" id="books-window" style="width:760px;height:500px;top:70px;left:170px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Books</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body books-body">
+          <aside class="books-sidebar">
+            <div class="books-sidebar-item active" data-shelf="library"><i class="ri-book-shelf-line"></i> Library</div>
+            <div class="books-sidebar-item" data-shelf="reading"><i class="ri-bookmark-line"></i> Reading Now</div>
+            <div class="books-sidebar-item" data-shelf="want"><i class="ri-book-mark-line"></i> Want to Read</div>
+            <div class="books-sidebar-item" data-shelf="finished"><i class="ri-check-double-line"></i> Finished</div>
+          </aside>
+          <div class="books-main">
+            <div class="books-toolbar">
+              <div class="books-search"><i class="ri-search-line"></i><input type="text" id="booksSearch" placeholder="Search Library"></div>
+            </div>
+            <div class="books-grid" id="booksGrid"></div>
+          </div>
+        </div>
+      </div>
+      <div class="books-reader-overlay" id="booksReaderOverlay" style="display:none;">
+        <div class="books-reader">
+          <div class="books-reader-topbar">
+            <span class="books-reader-title" id="booksReaderTitle"></span>
+            <span class="books-reader-page" id="booksReaderPage"></span>
+            <button class="books-reader-close" onclick="booksCloseReader()"><i class="ri-close-line"></i></button>
+          </div>
+          <div class="books-reader-page-content" id="booksReaderContent"></div>
+          <div class="books-reader-nav">
+            <button class="books-reader-nav-btn" id="booksPrevPage" onclick="booksFlipPage(-1)"><i class="ri-arrow-left-s-line"></i> Previous</button>
+            <button class="books-reader-nav-btn" id="booksNextPage" onclick="booksFlipPage(1)">Next <i class="ri-arrow-right-s-line"></i></button>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2482,6 +2523,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#7E2BEA"/><circle cx="24" cy="26" r="6" fill="#fff"/><path d="M24 18v16M16 32a12 12 0 0 0 16 0M14 34a16 16 0 0 0 20 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
           </div>
           <span class="launchpad-label">Podcasts</span>
+        </div>
+        <div class="launchpad-item" data-app="Books.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9500"/><rect x="6" y="10" width="36" height="28" rx="4" fill="#FF9F0A"/><rect x="10" y="14" width="28" height="20" rx="2" fill="#fff"/><path d="M10 16l14 8 14-8" stroke="#FF9F0A" stroke-width="2" fill="none" stroke-linejoin="round"/><line x1="10" y1="30" x2="20" y2="30" stroke="#FFD60A" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <span class="launchpad-label">Books</span>
         </div>
       </div>
     </div>

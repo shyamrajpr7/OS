@@ -863,7 +863,8 @@ const appIdMap = {
   'Screen Time.app': 'screentime-window',
   'Digital Color Meter.app': 'colormeter-window',
   'Print Queue.app': 'printqueue-window',
-  'Podcasts.app': 'podcasts-window'
+  'Podcasts.app': 'podcasts-window',
+  'Books.app': 'books-window'
 };
 
 const dockIconMap = {
@@ -904,7 +905,8 @@ const dockIconMap = {
   'Screen Time.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5E5CE6"/><path d="M8 20h32v6H8z" fill="white"/><path d="M8 32h32v6H8z" fill="white" opacity="0.75"/><path d="M24 8v6" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="8" r="2" fill="#FFD60A"/></svg>`,
   'Digital Color Meter.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="url(#cmGrad)"/><defs><radialGradient id="cmGrad" cx="35%" cy="35%" r="75%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="40%" stop-color="#FF2D55"/><stop offset="100%" stop-color="#BF5AF2"/></radialGradient></defs></svg>`,
   'Print Queue.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="14" width="32" height="20" rx="3" fill="#0D1117" stroke="#5AC8FA" stroke-width="2"/><rect x="14" y="20" width="20" height="3" rx="1.5" fill="#5AC8FA" opacity="0.6"/><rect x="14" y="26" width="14" height="3" rx="1.5" fill="#5AC8FA" opacity="0.35"/><rect x="12" y="34" width="24" height="6" rx="2" fill="#333"/></svg>`,
-  'Podcasts.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#7E2BEA"/><circle cx="24" cy="26" r="6" fill="white"/><path d="M24 18v16M16 32a12 12 0 0 0 16 0M14 34a16 16 0 0 0 20 0" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`
+  'Podcasts.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#7E2BEA"/><circle cx="24" cy="26" r="6" fill="white"/><path d="M24 18v16M16 32a12 12 0 0 0 16 0M14 34a16 16 0 0 0 20 0" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
+  'Books.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9500"/><rect x="6" y="10" width="36" height="28" rx="4" fill="#FF9F0A"/><rect x="10" y="14" width="28" height="20" rx="2" fill="#fff"/><path d="M10 16l14 8 14-8" stroke="#FF9F0A" stroke-width="2" fill="none" stroke-linejoin="round"/><line x1="10" y1="30" x2="20" y2="30" stroke="#FFD60A" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="26" x2="16" y2="26" stroke="#FFD60A" stroke-width="2" stroke-linecap="round" opacity="0.5"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -977,6 +979,7 @@ function openApp(appName) {
   if (winId === 'colormeter-window') initColorMeter();
   if (winId === 'printqueue-window') initPrintQueue();
   if (winId === 'podcasts-window') initPodcasts();
+  if (winId === 'books-window') initBooks();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -9790,4 +9793,99 @@ function initPodcasts() {
   document.querySelectorAll('.podcasts-sidebar-item').forEach(item => {
     item.addEventListener('click', () => switchPodcastsView(item.dataset.view));
   });
+}
+
+// ===================== BOOKS =====================
+const booksLibrary = [
+  { id: 0, title: 'The Art of Focus', author: 'Maya Chen', color: '#E4572E', pages: 12, shelf: 'reading', text: ['In a world of endless notifications, focus has become the rarest luxury. The ability to sit with a single problem, to let your attention settle like sediment in still water, is what separates the ordinary from the extraordinary.', 'Every great creation begins as an idea that someone refused to abandon. They protected it from the noise of the world, feeding it with patience and discipline until it grew strong enough to stand on its own.'] },
+  { id: 1, title: 'Threads of the Future', author: 'Derek Okafor', color: '#2E6FE4', pages: 10, shelf: 'reading', text: ['Every operating system is a story told in silicon. The kernel wakes, schedules, breathes life into sleeping processes, and when the work is done, it tucks them back to sleep with gentle precision.', 'Threads are the invisible workers of the digital world, weaving user intent into computation. Each one carries a sliver of your attention, racing across cores to bring an interface to life.'] },
+  { id: 2, title: 'Notes From a Small Island', author: 'Julia Bennett', color: '#2FA34D', pages: 9, shelf: 'library', text: ['The sea was the color of hammered silver, and the houses clung to the hillside like barnacles to a hull. I had come looking for solitude and found instead a thousand small kindnesses.', 'Here, time moved to the rhythm of the tide rather than the tick of a clock. Nobody was in a hurry, because there was nowhere else to go and nothing that could not wait until tomorrow.'] },
+  { id: 3, title: 'The Quiet Programmer', author: 'Sam Rivera', color: '#6A4FBF', pages: 11, shelf: 'library', text: ['There is a joy in code that runs clean the first time, a satisfaction like a perfectly struck chord. But the real craft is in the debugging, the slow archaeology of a fault buried deep in the stack.', 'Patience is the programmer\'s superpower. The bug that hides from frantic searching often reveals itself the moment you stop looking, like a word on the tip of your tongue.'] },
+  { id: 4, title: 'Aurora', author: 'Ingrid Halvorsen', color: '#3BA6B8', pages: 8, shelf: 'finished', text: ['The lights danced above the fjord, curtains of green and violet pulled by an invisible hand across the black sky. We stood in silence, breath visible in the cold, watching a performance that had been running for millennia.', 'Some things cannot be captured in photographs. The cold, the stillness, the sense of being so very small — those live only in memory, and in the retelling.'] },
+  { id: 5, title: 'Building Better Habits', author: 'Leon Ward', color: '#C2571B', pages: 10, shelf: 'want', text: ['Habits are the architecture of our days. Each small decision, repeated often enough, becomes a groove worn into the stone of our identity.', 'Start absurdly small. One push-up, one page, one minute of focus. The compound interest of tiny actions is the quiet engine behind every transformation.'] },
+  { id: 6, title: 'The Last Lighthouse', author: 'Rowan Doyle', color: '#335C81', pages: 9, shelf: 'library', text: ['It had stood for a hundred and forty years, its beam sweeping the dark water like a patient eye. When the automation came, they kept it lit anyway, out of respect.', 'People still came to the lighthouse. Not because they needed the light, but because they needed the idea of it — a steady flame in a shifting world.'] },
+  { id: 7, title: 'Silicon Dreams', author: 'Priya Nair', color: '#7C3E96', pages: 12, shelf: 'want', text: ['Can a machine dream of electric sheep? Perhaps the better question is whether our dreams have always been a kind of computation, replaying the day\'s data under a softer light.', 'The line between the organic and the artificial grows thinner each year, until the question is less about who made whom, and more about what we choose to become together.'] }
+];
+let booksActiveShelf = 'library';
+let booksSearch = '';
+let booksReaderState = null;
+
+function booksFiltered() {
+  const q = booksSearch.toLowerCase();
+  return booksLibrary.filter(b => b.shelf === booksActiveShelf || booksActiveShelf === 'library').filter(b => !q || b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q));
+}
+
+function renderBooksGrid() {
+  const grid = document.getElementById('booksGrid');
+  if (!grid) return;
+  const books = booksFiltered();
+  if (!books.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--mac-text-muted);font-size:13px;padding:60px 0;">No books found</div>';
+    return;
+  }
+  grid.innerHTML = books.map(b =>
+    '<div class="books-book" data-id="' + b.id + '">' +
+      '<div class="books-cover" style="background:linear-gradient(160deg,' + b.color + ',#000000aa)">' + b.title + '</div>' +
+      '<div class="books-book-name">' + b.title + '</div>' +
+      '<div class="books-book-author">' + b.author + '</div>' +
+    '</div>'
+  ).join('');
+  grid.querySelectorAll('.books-book').forEach(el => el.addEventListener('click', () => booksOpen(el.dataset.id)));
+}
+
+function booksOpen(id) {
+  const book = booksLibrary.find(b => b.id === parseInt(id, 10));
+  if (!book) return;
+  booksReaderState = { book, page: 0 };
+  const overlay = document.getElementById('booksReaderOverlay');
+  document.getElementById('booksReaderTitle').textContent = book.title + ' — ' + book.author;
+  booksRenderReaderPage();
+  overlay.style.display = 'flex';
+  playSystemSound('keyclick');
+}
+
+function booksRenderReaderPage() {
+  const state = booksReaderState;
+  if (!state) return;
+  const pageCount = state.book.pages;
+  const idx = state.page;
+  document.getElementById('booksReaderPage').textContent = 'Page ' + (idx + 1) + ' of ' + pageCount;
+  const content = state.book.text;
+  const chunk = content[idx % content.length];
+  const paragraphs = [];
+  for (let i = 0; i < 4; i++) paragraphs.push(chunk);
+  document.getElementById('booksReaderContent').innerHTML = paragraphs.map(p => '<p>' + p + '</p>').join('');
+  document.getElementById('booksPrevPage').disabled = idx === 0;
+  document.getElementById('booksNextPage').disabled = idx >= pageCount - 1;
+}
+
+function booksFlipPage(dir) {
+  const state = booksReaderState;
+  if (!state) return;
+  const next = state.page + dir;
+  if (next < 0 || next >= state.book.pages) return;
+  state.page = next;
+  booksRenderReaderPage();
+  playSystemSound('keyclick');
+}
+
+function booksCloseReader() {
+  const overlay = document.getElementById('booksReaderOverlay');
+  if (overlay) overlay.style.display = 'none';
+  booksReaderState = null;
+}
+
+function switchBooksShelf(shelf) {
+  booksActiveShelf = shelf;
+  document.querySelectorAll('.books-sidebar-item').forEach(it => it.classList.toggle('active', it.dataset.shelf === shelf));
+  renderBooksGrid();
+}
+
+function initBooks() {
+  renderBooksGrid();
+  document.querySelectorAll('.books-sidebar-item').forEach(item => {
+    item.addEventListener('click', () => switchBooksShelf(item.dataset.shelf));
+  });
+  const search = document.getElementById('booksSearch');
+  if (search) search.addEventListener('input', () => { booksSearch = search.value; renderBooksGrid(); });
 }
