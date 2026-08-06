@@ -871,7 +871,8 @@ const appIdMap = {
   'Home.app': 'home-window',
   'TV.app': 'tv-window',
   'Find My.app': 'findmy-window',
-  'Translator.app': 'translator-window'
+  'Translator.app': 'translator-window',
+  'Journal.app': 'journal-window'
 };
 
 const dockIconMap = {
@@ -920,7 +921,8 @@ const dockIconMap = {
   'Home.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 8l16 14h-4v18h-9v-9h-6v9h-9V22H8l16-14z" fill="#fff"/></svg>`,
   'TV.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="12" width="32" height="22" rx="4" fill="none" stroke="#0A84FF" stroke-width="2.5"/><line x1="18" y1="38" x2="30" y2="38" stroke="#8E8E93" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="23" r="5" fill="#0A84FF"/><path d="M24 18v10M19 21h10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/></svg>`,
   'Find My.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#30D158"/><circle cx="24" cy="24" r="15" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="#fff"/><circle cx="24" cy="24" r="2.5" fill="#30D158"/></svg>`,
-  'Translator.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M8 12h32M24 8v4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M12 12c2 10 6 16 12 20M20 32c-1-5-2-9-2-14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M16 18h16M28 18c0 6-3 11-8 14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="28" cy="28" r="11" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><path d="M28 19v18M22 22h12" stroke="#5AC8FA" stroke-width="2.5" stroke-linecap="round"/></svg>`
+  'Translator.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M8 12h32M24 8v4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M12 12c2 10 6 16 12 20M20 32c-1-5-2-9-2-14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M16 18h16M28 18c0 6-3 11-8 14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="28" cy="28" r="11" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><path d="M28 19v18M22 22h12" stroke="#5AC8FA" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  'Journal.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="#BF5AF2" stroke-width="2.5"/><text x="24" y="28" text-anchor="middle" font-family="Georgia" font-size="18" fill="#BF5AF2" font-style="italic">J</text><line x1="14" y1="33" x2="34" y2="33" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -1001,6 +1003,7 @@ function openApp(appName) {
   if (winId === 'tv-window') initTV();
   if (winId === 'findmy-window') initFindMy();
   if (winId === 'translator-window') initTranslator();
+  if (winId === 'journal-window') initJournal();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -10584,4 +10587,110 @@ function initTranslator() {
     out.textContent = 'Translation appears here';
     out.classList.add('placeholder');
   });
+}
+
+// ===================== JOURNAL =====================
+const journalPrompts = [
+  'What is one small thing that went well today?',
+  'Describe a moment when you felt fully present.',
+  'What is something you are looking forward to this week?',
+  'Who made a difference in your day today?',
+  'What did you learn about yourself recently?',
+  'Write about a place you would love to visit and why.',
+  'What is one thing you would tell your past self?',
+  'What is taking up your mental space right now?'
+];
+let journalEntries = [
+  { id: 0, title: 'A fresh start', date: 'Aug 5, 2026', body: 'Started sketching out the design for the new desktop shell. The idea is to make every window feel weightless, like it is floating on glass.\n\nNote to self: restraint is the hardest part of good design.' },
+  { id: 1, title: 'Morning thoughts', date: 'Aug 4, 2026', body: 'The best ideas show up before coffee. Woke up with a clear picture of how the thread scheduler should handle priorities. Wrote it down immediately.' },
+  { id: 2, title: 'Weekend recap', date: 'Aug 3, 2026', body: 'Long walk by the water. Nobody else out. The kind of quiet that resets you.\n\nFinished reading a book on habits — starting absurdly small really does work.' }
+];
+let journalSelected = null;
+let journalSearch = '';
+
+function journalTodayLabel() {
+  return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function journalRenderList() {
+  const el = document.getElementById('journalList');
+  if (!el) return;
+  const q = journalSearch.toLowerCase();
+  const list = journalEntries.filter(e => !q || e.title.toLowerCase().includes(q) || e.body.toLowerCase().includes(q));
+  document.getElementById('journalCount').textContent = list.length + (list.length === 1 ? ' entry' : ' entries');
+  el.innerHTML = list.map(e =>
+    '<div class="journal-entry-item' + (journalSelected === e.id ? ' selected' : '') + '" data-id="' + e.id + '">' +
+      '<div class="journal-entry-title">' + e.title + '</div>' +
+      '<div class="journal-entry-date">' + e.date + '</div>' +
+      '<div class="journal-entry-preview">' + e.body.replace(/\n/g, ' ').slice(0, 60) + '</div>' +
+    '</div>'
+  ).join('');
+  el.querySelectorAll('.journal-entry-item').forEach(item => {
+    item.addEventListener('click', () => journalOpen(parseInt(item.dataset.id, 10)));
+  });
+  if (!list.length) document.getElementById('journalCount').textContent = 'No entries';
+}
+
+function journalOpen(id) {
+  const e = journalEntries.find(x => x.id === id);
+  if (!e) return;
+  journalSelected = id;
+  document.getElementById('journalTitle').value = e.title;
+  document.getElementById('journalBody').value = e.body;
+  document.getElementById('journalDate').textContent = e.date;
+  journalUpdateWordCount();
+  journalRenderList();
+}
+
+function journalNew() {
+  journalSelected = null;
+  document.getElementById('journalTitle').value = '';
+  document.getElementById('journalBody').value = '';
+  document.getElementById('journalDate').textContent = journalTodayLabel();
+  journalUpdateWordCount();
+  journalRenderList();
+  document.getElementById('journalTitle').focus();
+}
+
+function journalSave() {
+  const title = document.getElementById('journalTitle').value.trim() || 'Untitled entry';
+  const body = document.getElementById('journalBody').value;
+  if (journalSelected !== null) {
+    const e = journalEntries.find(x => x.id === journalSelected);
+    if (e) { e.title = title; e.body = body; }
+  } else {
+    journalEntries.unshift({ id: Date.now(), title, body, date: journalTodayLabel() });
+    journalSelected = journalEntries[0].id;
+  }
+  journalRenderList();
+  journalOpen(journalSelected);
+  showNotifToast('Journal', 'Entry saved', 'Journal.app');
+  playSystemSound('message');
+}
+
+function journalUsePrompt() {
+  const text = document.getElementById('journalPromptText').textContent;
+  const body = document.getElementById('journalBody');
+  body.value = (body.value ? body.value + '\n\n' : '') + 'Reflecting on: ' + text + '\n';
+  body.focus();
+  journalUpdateWordCount();
+}
+
+function journalUpdateWordCount() {
+  const words = document.getElementById('journalBody').value.trim().split(/\s+/).filter(Boolean).length;
+  document.getElementById('journalWordCount').textContent = words + (words === 1 ? ' word' : ' words');
+}
+
+function initJournal() {
+  document.getElementById('journalPromptText').textContent = journalPrompts[new Date().getDate() % journalPrompts.length];
+  journalNew();
+  document.getElementById('journalBody').addEventListener('input', journalUpdateWordCount);
+  document.getElementById('journalSearch').addEventListener('input', e => { journalSearch = e.target.value; journalRenderList(); });
+  const sidebar = document.querySelector('.journal-sidebar');
+  const addBtn = document.createElement('button');
+  addBtn.className = 'journal-save';
+  addBtn.style.marginTop = '10px';
+  addBtn.innerHTML = '<i class="ri-add-line"></i> New Entry';
+  addBtn.onclick = journalNew;
+  sidebar.appendChild(addBtn);
 }

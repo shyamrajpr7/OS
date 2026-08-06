@@ -2537,6 +2537,42 @@
         </div>
       </div>
 
+      <!-- ========== JOURNAL ========== -->
+      <div class="mac-window app-window" id="journal-window" style="width:780px;height:500px;top:65px;left:160px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Journal</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body journal-body">
+          <aside class="journal-sidebar">
+            <div class="journal-search"><i class="ri-search-line"></i><input type="text" id="journalSearch" placeholder="Search"></div>
+            <div class="journal-count" id="journalCount"></div>
+            <div class="journal-list" id="journalList"></div>
+          </aside>
+          <div class="journal-main">
+            <div class="journal-prompt" id="journalPrompt">
+              <div class="journal-prompt-icon"><i class="ri-quill-pen-line"></i></div>
+              <div class="journal-prompt-text" id="journalPromptText"></div>
+              <button class="journal-prompt-use" onclick="journalUsePrompt()">Reflect</button>
+            </div>
+            <div class="journal-editor-head">
+              <input type="text" id="journalTitle" class="journal-title-input" placeholder="Entry title">
+              <span class="journal-date" id="journalDate"></span>
+            </div>
+            <textarea class="journal-textarea" id="journalBody" placeholder="Write your thoughts..."></textarea>
+            <div class="journal-footer">
+              <span class="journal-wordcount" id="journalWordCount">0 words</span>
+              <button class="journal-save" id="journalSaveBtn" onclick="journalSave()"><i class="ri-save-3-line"></i> Save Entry</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2795,6 +2831,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M8 12h32M24 8v4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M12 12c2 10 6 16 12 20M20 32c-1-5-2-9-2-14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M16 18h16M28 18c0 6-3 11-8 14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="28" cy="28" r="11" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><path d="M28 19v18M22 22h12" stroke="#5AC8FA" stroke-width="2.5" stroke-linecap="round"/></svg>
           </div>
           <span class="launchpad-label">Translator</span>
+        </div>
+        <div class="launchpad-item" data-app="Journal.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="#BF5AF2" stroke-width="2.5"/><text x="24" y="28" text-anchor="middle" font-family="Georgia" font-size="18" fill="#BF5AF2" font-style="italic">J</text><line x1="14" y1="33" x2="34" y2="33" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <span class="launchpad-label">Journal</span>
         </div>
       </div>
     </div>
