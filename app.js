@@ -870,7 +870,8 @@ const appIdMap = {
   'Fitness.app': 'fitness-window',
   'Home.app': 'home-window',
   'TV.app': 'tv-window',
-  'Find My.app': 'findmy-window'
+  'Find My.app': 'findmy-window',
+  'Translator.app': 'translator-window'
 };
 
 const dockIconMap = {
@@ -918,7 +919,8 @@ const dockIconMap = {
   'Fitness.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><circle cx="24" cy="24" r="15" fill="none" stroke="#FF453A" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.2 94.2" transform="rotate(-90 24 24)" opacity="0.25"/><circle cx="24" cy="24" r="10" fill="none" stroke="#30D158" stroke-width="4" stroke-linecap="round" stroke-dasharray="50 62.8" transform="rotate(-90 24 24)" opacity="0.8"/><circle cx="24" cy="24" r="5" fill="none" stroke="#64D2FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="20 31.4" transform="rotate(-90 24 24)"/></svg>`,
   'Home.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FF9F0A"/><path d="M24 8l16 14h-4v18h-9v-9h-6v9h-9V22H8l16-14z" fill="#fff"/></svg>`,
   'TV.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><rect x="8" y="12" width="32" height="22" rx="4" fill="none" stroke="#0A84FF" stroke-width="2.5"/><line x1="18" y1="38" x2="30" y2="38" stroke="#8E8E93" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="23" r="5" fill="#0A84FF"/><path d="M24 18v10M19 21h10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.8"/></svg>`,
-  'Find My.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#30D158"/><circle cx="24" cy="24" r="15" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="#fff"/><circle cx="24" cy="24" r="2.5" fill="#30D158"/></svg>`
+  'Find My.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#30D158"/><circle cx="24" cy="24" r="15" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="#fff"/><circle cx="24" cy="24" r="2.5" fill="#30D158"/></svg>`,
+  'Translator.app': `<svg width="32" height="32" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M8 12h32M24 8v4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M12 12c2 10 6 16 12 20M20 32c-1-5-2-9-2-14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M16 18h16M28 18c0 6-3 11-8 14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="28" cy="28" r="11" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><path d="M28 19v18M22 22h12" stroke="#5AC8FA" stroke-width="2.5" stroke-linecap="round"/></svg>`
 };
 
 const dockPinned = ['Finder', 'Safari.app', 'Google Chrome.app', 'YouTube.app', 'Terminal.app', 'Calculator.app', 'System Settings.app'];
@@ -998,6 +1000,7 @@ function openApp(appName) {
   if (winId === 'home-window') initHome();
   if (winId === 'tv-window') initTV();
   if (winId === 'findmy-window') initFindMy();
+  if (winId === 'translator-window') initTranslator();
   if (winId === 'settings-window') renderStorage();
   // Privacy permissions
   if (winId === 'facetime-window') {
@@ -10463,4 +10466,122 @@ function findmyRenderMap(d) {
 function initFindMy() {
   findmyRenderSidebar();
   findmyRenderMap(findmyDevices[0]);
+}
+
+// ===================== TRANSLATOR =====================
+const translatorLangs = ['English', 'Spanish', 'French', 'German', 'Italian', 'Japanese', 'Chinese', 'Korean', 'Hindi', 'Portuguese'];
+const translatorDict = {
+  'hello': { Spanish: 'Hola', French: 'Bonjour', German: 'Hallo', Italian: 'Ciao', Japanese: 'こんにちは', Chinese: '你好', Korean: '안녕하세요', Hindi: 'नमस्ते', Portuguese: 'Olá' },
+  'good morning': { Spanish: 'Buenos días', French: 'Bonjour', German: 'Guten Morgen', Italian: 'Buongiorno', Japanese: 'おはようございます', Chinese: '早上好', Korean: '좋은 아침', Hindi: 'सुप्रभात', Portuguese: 'Bom dia' },
+  'thank you': { Spanish: 'Gracias', French: 'Merci', German: 'Danke', Italian: 'Grazie', Japanese: 'ありがとう', Chinese: '谢谢', Korean: '감사합니다', Hindi: 'धन्यवाद', Portuguese: 'Obrigado' },
+  'goodbye': { Spanish: 'Adiós', French: 'Au revoir', German: 'Auf Wiedersehen', Italian: 'Arrivederci', Japanese: 'さようなら', Chinese: '再见', Korean: '안녕히 가세요', Hindi: 'अलविदा', Portuguese: 'Adeus' },
+  'how are you': { Spanish: '¿Cómo estás?', French: 'Comment ça va ?', German: 'Wie geht es dir?', Italian: 'Come stai?', Japanese: 'お元気ですか？', Chinese: '你好吗？', Korean: '어떻게 지내세요?', Hindi: 'आप कैसे हैं?', Portuguese: 'Como você está?' },
+  'i love you': { Spanish: 'Te quiero', French: 'Je t\'aime', German: 'Ich liebe dich', Italian: 'Ti amo', Japanese: '愛してる', Chinese: '我爱你', Korean: '사랑해요', Hindi: 'मैं तुमसे प्यार करता हूँ', Portuguese: 'Eu te amo' },
+  'good night': { Spanish: 'Buenas noches', French: 'Bonne nuit', German: 'Gute Nacht', Italian: 'Buonanotte', Japanese: 'おやすみなさい', Chinese: '晚安', Korean: '안녕히 주무세요', Hindi: 'शुभ रात्रि', Portuguese: 'Boa noite' },
+  'yes': { Spanish: 'Sí', French: 'Oui', German: 'Ja', Italian: 'Sì', Japanese: 'はい', Chinese: '是', Korean: '네', Hindi: 'हाँ', Portuguese: 'Sim' },
+  'no': { Spanish: 'No', French: 'Non', German: 'Nein', Italian: 'No', Japanese: 'いいえ', Chinese: '不', Korean: '아니요', Hindi: 'नहीं', Portuguese: 'Não' },
+  'apple': { Spanish: 'Manzana', French: 'Pomme', German: 'Apfel', Italian: 'Mela', Japanese: 'りんご', Chinese: '苹果', Korean: '사과', Hindi: 'सेब', Portuguese: 'Maçã' },
+  'water': { Spanish: 'Agua', French: 'Eau', German: 'Wasser', Italian: 'Acqua', Japanese: '水', Chinese: '水', Korean: '물', Hindi: 'पानी', Portuguese: 'Água' },
+  'coffee': { Spanish: 'Café', French: 'Café', German: 'Kaffee', Italian: 'Caffè', Japanese: 'コーヒー', Chinese: '咖啡', Korean: '커피', Hindi: 'कॉफी', Portuguese: 'Café' }
+};
+const translatorFallback = {
+  Spanish: ['Hola amigo', 'Gracias por su mensaje', 'El conocimiento es poder'],
+  French: ['Bonjour l\'ami', 'Merci pour votre message', 'Le savoir est un pouvoir'],
+  German: ['Hallo Freund', 'Danke für Ihre Nachricht', 'Wissen ist Macht'],
+  Italian: ['Ciao amico', 'Grazie per il tuo messaggio', 'La conoscenza è potere'],
+  Japanese: ['こんにちは、友よ', 'メッセージありがとう', '知識は力なり'],
+  Chinese: ['你好，朋友', '谢谢你的留言', '知识就是力量'],
+  Korean: ['안녕, 친구', '메시지 감사합니다', '지식은 힘이다'],
+  Hindi: ['नमस्ते दोस्त', 'आपके संदेश के लिए धन्यवाद', 'ज्ञान ही शक्ति है'],
+  Portuguese: ['Olá amigo', 'Obrigado pela sua mensagem', 'Conhecimento é poder']
+};
+
+function translatorPopulateLangs() {
+  const from = document.getElementById('translatorFrom');
+  const to = document.getElementById('translatorTo');
+  if (!from || !to) return;
+  const opts = translatorLangs.map(l => '<option>' + l + '</option>').join('');
+  from.innerHTML = opts;
+  to.innerHTML = opts;
+  from.value = 'English';
+  to.value = 'Spanish';
+}
+
+function translatorTranslate() {
+  const input = document.getElementById('translatorInput').value.trim().toLowerCase();
+  const from = document.getElementById('translatorFrom').value;
+  const to = document.getElementById('translatorTo').value;
+  const out = document.getElementById('translatorOutput');
+  out.classList.remove('placeholder');
+  if (!input) { out.textContent = 'Type some text to translate.'; out.classList.add('placeholder'); return; }
+  const direct = translatorDict[input];
+  let result;
+  if (direct && direct[to]) {
+    result = direct[to];
+  } else {
+    const words = input.split(/\s+/).map(w => translatorDict[w] && translatorDict[w][to] ? translatorDict[w][to] : w);
+    if (from === 'English') {
+      result = words.join(' ');
+      if (result === input) {
+        const fb = translatorFallback[to] || ['Translated text'];
+        result = fb[Math.floor(Math.random() * fb.length)];
+      }
+    } else {
+      const fb = translatorFallback[to] || ['Translated text'];
+      result = fb[Math.floor(Math.random() * fb.length)];
+    }
+  }
+  out.textContent = result;
+  playSystemSound('message');
+}
+
+function translatorSwap() {
+  const from = document.getElementById('translatorFrom');
+  const to = document.getElementById('translatorTo');
+  const input = document.getElementById('translatorInput');
+  const out = document.getElementById('translatorOutput');
+  const a = from.value;
+  from.value = to.value;
+  to.value = a;
+  if (!out.classList.contains('placeholder') && out.textContent && input.value) {
+    input.value = out.textContent;
+    out.textContent = '';
+    out.classList.add('placeholder');
+  }
+  playSystemSound('keyclick');
+}
+
+function translatorCopy() {
+  const out = document.getElementById('translatorOutput');
+  if (!out || out.classList.contains('placeholder')) return;
+  const text = out.textContent;
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  showNotifToast('Translator', 'Translation copied to clipboard', 'Translator.app');
+  playSystemSound('message');
+}
+
+function initTranslator() {
+  translatorPopulateLangs();
+  const input = document.getElementById('translatorInput');
+  const count = document.getElementById('translatorCharCount');
+  input.addEventListener('input', () => {
+    count.textContent = input.value.length + ' / 500';
+  });
+  document.getElementById('translatorGo').addEventListener('click', translatorTranslate);
+  document.getElementById('translatorSwap').addEventListener('click', translatorSwap);
+  document.getElementById('translatorCopy').addEventListener('click', translatorCopy);
+  document.getElementById('translatorListenTo').addEventListener('click', () => playSystemSound('volume'));
+  document.getElementById('translatorListenFrom').addEventListener('click', () => playSystemSound('volume'));
+  document.getElementById('translatorClear').addEventListener('click', () => {
+    input.value = '';
+    count.textContent = '0 / 500';
+    const out = document.getElementById('translatorOutput');
+    out.textContent = 'Translation appears here';
+    out.classList.add('placeholder');
+  });
 }

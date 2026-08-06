@@ -2499,6 +2499,44 @@
         </div>
       </div>
 
+      <!-- ========== TRANSLATOR ========== -->
+      <div class="mac-window app-window" id="translator-window" style="width:680px;height:460px;top:75px;left:200px;display:none;">
+        <div class="window-titlebar">
+          <div class="traffic-lights">
+            <button class="tl-btn tl-close" data-action="close"></button>
+            <button class="tl-btn tl-minimize" data-action="minimize"></button>
+            <button class="tl-btn tl-maximize" data-action="maximize"></button>
+          </div>
+          <div class="window-title">Translator</div>
+          <div class="window-titlebar-spacer"></div>
+        </div>
+        <div class="window-body translator-body">
+          <div class="translator-pane">
+            <div class="translator-lang-row">
+              <select class="translator-lang" id="translatorFrom"></select>
+              <button class="translator-action" id="translatorListenFrom" title="Listen"><i class="ri-volume-up-line"></i></button>
+              <button class="translator-action" id="translatorClear" title="Clear"><i class="ri-delete-bin-line"></i></button>
+            </div>
+            <textarea class="translator-input" id="translatorInput" placeholder="Enter text"></textarea>
+            <div class="translator-char-count" id="translatorCharCount">0 / 500</div>
+          </div>
+          <div class="translator-divider">
+            <button class="translator-swap" id="translatorSwap" title="Swap languages"><i class="ri-arrow-left-right-line"></i></button>
+          </div>
+          <div class="translator-pane">
+            <div class="translator-lang-row">
+              <select class="translator-lang" id="translatorTo"></select>
+              <button class="translator-action" id="translatorListenTo" title="Listen"><i class="ri-volume-up-line"></i></button>
+              <button class="translator-action" id="translatorCopy" title="Copy"><i class="ri-file-copy-line"></i></button>
+            </div>
+            <div class="translator-output" id="translatorOutput">Translation appears here</div>
+            <div class="translator-actions">
+              <button class="translator-primary" id="translatorGo"><i class="ri-translate-2"></i> Translate</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="launchpad-overlay" id="launchpadOverlay">
       <div class="launchpad-title">Apps</div>
@@ -2751,6 +2789,12 @@
             <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#30D158"/><circle cx="24" cy="24" r="15" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="#fff"/><circle cx="24" cy="24" r="2.5" fill="#30D158"/></svg>
           </div>
           <span class="launchpad-label">Find My</span>
+        </div>
+        <div class="launchpad-item" data-app="Translator.app">
+          <div class="launchpad-icon">
+            <svg viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#1C1C1E"/><path d="M8 12h32M24 8v4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M12 12c2 10 6 16 12 20M20 32c-1-5-2-9-2-14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M16 18h16M28 18c0 6-3 11-8 14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="28" cy="28" r="11" fill="none" stroke="#5AC8FA" stroke-width="2.5"/><path d="M28 19v18M22 22h12" stroke="#5AC8FA" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+          <span class="launchpad-label">Translator</span>
         </div>
       </div>
     </div>
